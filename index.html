@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#142842">
+    <meta name="description" content="Front Arcade, a oficina de boas práticas de front-end em formato de minijogos.">
+    <title>Front Arcade</title>
+    <link rel="stylesheet" href="./styles.css">
+    <link rel="stylesheet" href="./builder.css">
+    <link rel="stylesheet" href="./site-preview.css">
+    <script src="./art.js" defer></script>
+    <script src="./app.js" defer></script>
+    <script src="./olhar-afiado.js" defer></script>
+    <script src="./popups-infinitos.js" defer></script>
+    <script src="./lag-lab.js" defer></script>
+    <script src="./site-builder.js" defer></script>
+  </head>
+  <body>
+    <main id="boot-screen" class="boot-screen" aria-labelledby="boot-title">
+      <div class="boot-panel">
+        <div class="boot-emblem" aria-hidden="true">
+          <canvas class="games-icon boot-icon" width="32" height="32"></canvas>
+        </div>
+        <h1 id="boot-title">Front Arcade</h1>
+        <p class="boot-subtitle">by PP and Enzo</p>
+        <div class="boot-action">
+          <button id="power-on" class="power-button" type="button">
+            <span class="power-symbol" aria-hidden="true"></span> Começar
+          </button>
+        </div>
+        <p id="boot-status" class="boot-status" role="status"></p>
+      </div>
+    </main>
+
+    <div id="arcade-desktop" class="desktop" hidden>
+      <div class="wallpaper" aria-hidden="true"></div>
+      <main class="workspace">
+        <nav class="desktop-shortcuts" aria-label="Atalhos da área de trabalho">
+          <button class="desktop-shortcut" type="button" data-games aria-controls="games-window">
+            <canvas class="games-icon shortcut-icon" width="32" height="32" aria-hidden="true"></canvas>
+            Jogos
+          </button>
+          <button class="desktop-shortcut" type="button" data-about aria-controls="about-window">
+            <span class="folder-icon" aria-hidden="true"></span>
+            Sobre Nós
+          </button>
+          <button id="open-builder" class="desktop-shortcut builder-shortcut" type="button" aria-controls="builder-window" aria-expanded="false">
+            <span class="scrapbook-icon" aria-hidden="true"></span>
+            <span>Construa Meu Site</span>
+          </button>
+        </nav>
+
+        <section id="games-window" class="window" aria-labelledby="window-title" hidden>
+          <header class="window-bar">
+            <div class="window-title"><canvas class="games-icon window-icon" width="32" height="32" aria-hidden="true"></canvas><h1 id="window-title" tabindex="-1">Jogos</h1></div>
+            <div class="window-actions">
+              <button class="chrome-button fullscreen" type="button" data-fullscreen="games-window" aria-label="Tela cheia" title="Tela cheia" aria-pressed="false"></button>
+              <button id="close-window" class="chrome-button close" type="button" aria-label="Fechar janela Jogos"></button>
+            </div>
+          </header>
+
+          <div id="game-library" class="library">
+            <h2 tabindex="-1">Jogos da oficina</h2>
+            <div class="game-list">
+              <article class="game-card color-game-card">
+                <div class="color-game-mark" aria-hidden="true"></div>
+                <div><h3>Olhar Afiado</h3><p>Encontre a cor de uma região da imagem.</p></div>
+                <button id="play-color" class="primary-button" type="button">Jogar</button>
+              </article>
+              <article class="game-card next-game-card">
+                <span class="lock-icon" aria-hidden="true"></span>
+                <div><h3>Os Pop-ups Infinitos</h3><p id="next-game-status"></p></div>
+                <button id="play-popups" class="primary-button" type="button" disabled>Jogar</button>
+              </article>
+              <article id="lag-card" class="game-card next-game-card">
+                <span class="lock-icon" aria-hidden="true"></span>
+                <div><h3>Lag Lab</h3><p id="lag-card-status">Conclua Os Pop-ups Infinitos para jogar.</p></div>
+                <button id="play-lag" class="primary-button" type="button" disabled>Jogar</button>
+              </article>
+            </div>
+          </div>
+
+          <div id="color-game" class="color-game" hidden>
+            <div class="color-game-header">
+              <div><h2 id="color-game-title" tabindex="-1">Olhar Afiado</h2><p>Encontre a cor indicada. Você precisa de pelo menos 85% de semelhança.</p></div>
+              <div class="color-game-actions">
+                <button id="choose-color-image" class="secondary-button" type="button" hidden>Escolher outra imagem</button>
+                <button id="back-to-games" class="secondary-button" type="button">Voltar aos jogos</button>
+              </div>
+            </div>
+            <section id="color-intro" class="game-intro color-intro" aria-labelledby="color-intro-title">
+              <div class="color-intro-art" aria-hidden="true"><span></span><span></span><span></span></div>
+              <div>
+                <h3 id="color-intro-title">Cor também orienta</h3>
+                <p>Designers e devs precisam perceber diferenças de matiz, saturação e luminosidade para reproduzir a identidade visual de um produto e aplicar sua paleta com consistência.</p>
+                <p>No jogo, você aproxima duas cores pelo olhar. Em interfaces reais, verifique também o contraste e use texto ou ícones para comunicar estados como erro e sucesso.</p>
+                <button id="start-color" class="primary-button" type="button">Abrir acervo</button>
+              </div>
+            </section>
+            <div id="color-progress" class="color-progress" hidden>
+              <label for="color-progress-bar" id="color-progress-label">0 de 10 acertos</label>
+              <progress id="color-progress-bar" max="10" value="0"></progress>
+            </div>
+            <section id="color-gallery" aria-labelledby="color-gallery-title" hidden>
+              <div class="color-gallery-heading">
+                <div><h3 id="color-gallery-title" tabindex="-1">Acervo de imagens</h3><p id="color-gallery-caption"></p></div>
+                <button id="restart-color" class="secondary-button" type="button" hidden>Reiniciar partida</button>
+              </div>
+              <div id="color-gallery-grid" class="color-gallery-grid"></div>
+            </section>
+            <form id="color-round" hidden>
+              <div class="color-board">
+                <div class="color-target">
+                  <p id="target-prompt"></p>
+                  <div class="color-comparison">
+                    <figure>
+                      <div class="target-frame">
+                        <canvas id="target-art" width="320" height="240" role="img"></canvas>
+                        <img id="target-image" alt="" hidden>
+                        <span id="target-marker" aria-hidden="true"></span>
+                      </div>
+                      <figcaption>Referência</figcaption>
+                    </figure>
+                    <figure>
+                      <div class="target-frame">
+                        <canvas id="color-copy" width="320" height="240" role="img" aria-label="Cópia com a sua cor"></canvas>
+                      </div>
+                      <figcaption>Sua mistura</figcaption>
+                    </figure>
+                  </div>
+                </div>
+                <div class="color-controls">
+                  <div class="wheel-frame" aria-hidden="true">
+                    <canvas id="color-wheel" width="220" height="220"></canvas>
+                    <span id="wheel-marker"></span>
+                  </div>
+                  <div class="color-channels">
+                    <label>Matiz <input id="color-hue" type="range" min="0" max="359" value="210"></label>
+                    <label>Saturação <input id="color-saturation" type="range" min="0" max="100" value="60"></label>
+                    <label>Luminosidade <input id="color-lightness" type="range" min="0" max="100" value="50"></label>
+                  </div>
+                  <div class="color-sample"><span id="color-swatch" aria-hidden="true"></span><output id="color-value" aria-live="off"></output></div>
+                </div>
+              </div>
+              <div class="round-actions">
+                <p id="color-feedback" role="status"></p>
+                <div><button id="check-color" class="primary-button" type="submit">Conferir cor</button><button id="next-color" class="primary-button" type="button" hidden>Voltar ao acervo</button></div>
+              </div>
+            </form>
+          </div>
+          <section id="popup-game" class="popup-game" aria-labelledby="popup-game-title" hidden>
+            <header class="popup-game-head">
+              <div>
+                <p class="eyebrow">LAWD · Oficina da SEMAC</p>
+                <h2 id="popup-game-title" tabindex="-1">Os Pop-ups Infinitos</h2>
+              </div>
+              <button id="back-from-popups" class="secondary-button" type="button">Voltar aos jogos</button>
+            </header>
+            <div id="popup-lobby" class="popup-lobby">
+              <div class="popup-lobby-art" aria-hidden="true"><i></i><i></i><i></i></div>
+              <div>
+                <h3>O Formulário da Paciência</h3>
+                <p>Um bom formulário deixa a pessoa seguir com a tarefa. Avisos fora de hora dividem a atenção, controles inadequados aumentam o esforço e apagar campos após um erro obriga a refazer o trabalho.</p>
+                <p>Experimente o efeito dessas escolhas. Preencha a ficha fictícia em quatro etapas em até 40 segundos e feche os anúncios pelo ×.</p>
+                <button id="start-popups" class="primary-button" type="button">Começar desafio</button>
+              </div>
+            </div>
+            <div id="popup-round" hidden>
+              <div class="popup-game-meter">
+                <strong id="popup-step"></strong>
+                <span id="popup-clock" role="timer" aria-label="Tempo restante">40 s</span>
+              </div>
+              <div id="popup-arena" class="popup-arena">
+                <div class="popup-form-shell">
+                  <aside class="popup-reference">
+                    <h3>Ficha fictícia</h3>
+                    <dl><dt>Nome</dt><dd>Lia</dd><dt>Ano de nascimento</dt><dd>2004</dd><dt>Telefone</dt><dd>0000-0012</dd></dl>
+                  </aside>
+                  <form id="patience-form" novalidate autocomplete="off">
+                    <fieldset>
+                      <legend>Nome</legend>
+                      <label for="patience-name">Digite o nome da ficha.</label>
+                      <input id="patience-name" maxlength="20">
+                    </fieldset>
+                    <fieldset hidden>
+                      <legend>Ano de nascimento</legend>
+                      <label for="patience-year">Arraste até o ano da ficha.</label>
+                      <input id="patience-year" type="range" min="1900" max="2026" value="1963">
+                      <output for="patience-year" id="patience-year-value">1963</output>
+                    </fieldset>
+                    <fieldset hidden>
+                      <legend>Telefone</legend>
+                      <p>Altere o número de um em um.</p>
+                      <div class="patience-counter">
+                        <button id="patience-minus" type="button" aria-label="Diminuir telefone">−</button>
+                        <output id="patience-phone">0000-0000</output>
+                        <button id="patience-plus" type="button" aria-label="Aumentar telefone">+</button>
+                      </div>
+                    </fieldset>
+                    <fieldset hidden>
+                      <legend>Revisão</legend>
+                      <dl id="patience-review"></dl>
+                    </fieldset>
+                    <div class="patience-actions">
+                      <button id="patience-back" class="secondary-button" type="button" hidden>Voltar etapa</button>
+                      <button id="patience-next" class="primary-button" type="submit">Avançar</button>
+                    </div>
+                    <p id="patience-feedback" role="status"></p>
+                  </form>
+                </div>
+                <div id="popup-layer" class="popup-layer" aria-label="Avisos simulados"></div>
+              </div>
+            </div>
+            <div id="popup-end" class="popup-end" hidden>
+              <h3 id="popup-end-title" tabindex="-1"></h3>
+              <p id="popup-end-message"></p>
+              <h4>O que esse desafio mostra</h4>
+              <ul>
+                <li>Pop-ups interrompem a tarefa principal e disputam a atenção.</li>
+                <li>Campos de data e telefone precisam de controles adequados ao tipo de entrada.</li>
+                <li>Se o envio falhar, indique o campo com erro e preserve o que a pessoa já preencheu.</li>
+              </ul>
+              <button id="retry-popups" class="primary-button" type="button">Jogar novamente</button>
+            </div>
+          </section>
+          <section id="lag-game" class="color-game lag-game" aria-labelledby="lag-title" hidden>
+            <div class="color-game-header">
+              <h2 id="lag-title" tabindex="-1">Lag Lab</h2>
+              <button id="back-from-lag" class="secondary-button" type="button">Voltar aos jogos</button>
+            </div>
+            <div id="lag-intro" class="lag-intro">
+              <h3>Quando a interface demora a responder</h3>
+              <p>O Limiar de Doherty associa uma interação mais fluida a respostas rápidas, em torno de 400 ms ou menos. Aqui você sente o que muda ao repetir a mesma tarefa com quatro atrasos diferentes.</p>
+              <p>Escolha um tema e reproduza o desenho. A pontuação considera quanto do contorno você cobriu e quanto do seu traço ficou perto dele.</p>
+              <label>Tema <select id="lag-theme"><option value="arcos">Arcos da Atalaia</option><option value="peixe">Peixe</option><option value="foguete">Foguete</option></select></label>
+              <button id="start-lag" class="primary-button" type="button">Começar experimento</button>
+            </div>
+            <div id="lag-round" hidden>
+              <div class="lag-meter"><strong id="lag-trial"></strong><span id="lag-delay"></span></div>
+              <div class="lag-boards">
+                <figure><figcaption>Referência</figcaption><canvas id="lag-reference" width="320" height="240" role="img"></canvas></figure>
+                <figure><figcaption>Seu desenho</figcaption>
+                  <div class="lag-drawing-frame">
+                    <canvas id="lag-drawing" width="320" height="240" tabindex="0" aria-label="Área de desenho" aria-describedby="lag-controls"></canvas>
+                    <span id="lag-cursor" aria-hidden="true" hidden></span>
+                  </div>
+                </figure>
+              </div>
+              <p id="lag-controls">Desenhe com mouse ou toque. Com o teclado, use as setas para mover e Espaço para levantar ou baixar a caneta.</p>
+              <p id="lag-feedback" role="status"></p>
+              <div class="lag-actions">
+                <button id="clear-lag" class="secondary-button" type="button">Apagar desenho</button>
+                <button id="score-lag" class="primary-button" type="button">Conferir semelhança</button>
+                <button id="next-lag" class="primary-button" type="button" hidden>Próximo atraso</button>
+              </div>
+            </div>
+            <div id="lag-results" class="lag-intro" hidden>
+              <h3 id="lag-result-title" tabindex="-1">Compare suas tentativas</h3>
+              <dl id="lag-scores"></dl>
+              <p>A pontuação compara os contornos. Ela também depende da prática, da precisão e do tempo que você dedicou a cada tentativa.</p>
+              <button id="again-lag" class="primary-button" type="button">Jogar novamente</button>
+            </div>
+          </section>
+        </section>
+        <section id="builder-window" class="window builder-window" aria-labelledby="builder-window-title" hidden>
+          <header class="window-bar">
+            <div class="window-title"><span class="scrapbook-icon small-scrapbook" aria-hidden="true"></span><h1 id="builder-window-title" tabindex="-1">Construa Meu Site</h1></div>
+            <div class="window-actions">
+              <button class="chrome-button fullscreen" type="button" data-fullscreen="builder-window" aria-label="Tela cheia" title="Tela cheia" aria-pressed="false"></button>
+              <button id="close-builder" class="chrome-button close" type="button" aria-label="Fechar Construa Meu Site"></button>
+            </div>
+          </header>
+          <div class="builder-toolbar">
+            <div><h2>Monte sua página</h2><p>Escolha uma peça e personalize na prévia.</p></div>
+            <div class="builder-toolbar-actions">
+              <button id="builder-add-photo" class="primary-button" type="button">Adicionar foto</button>
+              <button id="builder-preview-mode" class="secondary-button" type="button" aria-pressed="false">Ver página</button>
+              <button id="builder-export" class="secondary-button" type="button">Baixar site</button>
+              <input id="builder-photo-input" type="file" accept="image/jpeg,image/png,image/webp" hidden>
+            </div>
+          </div>
+          <p id="builder-status" class="builder-status" role="status"></p>
+          <div id="builder-workbench" class="builder-workbench">
+            <aside class="builder-materials" aria-label="Materiais do scrapbook">
+              <div class="builder-tabs" role="group" aria-label="Categorias de materiais">
+                <button type="button" data-builder-tab="blocks" aria-pressed="true">Peças</button>
+                <button type="button" data-builder-tab="identity" aria-pressed="false">Marca</button>
+                <button type="button" data-builder-tab="stickers" aria-pressed="false">Adesivos</button>
+              </div>
+              <div id="builder-material-list" class="builder-material-list"></div>
+            </aside>
+            <div class="builder-paper">
+              <div class="builder-paper-bar">
+                <p>Prévia do site</p>
+                <button id="builder-size" class="secondary-button" type="button" aria-pressed="false">Como fica no celular</button>
+              </div>
+              <div id="builder-page" class="site-draft"></div>
+              <p id="builder-empty" class="builder-empty" hidden>Adicione um recorte para começar a montar a página.</p>
+            </div>
+            <aside class="builder-inspector" aria-labelledby="builder-inspector-title">
+              <h3 id="builder-inspector-title">Personalizar</h3>
+              <p id="builder-inspector-empty">Selecione um recorte na prévia para editá-lo.</p>
+              <form id="builder-inspector-form" hidden></form>
+            </aside>
+          </div>
+        </section>
+        <section id="about-window" class="window about-window" aria-labelledby="about-window-title" hidden>
+          <header class="window-bar">
+            <div class="window-title">
+              <span class="folder-icon small-folder" aria-hidden="true"></span>
+              <h1 id="about-window-title" tabindex="-1">Sobre Nós</h1>
+            </div>
+            <div class="window-actions">
+              <button id="minimize-about" class="chrome-button minimize" type="button" aria-label="Minimizar pasta Sobre Nós"></button>
+              <button id="close-about" class="chrome-button close" type="button" aria-label="Fechar pasta Sobre Nós"></button>
+            </div>
+          </header>
+          <div id="about-folder" class="about-content">
+            <h2>Quem criou o Front Arcade</h2>
+            <p>Conheça a dupla por trás da oficina de front-end.</p>
+            <ul class="profile-files">
+              <li><button class="profile-file" type="button" data-file="Enzo"><span class="file-icon" aria-hidden="true"></span> Enzo.txt</button></li>
+              <li><button class="profile-file" type="button" data-file="PP"><span class="file-icon" aria-hidden="true"></span> PP.txt</button></li>
+            </ul>
+          </div>
+          <div id="about-file" class="about-content" hidden>
+            <button id="back-to-folder" class="secondary-button" type="button">Voltar à pasta</button>
+            <p id="about-status" class="about-status" role="status"></p>
+            <article id="author-profile" hidden></article>
+          </div>
+        </section>
+      </main>
+
+      <footer class="taskbar">
+        <div class="task-apps">
+          <div class="task-account">
+            <canvas id="profile-avatar" width="44" height="44" aria-hidden="true" hidden></canvas>
+            <span class="task-profile" hidden></span>
+            <button id="edit-avatar" class="task-button" type="button" aria-haspopup="dialog">Criar avatar</button>
+          </div>
+          <button class="task-button" type="button" data-about aria-controls="about-window" hidden>
+            <span class="folder-icon small-folder" aria-hidden="true"></span> Sobre Nós
+          </button>
+        </div>
+        <div class="system-status"><time class="system-date"></time><time class="system-clock"></time></div>
+      </footer>
+    </div>
+
+    <dialog id="popup-reboot" class="popup-reboot" aria-labelledby="popup-reboot-title">
+      <div class="window-bar"><strong>Simulação do jogo · Front Arcade</strong></div>
+      <div class="popup-reboot-content">
+        <div class="popup-virus-stage" aria-hidden="true">
+          <span class="popup-virus-danger"><i>!</i> PERIGO</span>
+          <span class="popup-virus popup-virus-echo popup-virus-echo-left"></span>
+          <span class="popup-virus popup-virus-echo popup-virus-echo-right"></span>
+          <span class="popup-virus"></span>
+          <span class="popup-virus-log">SESSÃO INTERROMPIDA</span>
+          <span class="popup-reboot-scan"></span>
+        </div>
+        <h2 id="popup-reboot-title">Seu computador foi infectado!</h2>
+        <p>Na simulação, o anúncio interrompeu a sessão. Reinicie o Front Arcade para voltar à tela inicial. As conquistas da coletânea ficam salvas.</p>
+        <p>Anúncios sobre campos ou botões podem provocar cliques involuntários. Em formulários reais, mantenha a ação principal visível e preserve os dados se algo interromper a tarefa.</p>
+        <p><strong>Confira a origem antes de clicar em um pop-up.</strong> Se o aviso for inesperado ou pedir um download, feche-o pelo navegador. Se ele se passar por um alerta de segurança, abra o antivírus pelo próprio sistema.</p>
+        <div class="patience-actions">
+          <button id="confirm-reboot" class="primary-button" type="button">Reiniciar Front Arcade</button>
+        </div>
+      </div>
+    </dialog>
+    <dialog id="avatar-dialog" aria-labelledby="avatar-title">
+      <div class="window-bar">
+        <div class="window-title"><canvas class="games-icon window-icon" width="32" height="32" aria-hidden="true"></canvas> Editor de avatar</div>
+        <button id="close-avatar" class="chrome-button close" type="button" aria-label="Fechar personalização"></button>
+      </div>
+      <form id="avatar-form" class="avatar-editor">
+        <div class="editor-body">
+          <div class="avatar-preview">
+            <canvas id="avatar-art" width="64" height="80" role="img" aria-label="Prévia do seu avatar de corpo inteiro em pixel art"></canvas>
+            <div class="preview-caption">
+              <span class="preview-label">Prévia do avatar</span>
+              <div id="preview-tools" class="preview-tools" hidden>
+                <button id="scene-effect" type="button"></button>
+                <button id="item-action" type="button"></button>
+                <button id="preview-motion" type="button">Pausar movimento</button>
+              </div>
+            </div>
+          </div>
+          <div class="avatar-controls">
+            <p class="eyebrow"><span class="pixel-spark" aria-hidden="true"></span> Oficina de front-end</p>
+            <h2 id="avatar-title" tabindex="-1" autofocus>Crie seu avatar</h2>
+            <label class="name-field">Nome do jogador
+              <input id="player-name" name="playerName" type="text" maxlength="24" required autocomplete="off" placeholder="Como podemos te chamar?">
+            </label>
+            <div id="avatar-categories" class="avatar-categories" role="group" aria-label="Categorias de personalização"></div>
+            <div id="avatar-options" class="avatar-options">
+              <p id="costume-clothes-note" class="costume-clothes-note" hidden>A fantasia cobre o avatar por inteiro. Escolha <strong>Nenhuma</strong> em Fantasias para voltar à sua roupa.</p>
+            </div>
+          </div>
+        </div>
+        <div class="editor-actions">
+          <button class="secondary-button" id="randomize" type="button">Sortear visual</button>
+            <button class="primary-button" id="save-avatar" type="submit">Salvar avatar</button>
+        </div>
+      </form>
+    </dialog>
+  </body>
+</html>

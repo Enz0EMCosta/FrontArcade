@@ -1,0 +1,31 @@
+Enzo E. Maia Costa
+
+## Sobre mim
+Sou graduando em Sistemas de Informação pela Universidade Federal de Sergipe (UFS) e desenvolvedor web júnior. Tenho experiência com desenvolvimento front-end, prototipagem, análise de dados e suporte a usuários. Gosto de aplicar pensamento analítico a problemas de produto e tecnologia e aprender na prática com cada projeto.
+
+## Experiência profissional
+InHire · Estagiário de Engenharia de Dados · Remoto
+Novembro de 2026 – atual
+Atuação com software de recrutamento (ATS), consultas e manipulação de bancos relacionais e não relacionais, análise de informações e suporte a usuários.
+
+Hospital Primavera · Estagiário de Sistemas · Aracaju, SE
+Março a outubro de 2026
+Atuação em TI com consultas e manipulação de bancos de dados, análise de informações, suporte direto aos usuários e auxílio na manutenção de sistemas. Experiência prática com o sistema Tasy.
+
+## Formação acadêmica
+Graduação em Sistemas de Informação · Universidade Federal de Sergipe (UFS)
+Agosto de 2023 – em andamento
+
+## Tecnologias e habilidades
+HTML, CSS, JavaScript e TypeScript. Prototipagem no Figma, bancos de dados relacionais e não relacionais, PostgreSQL, DynamoDB, software de ATS e criação de scripts APL. Trabalho em equipe, comunicação, proatividade e resolução de problemas.
+
+## Cursos e conquistas
+1º lugar no PitchUFS, em 2024.
+Minicurso Prototipação com Figma: Transformando ideias em experiências navegáveis, pelo LAWD, em 2024.
+Curso Java: Programação Orientada a Objetos + Projetos Interativos, pela Udemy, em 2024.
+
+## Idiomas
+Português nativo e inglês C1.
+
+## Front Arcade
+Sou coautor do Front Arcade com Pedro Paulo. O projeto nasceu para a etapa prática do nosso minicurso sobre front-end na Semana Acadêmica da UFS e aproxima pessoas de diferentes áreas de temas como usabilidade, sistemas visuais e engenharia de interface.

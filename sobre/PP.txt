@@ -1,0 +1,7 @@
+Pedro Paulo
+
+## Na Semana Acadêmica
+Pedro Paulo, o PP, apresenta com Enzo Maia um minicurso sobre boas práticas de front-end. A palestra aborda usabilidade, sistemas visuais, estados de interface, movimento e engenharia no navegador.
+
+## No Front Arcade
+PP é um dos criadores da proposta de transformar os temas da palestra em uma oficina prática. A ideia é que pessoas de diferentes áreas consigam experimentar como escolhas de interface influenciam o uso de um site.
