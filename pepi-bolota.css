@@ -1,0 +1,812 @@
+/* Pepi Bolota: boot screen button, intro stage, robot parts and the "glass" of the screen. */
+
+/* Secondary sibling of .power-button: same shape, radius and pressed depth, in the
+   navy of the taskbar so "Começar" stays the main action. */
+.intro-button,
+.intro-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 1px solid #5f8bb3;
+  border-radius: 10px;
+  color: #eef8f6;
+  background: linear-gradient(#2b5480, #1b3a5e);
+  box-shadow: 0 4px 0 #0b1f3a, 0 8px 18px #061b3166, inset 0 1px #a9d0f04d;
+  font-weight: 750;
+}
+.intro-button:hover, .intro-chip:hover { background: linear-gradient(#35628f, #22476f); }
+.intro-button:active, .intro-chip:active { transform: translateY(3px); box-shadow: 0 1px 0 #0b1f3a, inset 0 1px #a9d0f04d; }
+.intro-button:focus-visible, .intro-chip:focus-visible { outline: 2px solid #fcf9ee; outline-offset: 3px; }
+
+.intro-button {
+  min-width: 171px;
+  min-height: 46px;
+  margin-top: 16px;
+  padding: 8px 18px 8px 12px;
+  font-size: .95rem;
+}
+.intro-button-icon { width: 26px; height: 26px; }
+.intro-button-icon svg { display: block; width: 100%; height: 100%; }
+.is-booting .intro-button { visibility: hidden; }
+
+.intro-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---------- Stage ---------- */
+
+/* Pepi's sizes: one SVG/canvas pixel = this many CSS pixels. The duo is always a bit
+   taller than Pepi, so the presenters stay the stars of the closing scene. */
+dialog.intro-dialog {
+  --pepi-px: 3.6;
+  --sprite-px: 3.8;
+  /* Pepi OS palette: Pepi's own plum, pink, lilac and gold, apart from the navy and
+     green of the Front Arcade desktop. */
+  --os-bg: #120a1a;
+  --os-ink: #f8ecf4;
+  --os-muted: #c7b0cf;
+  --os-pink: #f0a8cc;
+  --os-lilac: #c6a6d4;
+  --os-gold: #ffc96b;
+  --os-mint: #8ef0c4;
+  --os-cyan: #86e6ff;
+  --os-line: #f0a8cc2e;
+  --os-panel: #24142ff2;
+  --os-shadow: #07030b;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  border: 0;
+  padding: 0;
+  overflow: hidden;
+  color: var(--os-ink);
+  background: var(--os-bg);
+}
+dialog.intro-dialog[open] { display: block; }
+.intro-dialog::backdrop { background: var(--os-bg); }
+
+.intro-stage {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 12px;
+  height: 100%;
+  padding: 16px clamp(16px, 4vw, 40px) clamp(20px, 4vh, 36px);
+}
+
+/* Top bar of Pepi OS: brand and chapter on the left, controls on the right. */
+.intro-toolbar {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  padding: 6px 6px 6px 14px;
+  border: 1px solid var(--os-line);
+  border-radius: 14px;
+  background: #1c1026b3;
+  box-shadow: 0 10px 30px #07030b80, inset 0 1px #ffffff0f;
+}
+.os-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--os-ink);
+  font-weight: 750;
+  letter-spacing: .01em;
+}
+.os-brand-mark {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: linear-gradient(#3a2147, #2a1735);
+  box-shadow: inset 0 0 0 1px #f0a8cc40;
+}
+.os-brand-mark svg { width: 16px; image-rendering: pixelated; }
+.intro-chapter {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding-left: 16px;
+  border-left: 1px solid var(--os-line);
+  color: var(--os-muted);
+  font: 600 .8125rem/1 var(--mono);
+}
+.intro-chapter-track { display: inline-flex; gap: 4px; }
+.intro-chapter-track i {
+  width: 18px;
+  height: 4px;
+  border-radius: 2px;
+  background: #ffffff1f;
+  transition: background-color .4s;
+}
+.intro-chapter-track i.is-done { background: var(--os-pink); }
+.intro-chapter-track i.is-current { background: var(--os-gold); box-shadow: 0 0 10px #ffc96b80; }
+.intro-voice-note {
+  margin-left: auto;
+  color: var(--os-muted);
+  font: .8125rem/1.4 var(--mono);
+}
+
+.intro-chip {
+  gap: 8px;
+  min-height: 42px;
+  padding: 8px 14px;
+  font-size: .9rem;
+}
+.intro-end .intro-chip { min-height: 53px; padding: 10px 22px; font-size: 1.05rem; }
+/* Inside Pepi OS the controls are quiet plum buttons; "Começar" keeps the green of the
+   Front Arcade, the one strong call to action leading back to it. */
+.intro-dialog .intro-chip {
+  border-color: #f0a8cc4d;
+  color: var(--os-ink);
+  background: linear-gradient(#3a2147, #2a1735);
+  box-shadow: 0 3px 0 var(--os-shadow), inset 0 1px #ffffff1a;
+}
+.intro-dialog .intro-chip:hover { background: linear-gradient(#472a56, #331c40); }
+.intro-dialog .intro-chip:active { box-shadow: 0 0 0 var(--os-shadow), inset 0 1px #ffffff1a; }
+.intro-toolbar .intro-chip { min-height: 38px; box-shadow: inset 0 1px #ffffff1a; }
+
+.intro-sound-icon { position: relative; width: 20px; height: 16px; }
+.intro-sound-icon::before {
+  content: "";
+  position: absolute;
+  inset: 0 6px 0 0;
+  background: currentColor;
+  clip-path: polygon(0 32%, 36% 32%, 100% 0, 100% 100%, 36% 68%, 0 68%);
+}
+.intro-sound-icon::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  right: 0;
+  width: 5px;
+  height: 10px;
+  border: 2px solid currentColor;
+  border-left: 0;
+  border-radius: 0 10px 10px 0;
+}
+[aria-pressed="false"] > .intro-sound-icon::after {
+  top: -1px;
+  right: 2px;
+  width: 2px;
+  height: 18px;
+  border: 0;
+  border-radius: 1px;
+  background: #f58c8b;
+  transform: rotate(40deg);
+}
+
+/* ---------- Floor: Pepi and the pixel duo ---------- */
+
+.intro-floor {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: clamp(16px, 5vw, 56px);
+  min-height: 0;
+  padding-bottom: 6px;
+}
+
+.intro-duo { display: flex; align-items: flex-end; gap: clamp(10px, 2.5vw, 28px); }
+.intro-person { display: grid; justify-items: center; gap: 10px; margin: 0; }
+.intro-person canvas {
+  display: block;
+  width: calc(40px * var(--sprite-px));
+  height: calc(68px * var(--sprite-px));
+  image-rendering: pixelated;
+  /* A one-pixel white sticker border makes the duo pop out of the scenery. */
+  --o: calc(1px * var(--sprite-px));
+  filter: drop-shadow(var(--o) 0 0 #fff) drop-shadow(calc(var(--o) * -1) 0 0 #fff)
+    drop-shadow(0 var(--o) 0 #fff) drop-shadow(0 calc(var(--o) * -1) 0 #fff) drop-shadow(0 6px 10px #0b1d3a4d);
+}
+.intro-person figcaption {
+  padding: 2px 12px;
+  border-radius: 999px;
+  color: var(--navy);
+  background: #fcf9ee;
+  font: 700 .875rem/1.5 var(--mono);
+  opacity: 0;
+  transition: opacity .3s;
+}
+.intro-person.has-arrived figcaption { opacity: 1; }
+.intro-person.is-walking canvas { animation: intro-step .32s steps(1) infinite; }
+
+.pepi-rig { display: grid; justify-items: center; }
+.pepi-move { position: relative; z-index: 2; transform-origin: 50% 50%; will-change: transform; }
+/* A soft warm light behind Pepi: he always stands out from the scenery. */
+.pepi-move::before {
+  content: "";
+  position: absolute;
+  inset: -35% -40%;
+  z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, #ffd6e866, #f0a8cc26 55%, transparent);
+  pointer-events: none;
+  animation: pepi-glow 3.2s ease-in-out infinite;
+}
+.pepi {
+  position: relative;
+  width: calc(48px * var(--pepi-px));
+  height: calc(51px * var(--pepi-px));
+  isolation: isolate;
+  animation: pepi-float 2.4s ease-in-out infinite;
+  transition: rotate .4s ease;
+}
+.pepi.look-right { rotate: 7deg; }
+.pepi.look-left { rotate: -7deg; }
+.pepi-art {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  filter: drop-shadow(0 0 18px #f0a8cc2e);
+}
+/* In the intro and the editor Pepi gets the same white pixel border as the duo. */
+.intro-dialog .pepi-art, .pepi-guide .pepi-art, .pepi-pal .pepi-art {
+  --o: calc(1px * var(--pepi-px));
+  filter: drop-shadow(var(--o) 0 0 #fff) drop-shadow(calc(var(--o) * -1) 0 0 #fff)
+    drop-shadow(0 var(--o) 0 #fff) drop-shadow(0 calc(var(--o) * -1) 0 #fff) drop-shadow(0 8px 14px #0b1d3a4d);
+}
+.pepi-shadow {
+  width: calc(30px * var(--pepi-px));
+  height: 12px;
+  margin-top: 10px;
+  border-radius: 50%;
+  background: #02081466;
+  animation: pepi-shadow 2.4s ease-in-out infinite;
+}
+
+/* SVG parts. Transforms on <g> use their own box, so arms pivot at the shoulder. */
+.pepi-core, .pepi-ball-spin, .pepi-boot-line { transform-box: fill-box; transform-origin: center; }
+.pepi-feet { transform-box: fill-box; transform-origin: 50% 0; }
+.pepi-ear-left { transform-box: fill-box; transform-origin: 100% 50%; }
+.pepi-ear-right { transform-box: fill-box; transform-origin: 0 50%; }
+.pepi-arm { transform-box: fill-box; transform-origin: 50% 15%; }
+
+/* Ball form: Pepi travels rolled up and unfolds into the robot when he arrives. */
+.pepi-ball { display: none; }
+.pepi.is-ball .pepi-ball { display: inline; }
+.pepi.is-ball .pepi-robot { display: none; }
+.pepi-boot-line { opacity: 0; }
+.pepi.is-booting .pepi-face { opacity: 0; }
+.pepi-star { transform-box: fill-box; transform-origin: center; animation: pepi-twinkle 2.2s steps(1) infinite; }
+.pepi-antenna { transform-box: fill-box; transform-origin: 50% 100%; animation: pepi-antenna 3.2s ease-in-out infinite; }
+.pepi-heart { transform-box: fill-box; transform-origin: center; animation: pepi-beat 1.2s steps(1) infinite; }
+.pepi.is-loving .pepi-heart { animation-duration: .45s; }
+.pepi-sweat { display: none; }
+.pepi.is-nervous .pepi-sweat { display: inline; }
+.pepi-brow .brow-worried { display: none; }
+.pepi.brows-worried .brow-flat { display: none; }
+.pepi.brows-worried .brow-worried { display: inline; }
+.pepi-brow { transition: transform .15s steps(1, end); }
+.pepi.brows-up .pepi-brow, .pepi.is-confused .pepi-brow-left { transform: translateY(-1px); }
+.pepi-look { transition: transform .2s steps(2, end); }
+.pepi.look-right .pepi-look { transform: translateX(2px); }
+.pepi.look-left .pepi-look { transform: translateX(-2px); }
+.pepi.look-right .pepi-look-mouth { transform: translateX(1px); }
+.pepi.look-left .pepi-look-mouth { transform: translateX(-1px); }
+/* Emotions: data-face picks the eyes; surprised faces also open the mouth. */
+.pepi-eyes { display: none; }
+.pepi-eyes-normal { transform-box: fill-box; transform-origin: center; animation: pepi-blink 4.2s infinite; }
+[data-face="normal"] .pepi-eyes-normal, [data-face="unsure"] .pepi-eyes-normal, [data-face="sad"] .pepi-eyes-normal,
+[data-face="sleep"] .pepi-eyes-sleep,
+[data-face="happy"] .pepi-eyes-happy, [data-face="love"] .pepi-eyes-love,
+[data-face="oops"] .pepi-eyes-oops, [data-face="wide"] .pepi-eyes-wide,
+[data-face="laugh"] .pepi-eyes-laugh, [data-face="wink"] .pepi-eyes-wink,
+[data-face="star"] .pepi-eyes-star, [data-face="shy"] .pepi-eyes-shy, [data-face="squint"] .pepi-eyes-squint { display: inline; }
+.pepi-eyes-love { transform-box: fill-box; transform-origin: center; animation: pepi-beat .9s steps(1) infinite; }
+.pepi-eyes-star { transform-box: fill-box; transform-origin: center; animation: pepi-twinkle 1.1s steps(1) infinite; }
+/* Closed mouths: a smile by default, a variant for some faces. */
+.pepi-mouth-closed > g { display: none; }
+.pepi-mouth-closed > .mouth-smile { display: inline; }
+[data-face="unsure"] .mouth-smile, [data-face="shy"] .mouth-smile, [data-face="laugh"] .mouth-smile,
+[data-face="sad"] .mouth-smile, [data-face="sleep"] .mouth-smile, [data-face="squint"] .mouth-smile { display: none; }
+[data-face="unsure"] .mouth-flat, [data-face="shy"] .mouth-shy, [data-face="laugh"] .mouth-laugh,
+[data-face="sad"] .mouth-sad, [data-face="sleep"] .mouth-sleep, [data-face="squint"] .mouth-hmm { display: inline; }
+.pepi-blush-strong { display: none; }
+.pepi.is-blushing .pepi-blush-strong { display: inline; }
+.pepi-mouth-open { opacity: 0; }
+.pepi.is-talking .pepi-mouth-open, .pepi.is-talking .pepi-mouth-closed { animation: pepi-mouth .28s steps(1, end) infinite; }
+.pepi.is-talking .pepi-mouth-closed { animation-delay: -.14s; }
+[data-face="oops"] .pepi-mouth-open, [data-face="wide"] .pepi-mouth-open { opacity: 1; }
+[data-face="oops"] .pepi-mouth-closed, [data-face="wide"] .pepi-mouth-closed { opacity: 0; }
+/* Recorded clips drive the mouth from the audio volume instead of a fixed flap. */
+.pepi.is-lipsync .pepi-mouth-open, .pepi.is-lipsync .pepi-mouth-closed { animation: none; }
+.pepi.is-lipsync.mouth-open .pepi-mouth-open { opacity: 1; }
+.pepi.is-lipsync.mouth-open .pepi-mouth-closed { opacity: 0; }
+
+.pepi-particle {
+  position: absolute;
+  top: 55%;
+  left: 50%;
+  width: calc(5px * var(--pepi-px));
+  pointer-events: none;
+}
+.pepi-particle svg { display: block; width: 100%; }
+.pepi-particle.is-giggle {
+  top: 30%;
+  left: 62%;
+  width: auto;
+  color: #d6407e;
+  font: 900 calc(5px * var(--pepi-px))/1 var(--mono);
+  text-shadow: 2px 0 #fff, -2px 0 #fff, 0 2px #fff, 0 -2px #fff, 0 4px 0 #3b283866;
+}
+.pepi-flash {
+  position: absolute;
+  top: 55%;
+  left: 50%;
+  width: calc(34px * var(--pepi-px));
+  aspect-ratio: 1;
+  border: 4px solid #fff4fa;
+  border-radius: 50%;
+  box-shadow: 0 0 30px #ffd1e6, inset 0 0 24px #ffd1e6;
+  pointer-events: none;
+}
+
+.pepi-thinking {
+  position: absolute;
+  bottom: 90%;
+  left: 60%;
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  pointer-events: none;
+}
+.pepi-thinking i {
+  color: #ffd66f;
+  font-size: calc(6px * var(--pepi-px));
+  font-style: normal;
+  font-weight: 900;
+  line-height: 1;
+  text-shadow: 0 3px 0 var(--navy);
+  opacity: 0;
+  transform: translateY(10px) scale(.4);
+}
+.pepi-thinking i:nth-child(2) { font-size: calc(8px * var(--pepi-px)); rotate: 12deg; }
+.pepi-thinking i:nth-child(3) { rotate: -10deg; }
+.pepi.is-confused .pepi-thinking i, .pepi.is-thinking-out .pepi-thinking i { animation: pepi-question .45s cubic-bezier(.3, 1.6, .5, 1) forwards; }
+.pepi.is-confused .pepi-thinking i:nth-child(2), .pepi.is-thinking-out .pepi-thinking i:nth-child(2) { animation-delay: .18s; }
+.pepi.is-confused .pepi-thinking i:nth-child(3), .pepi.is-thinking-out .pepi-thinking i:nth-child(3) { animation-delay: .36s; }
+.pepi-thinking { transition: opacity .25s, translate .25s; }
+.pepi.is-thinking-out .pepi-thinking { opacity: 0; translate: 0 -8px; }
+
+/* ---------- Build: blueprint and printer head ---------- */
+
+/* The blueprint lies behind the real art; printed rows cover it from top to bottom. */
+.pepi-blueprint {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .6s;
+}
+.pepi-blueprint rect { fill: #86e6ff14; stroke: #86e6ffb3; stroke-width: .16; }
+.pepi.is-building .pepi-blueprint { opacity: 1; animation: blueprint-in .5s steps(4) both; }
+.pepi-scan {
+  position: absolute;
+  top: 0;
+  left: -10%;
+  right: -10%;
+  height: calc(1px * var(--pepi-px));
+  display: none;
+  border-radius: 2px;
+  background: var(--os-cyan);
+  box-shadow: 0 0 12px 2px #86e6ffb3, 0 0 40px 6px #86e6ff40;
+  pointer-events: none;
+}
+.pepi.is-printing .pepi-scan { display: block; }
+
+/* ---------- Dialogue box ---------- */
+
+.intro-dialogue {
+  position: relative;
+  z-index: 3;
+  justify-self: center;
+  width: min(100%, 780px);
+  padding: 22px 24px 18px;
+  border: 1px solid #f0a8cc59;
+  border-radius: 16px;
+  background: linear-gradient(#2a1736f5, #1c0f26f5);
+  box-shadow: 0 0 0 1px #07030b, 0 6px 0 1px #07030b, 0 24px 60px #07030bb3, inset 0 1px #ffffff14;
+  animation: intro-dialogue-in .35s ease-out both;
+}
+.intro-speaker {
+  position: absolute;
+  top: -14px;
+  left: 20px;
+  padding: 3px 12px;
+  border-radius: 8px;
+  color: #2a1220;
+  background: var(--os-pink);
+  box-shadow: 0 0 0 3px #1c0f26;
+  font: 700 .875rem/1.4 var(--mono);
+}
+.intro-line {
+  min-height: 3em;
+  color: var(--os-ink);
+  font-size: clamp(1.05rem, 2.4vw, 1.35rem);
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+.intro-caret {
+  display: inline-block;
+  width: .55em;
+  height: .16em;
+  margin-left: .2em;
+  background: var(--os-pink);
+  animation: intro-caret 1s steps(1) infinite;
+}
+.intro-end { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 14px; }
+
+/* ---------- Pepi OS: the living desktop behind the stage ---------- */
+
+.intro-os {
+  position: absolute;
+  inset: 0;
+  z-index: 0; /* its own layer, so the build window stays behind Pepi */
+  overflow: hidden;
+  background:
+    radial-gradient(120% 80% at 50% -10%, #3a1a47, transparent 60%),
+    radial-gradient(90% 70% at 50% 115%, #2b1238, transparent 65%),
+    var(--os-bg);
+  transition: opacity .9s ease;
+}
+.intro-os.is-off { opacity: 0; }
+.os-power {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  background: #fff4fa;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Pixel scenery (pepi-scenery.js): three canvases scaled to the viewport height. */
+.scenery { position: absolute; inset: 0; overflow: hidden; }
+.scenery-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: auto;
+  height: 100%;
+  image-rendering: pixelated;
+  will-change: transform;
+}
+/* Softly darker edges keep the eye on the centre of the bright daytime scenery. */
+.scenery-shade {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(130% 100% at 50% 45%, transparent 58%, #0b1d3a4d 100%);
+}
+
+/* Two small cards about Pepi, over the sky. */
+.os-window {
+  position: absolute;
+  top: calc(var(--toolbar-room, 84px) + 12px);
+  width: 220px;
+  border: 1px solid #f0a8cc40;
+  border-radius: 12px;
+  background: #1c1026c7;
+  box-shadow: 0 16px 40px #07030b80, inset 0 1px #ffffff0f;
+  backdrop-filter: blur(6px);
+  transition: opacity .7s ease;
+}
+.os-status { left: clamp(16px, 4vw, 40px); }
+.os-voice { right: clamp(16px, 4vw, 40px); }
+.os-window-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-bottom: 1px solid #f0a8cc1f;
+  color: var(--os-muted);
+  font: 600 .72rem/1 var(--mono);
+}
+.build-dots { display: inline-flex; gap: 5px; }
+.build-dots i { width: 8px; height: 8px; border-radius: 50%; background: #f07a8c; }
+.build-dots i:nth-child(2) { background: var(--os-gold); }
+.build-dots i:nth-child(3) { background: var(--os-mint); }
+.os-window-body { margin: 0; padding: 10px 12px 12px; }
+.os-facts { display: grid; gap: 6px; font: .78rem/1.3 var(--mono); }
+.os-facts div { display: flex; justify-content: space-between; gap: 12px; }
+.os-facts dt { color: var(--os-muted); }
+.os-facts dd { margin: 0; color: var(--os-ink); font-weight: 700; text-align: right; }
+.os-mood { color: var(--os-pink) !important; }
+.os-beat {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 4px;
+  border-radius: 50%;
+  background: #e44d63;
+  animation: os-beat 1.2s ease-in-out infinite;
+}
+
+/* The voice meter follows Pepi: --level comes from the recorded clip's volume. */
+.os-meter { display: flex; align-items: center; gap: 4px; height: 44px; }
+.os-meter i {
+  flex: 1;
+  height: 100%;
+  border-radius: 2px;
+  background: linear-gradient(var(--os-gold), var(--os-pink));
+  transform: scaleY(calc(.08 + var(--level, 0) * var(--f) * 1.1));
+  transition: transform 90ms linear;
+}
+.intro-os.is-voicing .os-meter i { animation: os-meter .42s ease-in-out var(--d) infinite alternate; }
+
+/* Close-ups: a spotlight on Pepi dims Pepi OS around him. */
+.os-spotlight {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background: radial-gradient(circle at var(--spot-x, 50%) var(--spot-y, 45%), #f0a8cc24 0, transparent var(--spot-r, 200px), #0b1d3a99 calc(var(--spot-r, 200px) * 2.6));
+  transition: opacity .7s ease;
+}
+.intro-dialog[data-shot="close"] .os-spotlight { opacity: 1; }
+.intro-dialog[data-shot="close"] .os-window { opacity: .1; }
+
+/* ---------- Build window: where Pepi is created ---------- */
+
+.intro-build {
+  position: absolute;
+  z-index: 2;
+  display: grid;
+  grid-template-rows: 40px 1fr auto;
+  overflow: hidden;
+  border: 1px solid #f0a8cc59;
+  border-radius: 16px;
+  background: linear-gradient(#2a1736fa, #1b0f25fa);
+  box-shadow: 0 0 0 1px var(--os-shadow), 0 30px 80px #07030bcc, inset 0 1px #ffffff14;
+}
+.build-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 14px;
+  border-bottom: 1px solid var(--os-line);
+  color: var(--os-ink);
+  font: 600 .8rem/1 var(--mono);
+}
+.build-status {
+  margin-left: auto;
+  padding: 4px 8px;
+  border-radius: 6px;
+  color: var(--os-gold);
+  background: #ffc96b1a;
+  font-size: .7rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.intro-build.is-complete .build-status { color: var(--os-mint); background: #8ef0c41a; }
+.build-body {
+  position: relative;
+  margin: 10px 12px 0;
+  border-radius: 10px;
+  background:
+    linear-gradient(#86e6ff12 1px, transparent 1px) 0 0 / 16px 16px,
+    linear-gradient(90deg, #86e6ff12 1px, transparent 1px) 0 0 / 16px 16px,
+    #140a1c;
+  box-shadow: inset 0 0 0 1px #86e6ff1f;
+}
+.build-corner { position: absolute; width: 14px; height: 14px; border: 2px solid var(--os-cyan); opacity: .7; }
+.build-corner:nth-child(1) { top: 8px; left: 8px; border-right: 0; border-bottom: 0; }
+.build-corner:nth-child(2) { top: 8px; right: 8px; border-left: 0; border-bottom: 0; }
+.build-corner:nth-child(3) { bottom: 8px; left: 8px; border-right: 0; border-top: 0; }
+.build-corner:nth-child(4) { right: 8px; bottom: 8px; border-left: 0; border-top: 0; }
+.build-foot { padding: 12px 16px 14px; }
+.build-log {
+  min-height: calc(3 * 1.55em);
+  margin: 0 0 10px;
+  padding: 0;
+  list-style: none;
+  color: var(--os-muted);
+  font: .8rem/1.55 var(--mono);
+}
+.build-log li { animation: log-in .25s ease-out both; }
+.build-log li::before { content: "›"; display: inline-block; width: 1.5em; color: var(--os-pink); }
+.build-log li.is-running { color: var(--os-ink); }
+.build-log li.is-running::after { content: "…"; }
+.build-log li.is-ok::before, .build-log li.is-done::before { content: "✓"; color: var(--os-mint); }
+.build-log li.is-done { color: var(--os-mint); font-weight: 700; }
+.build-meter { display: flex; align-items: center; gap: 12px; }
+.build-progress { flex: 1; height: 6px; overflow: hidden; border-radius: 3px; background: #ffffff14; }
+.build-progress > span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--os-pink), var(--os-gold));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .6s cubic-bezier(.3, .7, .2, 1);
+}
+.build-percent { min-width: 4ch; color: var(--os-ink); font: 700 .8rem/1 var(--mono); font-variant-numeric: tabular-nums; text-align: right; }
+
+/* ---------- Glass of the screen: sheen, scanlines, ripples and cracks ---------- */
+
+.intro-glass {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  background:
+    linear-gradient(115deg, transparent 30%, #ffffff0b 42%, transparent 52%),
+    repeating-linear-gradient(0deg, #050f2414 0 1px, transparent 1px 4px);
+}
+.glass-ripple {
+  position: absolute;
+  width: 90px;
+  height: 90px;
+  border: 3px solid #e9fbff;
+  border-radius: 50%;
+  box-shadow: 0 0 18px #bfefff99, inset 0 0 14px #bfefff66;
+}
+.glass-crack {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  fill: none;
+  stroke: #f2fbffe6;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 2px #fff) drop-shadow(1px 1px 0 #00000080);
+}
+.glass-crack path, .glass-crack polygon {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: crack-draw .22s ease-out forwards;
+}
+
+@keyframes pepi-float { 50% { translate: 0 -6px; } }
+@keyframes pepi-shadow { 50% { scale: .85; } }
+@keyframes pepi-twinkle { 0%, 70% { transform: scale(1); } 75% { transform: scale(1.35); } 85% { transform: scale(.8); } }
+@keyframes pepi-antenna { 0%, 100% { transform: rotate(0); } 30% { transform: rotate(-6deg); } 60% { transform: rotate(5deg); } }
+@keyframes pepi-beat { 0%, 60% { transform: scale(1); } 65% { transform: scale(1.25); } 80% { transform: scale(1.1); } }
+@keyframes pepi-blink { 0%, 93%, 100% { transform: scaleY(1); } 95% { transform: scaleY(.15); } }
+@keyframes pepi-mouth { 0% { opacity: 1; } 50% { opacity: 0; } }
+@keyframes pepi-question { to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes intro-step { 50% { translate: 0 -3px; } }
+@keyframes intro-caret { 50% { opacity: 0; } }
+@keyframes intro-dialogue-in { from { opacity: 0; transform: translateY(16px); } }
+@keyframes crack-draw { to { stroke-dashoffset: 0; } }
+@keyframes blueprint-in { 0% { opacity: 0; } 25% { opacity: .8; } 50% { opacity: .2; } 100% { opacity: 1; } }
+@keyframes log-in { from { opacity: 0; transform: translateY(6px); } }
+/* ---------- Pepi inside the avatar editor ---------- */
+
+/* He peeks in from the right edge of the screen: half his body shows, tilted towards
+   the editor, with a speech bubble on his left. Fixed to the viewport, above the editor. */
+.pepi-guide {
+  --pepi-px: 5.4;
+  position: fixed;
+  right: 0;
+  bottom: 5vh;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  color: var(--navy);
+  pointer-events: none;
+}
+.pepi-guide-peek {
+  flex: 0 0 auto;
+  /* Half of Pepi stays past the edge of the screen. */
+  margin-right: calc(-18px * var(--pepi-px));
+  /* Leaning well into the screen, pivoting from the corner, and swaying gently. */
+  rotate: -20deg;
+  transform-origin: 100% 100%;
+  cursor: pointer;
+  pointer-events: auto;
+  animation: guide-sway 3.6s ease-in-out infinite;
+}
+.pepi-guide-bot { animation-duration: 2s; }
+/* At rest his eyes follow the pointer (--look-x/-y are set from pepi-bolota.js). */
+.pepi-guide-bot .pepi-look, .pepi-pal-bot .pepi-look { transform: translate(var(--look-x, 0px), var(--look-y, 0px)); }
+.pepi-guide-bot .pepi-look-mouth, .pepi-pal-bot .pepi-look-mouth { transform: translate(calc(var(--look-x, 0px) / 2), 0px); }
+@keyframes guide-sway { 50% { rotate: -14deg; } }
+/* A comic balloon above Pepi's head, away from the editor's buttons. Fixed width, so it
+   doesn't grow while the text is typed. */
+.pepi-guide-bubble {
+  position: relative;
+  flex: 0 0 auto;
+  width: min(340px, 70vw);
+  margin: 0 calc(8px * var(--pepi-px)) calc(2px * var(--pepi-px)) 0;
+  padding: 14px 16px 12px;
+  border: 2px solid #3b2838;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 5px 0 #3b2838, 0 18px 40px #0a192d40;
+  transform-origin: 70% 100%;
+  pointer-events: auto;
+}
+/* The tail points down at Pepi. */
+.pepi-guide-bubble::after {
+  content: "";
+  position: absolute;
+  right: 22%;
+  bottom: -11px;
+  width: 18px;
+  height: 18px;
+  border-right: 2px solid #3b2838;
+  border-bottom: 2px solid #3b2838;
+  background: #fff;
+  rotate: 45deg;
+}
+.pepi-guide-name { margin-bottom: 4px; color: #a2457a; font: 700 .75rem/1.2 var(--mono); }
+/* Spoken lines get the full fixed width; short remarks shrink to their text. */
+.pepi-guide-bubble { width: fit-content; min-width: min(340px, 70vw); max-width: min(340px, 70vw); }
+.pepi-guide-bubble.is-remark { min-width: 0; }
+.pepi-guide-bubble.is-remark .pepi-guide-text { min-height: 0; }
+.pepi-guide-text { min-height: 4.4em; font-size: 1rem; line-height: 1.45; text-wrap: pretty; }
+.pepi-guide-close {
+  display: block;
+  min-height: 34px;
+  margin: 10px 0 0 auto;
+  padding: 5px 14px;
+  border: 1px solid #e2b6cc;
+  border-radius: 999px;
+  color: #8a3a68;
+  background: #fff;
+  font-size: .85rem;
+  font-weight: 700;
+}
+.pepi-guide-close:hover { background: #fbe5f0; }
+@media (max-width: 1500px), (max-height: 820px) {
+  .pepi-guide { --pepi-px: 4.4; }
+}
+@media (max-width: 700px) {
+  .pepi-guide { --pepi-px: 3.4; bottom: 4vh; }
+}
+
+@keyframes os-meter { from { transform: scaleY(.12); } to { transform: scaleY(calc(.3 + var(--f) * .6)); } }
+@keyframes os-beat { 0%, 60%, 100% { transform: scale(1); } 70% { transform: scale(1.4); } }
+@keyframes pepi-glow { 50% { opacity: .75; scale: 1.06; } }
+
+/* Big screens and projectors: more room, so everyone grows (the duo stays taller). */
+@media (min-width: 1100px) and (min-height: 860px) {
+  dialog.intro-dialog { --pepi-px: 4.2; --sprite-px: 4.6; }
+}
+@media (max-width: 900px) {
+  .os-voice { display: none; }
+  .intro-chapter-name { display: none; }
+}
+@media (max-width: 640px), (max-height: 640px) {
+  dialog.intro-dialog { --pepi-px: 2.2; --sprite-px: 2.4; }
+  .intro-chip { min-height: 40px; padding: 6px 12px; font-size: .85rem; }
+  .os-windows { display: none; }
+}
+@media (max-width: 520px) {
+  .intro-chapter { display: none; }
+}
+@media (max-width: 380px) {
+  dialog.intro-dialog { --pepi-px: 1.9; --sprite-px: 2.1; }
+  .intro-floor { gap: 12px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pepi, .pepi-shadow, .pepi-star, .pepi-antenna, .pepi-heart, .pepi-eyes-normal, .pepi-eyes-love, .pepi-eyes-star,
+  .intro-person.is-walking canvas, .intro-caret, .intro-dialogue,
+  .os-beat, .pepi-move::before, .pepi-guide-bot, .pepi-guide-peek,
+  .intro-os.is-voicing .os-meter i, .build-log li, .pepi.is-building .pepi-blueprint { animation: none; }
+  .pepi, .pepi-look { transition: none; }
+  .pepi.is-confused .pepi-thinking i { animation: none; opacity: 1; transform: none; }
+  .glass-crack path, .glass-crack polygon { animation: none; stroke-dashoffset: 0; }
+}

@@ -1,0 +1,21 @@
+{
+  "hello": "01-hello.mp3",
+  "guide": "02-guide.mp3",
+  "origin": "03-origin.mp3",
+  "purpose": "04-purpose.mp3",
+  "lab": "05-lab.mp3",
+  "goal": "06-goal.mp3",
+  "lessons": "07-lessons.mp3",
+  "colors": "08-colors.mp3",
+  "games": "09-games.mp3",
+  "builder": "10-builder.mp3",
+  "everyone": "11-everyone.mp3",
+  "call": "12-call.mp3",
+  "papais": "13-papais.mp3",
+  "confused": "14-confused.mp3",
+  "summon": "15-summon.mp3",
+  "thanks": "16-thanks.mp3",
+  "start": "17-start.mp3",
+  "ready": "18-ready.mp3",
+  "avatar": "19-avatar.mp3"
+}

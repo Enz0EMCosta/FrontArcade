@@ -9,12 +9,15 @@
     <link rel="stylesheet" href="./styles.css">
     <link rel="stylesheet" href="./builder.css">
     <link rel="stylesheet" href="./site-preview.css">
+    <link rel="stylesheet" href="./pepi-bolota.css">
     <script src="./art.js" defer></script>
     <script src="./app.js" defer></script>
     <script src="./olhar-afiado.js" defer></script>
     <script src="./popups-infinitos.js" defer></script>
     <script src="./lag-lab.js" defer></script>
     <script src="./site-builder.js" defer></script>
+    <script src="./pepi-scenery.js" defer></script>
+    <script src="./pepi-bolota.js" defer></script>
   </head>
   <body>
     <main id="boot-screen" class="boot-screen" aria-labelledby="boot-title">
@@ -29,6 +32,9 @@
             <span class="power-symbol" aria-hidden="true"></span> Começar
           </button>
         </div>
+        <button id="open-intro" class="intro-button" type="button" aria-haspopup="dialog" hidden>
+          <span class="intro-button-icon" aria-hidden="true"></span> Pedir introdução
+        </button>
         <p id="boot-status" class="boot-status" role="status"></p>
       </div>
     </main>
@@ -347,6 +353,74 @@
       </footer>
     </div>
 
+    <dialog id="intro-dialog" class="intro-dialog" aria-labelledby="intro-title">
+      <!-- Behind the stage: pixel scenery of Aracaju and the UFS (pepi-scenery.js), two
+           small cards about Pepi, the close-up spotlight and the window where he is built. -->
+      <div class="intro-os is-off" aria-hidden="true">
+        <div class="scenery"></div>
+        <div class="scenery-shade"></div>
+        <div class="os-windows"></div>
+        <div class="os-spotlight"></div>
+        <div class="intro-build" hidden>
+          <div class="build-bar">
+            <span class="build-dots"><i></i><i></i><i></i></span>
+            <span class="build-title">pepi_bolota.exe</span>
+            <span class="build-status">compilando</span>
+          </div>
+          <div class="build-body"><span class="build-corner"></span><span class="build-corner"></span><span class="build-corner"></span><span class="build-corner"></span></div>
+          <div class="build-foot">
+            <ol class="build-log"></ol>
+            <div class="build-meter"><span class="build-progress"><span></span></span><span class="build-percent">0%</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="os-power" aria-hidden="true"></div>
+      <div class="intro-stage">
+        <header class="intro-toolbar">
+          <h2 id="intro-title" class="intro-sr" tabindex="-1">Introdução com Pepi Bolota, o robô guia do Front Arcade</h2>
+          <div class="os-brand" aria-hidden="true"><span class="os-brand-mark"></span><span class="os-brand-name">Pepi Bolota</span></div>
+          <div class="intro-chapter" aria-hidden="true">
+            <span class="intro-chapter-track"><i></i><i></i><i></i><i></i><i></i></span>
+            <span class="intro-chapter-name">Inicialização</span>
+          </div>
+          <p id="intro-voice-note" class="intro-voice-note" role="status"></p>
+          <button id="intro-sound" class="intro-chip" type="button" aria-pressed="true">
+            <span class="intro-sound-icon" aria-hidden="true"></span><span class="intro-sound-label">Som ligado</span>
+          </button>
+          <button id="intro-skip" class="intro-chip" type="button">Pular introdução</button>
+        </header>
+        <div class="intro-floor">
+          <div class="pepi-rig">
+            <div class="pepi-move">
+              <div id="pepi" class="pepi" role="img" aria-label="Pepi Bolota, um robozinho gordinho e rosa com rosto de tela, antena de estrela e coração no peito">
+                <span class="pepi-thinking" aria-hidden="true"><i>?</i><i>?</i><i>?</i></span>
+              </div>
+            </div>
+            <span class="pepi-shadow" aria-hidden="true"></span>
+          </div>
+          <div id="intro-duo" class="intro-duo" hidden>
+            <figure class="intro-person">
+              <canvas data-person="enzo" width="40" height="68" role="img" aria-label="Enzo em pixel art"></canvas>
+              <figcaption>Enzo</figcaption>
+            </figure>
+            <figure class="intro-person">
+              <canvas data-person="pp" width="40" height="68" role="img" aria-label="PP em pixel art"></canvas>
+              <figcaption>PP</figcaption>
+            </figure>
+          </div>
+        </div>
+        <section class="intro-dialogue" aria-labelledby="intro-speaker" hidden>
+          <p id="intro-speaker" class="intro-speaker">Pepi Bolota</p>
+          <p class="intro-line" aria-hidden="true"><span id="intro-line-text"></span><span class="intro-caret"></span></p>
+          <p id="intro-live" class="intro-sr" aria-live="polite"></p>
+          <div id="intro-end" class="intro-end" hidden>
+            <button id="intro-start" class="power-button" type="button"><span class="power-symbol" aria-hidden="true"></span> Começar</button>
+            <button id="intro-replay" class="intro-chip" type="button">Ver de novo</button>
+          </div>
+        </section>
+      </div>
+      <div class="intro-glass" aria-hidden="true"></div>
+    </dialog>
     <dialog id="popup-reboot" class="popup-reboot" aria-labelledby="popup-reboot-title">
       <div class="window-bar"><strong>Simulação do jogo · Front Arcade</strong></div>
       <div class="popup-reboot-content">
