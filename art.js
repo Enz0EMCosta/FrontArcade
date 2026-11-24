@@ -157,7 +157,12 @@ const avatarBuffer = document.createElement("canvas");
 avatarBuffer.width = 64;
 avatarBuffer.height = 80;
 
-function paintAvatar(canvas, avatar, crop = [0, 0, 64, 80], { frame = 0, alternate = false, sceneOnly = false, itemFrame = null } = {}) {
+const activeItemFrame = 2;
+
+function paintAvatar(canvas, avatar, crop = [0, 0, 64, 80], {
+  frame = 0, alternate = avatar.sceneAlternate, sceneOnly = false,
+  itemFrame = avatar.itemActionActive ? activeItemFrame : null,
+} = {}) {
   const ctx = avatarBuffer.getContext("2d");
   const box = (x, y, width, height, color) => {
     ctx.fillStyle = color;

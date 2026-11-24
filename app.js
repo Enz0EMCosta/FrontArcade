@@ -43,6 +43,7 @@ let activeCategory = avatarCategories[0].id;
 let previewAppearance;
 let sceneFrame = 0;
 let sceneAlternate = false;
+let itemActionActive = false;
 let itemFrame = null;
 let motionEnabled = !motionPreference.matches;
 let previewTimer;
@@ -63,7 +64,12 @@ function loadProfile() {
       const valid = Number.isInteger(value) && value >= 0 && value < choices.length;
       return [key, valid ? value : 0];
     }));
-    return { name: saved.name.trim().slice(0, nameField.maxLength), ...appearance };
+    return {
+      name: saved.name.trim().slice(0, nameField.maxLength),
+      ...appearance,
+      sceneAlternate: saved.sceneAlternate === true && Boolean(avatarScenes[appearance.scene].effect),
+      itemActionActive: saved.itemActionActive === true && Boolean(avatarItems[appearance.held].action),
+    };
   } catch {
     return null;
   }
@@ -208,7 +214,8 @@ function renderProfile() {
 
   taskProfile.textContent = profile.name;
   taskProfile.title = profile.name;
-  paintAvatar(profileCanvas, profile, [10, 4, 44, 44]);
+  const crop = profile.sceneAlternate || profile.itemActionActive ? [0, 0, 64, 64] : [10, 4, 44, 44];
+  paintAvatar(profileCanvas, profile, crop);
 }
 
 function createEditor() {
@@ -291,7 +298,10 @@ function previewAvatar() {
     sceneFrame = 0;
     sceneAlternate = false;
   }
-  if (appearance.held !== previewAppearance?.held) itemFrame = null;
+  if (appearance.held !== previewAppearance?.held) {
+    itemActionActive = false;
+    itemFrame = null;
+  }
   previewAppearance = appearance;
   paintLivePreview();
   updatePreviewTools();
@@ -318,7 +328,7 @@ function paintLivePreview() {
   paintAvatar(avatarCanvas, previewAppearance, undefined, {
     frame: sceneFrame,
     alternate: sceneAlternate,
-    itemFrame: itemFrame === null || motionEnabled ? itemFrame : 2,
+    itemFrame: itemActionActive ? (motionEnabled ? itemFrame ?? activeItemFrame : activeItemFrame) : null,
   });
 }
 
@@ -329,7 +339,7 @@ function updatePreviewTools() {
   sceneEffect.hidden = !effect;
   itemAction.hidden = !action;
   sceneEffect.textContent = effect?.[Number(sceneAlternate)] ?? "";
-  itemAction.textContent = action ?? "";
+  itemAction.textContent = itemActionActive ? "Desativar ação do objeto" : action ?? "";
   previewMotion.textContent = motionEnabled ? "Pausar movimento" : "Ativar movimento";
 }
 
@@ -351,10 +361,12 @@ function openEditor() {
   document.querySelector("#save-avatar").textContent = profile ? "Salvar alterações" : "Salvar avatar";
   nameField.value = profile?.name ?? "";
   nameField.setCustomValidity("");
-  sceneFrame = 0;
-  sceneAlternate = false;
-  itemFrame = null;
   for (const [key] of fields) form.elements[key].value = String(profile?.[key] ?? 0);
+  previewAppearance = readAppearance();
+  sceneFrame = 0;
+  sceneAlternate = profile?.sceneAlternate ?? false;
+  itemActionActive = profile?.itemActionActive ?? false;
+  itemFrame = null;
   selectCategory(avatarCategories[0].id);
   dialog.querySelector(".editor-body").scrollTop = 0;
   dialog.showModal();
@@ -429,8 +441,10 @@ sceneEffect.addEventListener("click", () => {
   updatePreviewTools();
 });
 itemAction.addEventListener("click", () => {
-  itemFrame = 0;
+  itemActionActive = !itemActionActive;
+  itemFrame = itemActionActive && motionEnabled ? 0 : null;
   paintLivePreview();
+  updatePreviewTools();
   updatePreviewAnimation();
 });
 previewMotion.addEventListener("click", () => {
@@ -464,7 +478,7 @@ form.addEventListener("submit", event => {
     return;
   }
 
-  profile = { name, ...readAppearance() };
+  profile = { name, ...readAppearance(), sceneAlternate, itemActionActive };
   try {
     localStorage.setItem(storageKey, JSON.stringify(profile));
   } catch {
