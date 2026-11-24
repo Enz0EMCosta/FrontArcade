@@ -50,6 +50,11 @@ let previewTimer;
 let profileRequest;
 let openedFile;
 
+// Moments other scripts (Pepi Bolota, the guide) can react to. Nothing depends on them.
+function report(type, detail = {}) {
+  document.dispatchEvent(new CustomEvent("frontarcade:event", { detail: { type, ...detail } }));
+}
+
 const authorAssets = {
   Enzo: { portrait: paintEnzoPortrait, resume: "Curriculo-Enzo-Costa.pdf" },
 };
@@ -378,6 +383,7 @@ function openGames() {
   if (!aboutWindow.hidden) setAboutWindow("minimized");
   setGamesWindow(true);
   gamesTitle.focus();
+  report("games-opened");
 }
 
 powerButton.addEventListener("click", () => {
@@ -390,6 +396,7 @@ powerButton.addEventListener("click", () => {
     desktop.hidden = false;
     (profile ? desktopShortcut : editAvatarButton).focus({ preventScroll: true });
     if (!profile) openEditor();
+    report("desktop-ready", { hasProfile: Boolean(profile) });
   }, motionPreference.matches ? 150 : Number.parseInt(getComputedStyle(bootScreen).getPropertyValue("--boot-duration"), 10));
 });
 
@@ -399,6 +406,7 @@ builderShortcut.addEventListener("click", () => {
   if (!aboutWindow.hidden) setAboutWindow("minimized");
   setBuilderWindow(true);
   document.querySelector("#builder-window-title").focus({ preventScroll: true });
+  report("builder-opened");
 });
 document.querySelector("#close-builder").addEventListener("click", () => {
   setBuilderWindow(false);
@@ -409,6 +417,7 @@ document.querySelectorAll("[data-about]").forEach(button => button.addEventListe
   setBuilderWindow(false);
   setAboutWindow("open");
   document.querySelector("#about-window-title").focus();
+  report("about-opened");
 }));
 document.querySelectorAll("[data-file]").forEach(button => {
   button.addEventListener("click", () => openAboutFile(button));
@@ -456,6 +465,7 @@ previewMotion.addEventListener("click", () => {
 document.querySelector("#close-window").addEventListener("click", () => {
   setGamesWindow(false);
   desktopShortcut.focus();
+  report("games-closed");
 });
 
 optionsRoot.addEventListener("change", previewAvatar);
@@ -478,6 +488,7 @@ form.addEventListener("submit", event => {
     return;
   }
 
+  const created = !profile;
   profile = { name, ...readAppearance(), sceneAlternate, itemActionActive };
   try {
     localStorage.setItem(storageKey, JSON.stringify(profile));
@@ -487,6 +498,7 @@ form.addEventListener("submit", event => {
   dialog.close();
   renderProfile();
   editAvatarButton.focus({ preventScroll: true });
+  report("avatar-saved", { created, name });
 });
 
 const clock = document.querySelector(".system-clock");

@@ -17,6 +17,8 @@ const assets = new Map([
   ["/pepi-bolota.js", ["pepi-bolota.js", "text/javascript"]],
   ["/pepi-scenery.js", ["pepi-scenery.js", "text/javascript"]],
   ["/pepi-bolota.css", ["pepi-bolota.css", "text/css"]],
+  ["/pepi-companion.js", ["pepi-companion.js", "text/javascript"]],
+  ["/pepi-companion.css", ["pepi-companion.css", "text/css"]],
   ["/assets/desktop-hills.webp", ["assets/desktop-hills.webp", "image/webp"]],
   ["/assets/lawd-wallpaper.png", ["assets/lawd-wallpaper.png", "image/png"]],
   ["/assets/lawd-enzo.webp", ["assets/lawd-enzo.webp", "image/webp"]],

@@ -34,6 +34,8 @@
   let keyPen = false;
   let keyPoint;
 
+  const report = (type, detail = {}) => document.dispatchEvent(new CustomEvent("frontarcade:event", { detail: { type, ...detail } }));
+
   function readFlag(key) {
     try { return localStorage.getItem(key) === "true"; } catch { return false; }
   }
@@ -222,6 +224,7 @@
     next.textContent = trial === delays.length - 1 ? "Comparar tentativas" : "Próximo atraso";
     next.hidden = false;
     next.focus();
+    report("lag-scored", { trial, delay: delays[trial], score, scores: [...scores] });
   }
 
   check.addEventListener("click", () => {
@@ -260,6 +263,7 @@
     try { localStorage.setItem("front-arcade.lag-lab.completed.v1", "true"); } catch { /* The current result still displays. */ }
     unlock();
     get("lag-result-title").focus();
+    report("lag-finished", { scores: [...scores] });
   });
 
   function showIntro() {
@@ -281,6 +285,7 @@
     library.hidden = true;
     game.hidden = false;
     showIntro();
+    report("lag-opened");
   });
   get("start-lag").addEventListener("click", () => {
     intro.hidden = true;

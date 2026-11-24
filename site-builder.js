@@ -659,6 +659,7 @@
       link.click();
       setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
       status.textContent = "HTML pronto para abrir no navegador.";
+      document.dispatchEvent(new CustomEvent("frontarcade:event", { detail: { type: "builder-exported" } }));
     } catch {
       status.textContent = "Não foi possível gerar o HTML. Tente novamente.";
     } finally {

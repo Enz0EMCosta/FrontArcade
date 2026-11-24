@@ -1,0 +1,255 @@
+/* Pepi Bolota on the desktop (pepi-companion.js). */
+
+/* A layer over the whole screen that lets every click through; only Pepi catches the
+   pointer. The ground box ends on top of the taskbar (--ground), so when he tucks in the
+   corner the lower half of his body hides behind the taskbar edge. */
+.pepi-pal {
+  --pepi-px: 2.4;
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  pointer-events: none;
+}
+.pepi-pal[hidden] { display: none; }
+.pepi-pal-ground {
+  position: absolute;
+  inset: 0 0 var(--ground, 62px);
+  overflow: hidden;
+}
+.pepi-pal-walker {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  will-change: transform;
+}
+.pepi-pal-body {
+  translate: 0 var(--sink, 0px);
+  transform-origin: 70% 100%;
+  transition: translate .6s cubic-bezier(.3, 1.4, .5, 1), rotate .6s ease;
+}
+.pepi-pal.is-tucked .pepi-pal-body { rotate: -12deg; }
+.pepi-pal-bot {
+  transform-origin: 50% 100%;
+  cursor: grab;
+  pointer-events: auto;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  /* Standing on the taskbar he breathes instead of floating. */
+  animation: pal-breathe 2.6s ease-in-out infinite;
+}
+.pepi-pal-bot.is-ball { pointer-events: none; }
+.pepi-pal-bot.is-morphing { animation: none; }
+.pepi-pal-bot .pepi-art { transform-origin: 50% 100%; }
+
+/* Picked up: he dangles from the hand (pepi-companion.js rotates the body around the
+   grab point), stops breathing and kicks his feet; upside down on the floor too. */
+.pepi-pal.is-held .pepi-pal-body { transition: none; }
+.pepi-pal.is-held .pepi-pal-bot { cursor: grabbing; animation: none; }
+.pepi-pal.is-held .pepi-pal-bot .pepi-feet, .pepi-pal-bot.is-kicking .pepi-feet { animation: pal-feet .18s steps(1) infinite; }
+.pepi-pal.is-held .pepi-pal-bot .pepi-antenna { animation-duration: .6s; }
+
+/* Dust behind him when he speeds off as a ball, and when he lands. */
+.pepi-pal-dust {
+  position: absolute;
+  bottom: 0;
+  width: calc(4px * var(--pepi-px));
+  height: calc(4px * var(--pepi-px));
+  border: 2px solid #9fb1c7;
+  border-radius: 3px;
+  background: #eef3f9;
+  pointer-events: none;
+}
+
+/* Virus alert: a red siren on the antenna, a warning sign and a nervous tremble. */
+.pepi-pal-bot.is-alarm { animation: pal-alarm .16s steps(2, jump-none) infinite; }
+.pepi-pal-bot.is-alarm .pepi-star rect { animation: pal-siren .5s steps(1) infinite; }
+.pepi-pal-bot.is-alarm::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  z-index: -1;
+  width: calc(30px * var(--pepi-px));
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ff4d6acc 0 18%, #ff4d6a44 40%, #ff4d6a00 68%);
+  translate: -50% -42%;
+  animation: pal-siren-glow .5s steps(1) infinite;
+  pointer-events: none;
+}
+.pepi-pal-bot.is-alarm::after {
+  content: "!";
+  position: absolute;
+  top: -4%;
+  right: -12%;
+  display: grid;
+  place-items: end center;
+  width: calc(11px * var(--pepi-px));
+  height: calc(10px * var(--pepi-px));
+  padding-bottom: calc(.6px * var(--pepi-px));
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  color: #50303d;
+  background: #ffbd79;
+  font: 900 calc(6px * var(--pepi-px))/1 var(--mono);
+  animation: pal-alert-sign .5s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+.pepi-pal-bot.is-alarm.is-ball::after { top: 6%; }
+
+/* Napping: slow, deep breaths and a drooping antenna. */
+.pepi-pal-bot.is-sleeping { animation: pal-snooze 3.4s ease-in-out infinite; }
+.pepi-pal-bot.is-sleeping .pepi-antenna { animation: none; transform: rotate(-18deg); }
+.pepi-pal-bot.is-sleeping .pepi-star { animation: none; opacity: .55; }
+.pepi-pal-z {
+  position: absolute;
+  top: 8%;
+  right: 12%;
+  color: #5d84b4;
+  font: 900 calc(6px * var(--pepi-px))/1 var(--mono);
+  text-shadow: 2px 0 #fff, -2px 0 #fff, 0 2px #fff, 0 -2px #fff;
+  pointer-events: none;
+}
+
+/* Speech bubble: above his head, kept inside the screen, never in the way of a click. */
+.pepi-pal-bubble {
+  --tail-x: 75%;
+  position: absolute;
+  width: min(300px, calc(100vw - 24px));
+  padding: 12px 14px 12px;
+  border: 2px solid #3b2838;
+  border-radius: 14px;
+  color: var(--navy, #142842);
+  background: #fff;
+  box-shadow: 0 4px 0 #3b2838, 0 16px 34px #0a192d40;
+  transform-origin: var(--tail-x) 100%;
+}
+.pepi-pal-bubble[hidden] { display: none; }
+/* Dragged up near the top of the screen, the bubble hangs below him instead. */
+.pepi-pal-bubble.is-below { transform-origin: var(--tail-x) 0; }
+.pepi-pal-bubble.is-below::after { top: -10px; bottom: auto; rotate: 225deg; }
+/* With the pointer close by, the bubble turns see-through so nothing hides behind it. */
+.pepi-pal-bubble { transition: opacity .2s; }
+.pepi-pal-bubble.is-see-through { opacity: .18; }
+.pepi-pal-bubble::after {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  left: calc(var(--tail-x) - 8px);
+  width: 16px;
+  height: 16px;
+  border-right: 2px solid #3b2838;
+  border-bottom: 2px solid #3b2838;
+  background: #fff;
+  rotate: 45deg;
+}
+.pepi-pal-name { margin: 0 0 3px; color: #a2457a; font: 700 .72rem/1.2 var(--mono); }
+.pepi-pal-text { margin: 0; font-size: .95rem; line-height: 1.42; text-wrap: pretty; }
+
+/* "Os jogos ficam bem ali": the Jogos icon glows while Pepi points at it. */
+.desktop-shortcut.pepi-hint { animation: pal-hint 1.1s ease-in-out 4; }
+/* "Reiniciar Front Arcade" keeps pulsing while Pepi explains the virus alert. */
+.primary-button.pepi-hint { animation: pal-cta 1.1s ease-in-out infinite; }
+
+/* Taskbar: a little Pepi head that opens his options. */
+.pepi-tray { position: relative; display: flex; }
+.pepi-tray-button {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid #486581;
+  border-radius: 10px;
+  background: #1c3656;
+  cursor: pointer;
+}
+.pepi-tray-button:hover, .pepi-tray-button[aria-expanded="true"] { border-color: #f0a8cc; background: #2a4669; }
+.pepi-tray-icon { width: 30px; height: 30px; }
+.pepi-tray-icon svg { display: block; width: 100%; height: 100%; }
+.pepi-tray-menu {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 12px);
+  z-index: 40;
+  margin: 0;
+  display: grid;
+  gap: 4px;
+  min-width: 220px;
+  padding: 12px;
+  border: 1px solid #486581;
+  border-radius: 12px;
+  color: #f7f9fc;
+  background: #142842;
+  box-shadow: 0 18px 40px #02081480;
+  font-family: inherit;
+}
+.pepi-tray-menu[hidden] { display: none; }
+/* As a popover it lives in the top layer, placed over the button from pepi-companion.js. */
+.pepi-tray-menu[popover] { position: fixed; inset: auto; }
+.pepi-tray-menu[popover]:not(:popover-open) { display: none; }
+.pepi-tray-title { margin: 0 0 4px; color: #f0a8cc; font-weight: 700; }
+.pepi-switch {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 40px;
+  padding: 4px 6px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.pepi-switch:hover { background: #1f3b5e; }
+.pepi-switch input {
+  appearance: none;
+  flex: 0 0 auto;
+  width: 40px;
+  height: 22px;
+  margin: 0;
+  border-radius: 999px;
+  background: #486581;
+  cursor: pointer;
+  transition: background .2s;
+}
+.pepi-switch input::before {
+  content: "";
+  display: block;
+  width: 16px;
+  height: 16px;
+  margin: 3px;
+  border-radius: 50%;
+  background: #fff;
+  transition: translate .2s;
+}
+.pepi-switch input:checked { background: #d6407e; }
+.pepi-switch input:checked::before { translate: 18px 0; }
+.pepi-switch input:disabled { opacity: .45; cursor: not-allowed; }
+.pepi-switch input:focus-visible { outline: 2px solid #f5faff; outline-offset: 2px; }
+
+@keyframes pal-breathe { 50% { scale: 1.015 .985; } }
+@keyframes pal-feet { 50% { transform: translateY(-1px); } }
+@keyframes pal-snooze { 0%, 100% { scale: 1; translate: 0 0; } 50% { scale: 1.04 .95; translate: 0 2%; } }
+@keyframes pal-alarm { 0% { translate: -1.5px 0; } 100% { translate: 1.5px 0; } }
+@keyframes pal-siren { 0% { fill: #ff4d6a; } 50% { fill: #fff1f4; } }
+@keyframes pal-siren-glow { 0% { opacity: 1; scale: 1; } 50% { opacity: .35; scale: .8; } }
+@keyframes pal-alert-sign { from { translate: 0 0; rotate: -8deg; } to { translate: 0 -4px; rotate: 8deg; } }
+@keyframes pal-cta { 50% { box-shadow: 0 0 0 5px #f0a8cc88, 0 0 24px #f0a8cc; scale: 1.04; } }
+@keyframes pal-hint {
+  50% { border-color: #f0a8cc; background: #d6407e40; box-shadow: 0 0 0 6px #f0a8cc55, 0 0 26px #f0a8cc; }
+}
+
+@media (max-width: 1500px), (max-height: 820px) {
+  .pepi-pal { --pepi-px: 2.2; }
+}
+@media (max-width: 700px) {
+  .pepi-pal { --pepi-px: 1.8; }
+  .pepi-pal-text { font-size: .9rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pepi-pal-bot, .pepi-pal-bot.is-sleeping, .pepi-pal-bot.is-alarm, .pepi-pal-bot.is-alarm::before,
+  .pepi-pal-bot.is-alarm::after, .pepi-pal.is-held .pepi-pal-bot .pepi-feet, .pepi-pal-bot.is-kicking .pepi-feet,
+  .desktop-shortcut.pepi-hint, .primary-button.pepi-hint { animation: none; }
+  .desktop-shortcut.pepi-hint, .primary-button.pepi-hint { box-shadow: 0 0 0 3px #f0a8cc; }
+  .pepi-pal-body, .pepi-switch input, .pepi-switch input::before { transition: none; }
+}

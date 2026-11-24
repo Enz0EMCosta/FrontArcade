@@ -641,7 +641,7 @@ canvas { display: block; image-rendering: pixelated; }
 @media (prefers-reduced-motion: reduce) { .popup-notice { animation: none; } }
 .popup-end ul { padding-inline-start: 20px; }
 dialog.popup-reboot { max-width: 540px; border-color: #ac5267; }
-dialog.popup-reboot[open] { animation: popup-alert-enter 700ms ease-out both; }
+dialog.popup-reboot[open] { animation: popup-alert-enter 700ms ease-out backwards; }
 .popup-reboot::backdrop { background: radial-gradient(ellipse at center, #70283899, #201323d9); }
 .popup-reboot .window-bar { background: #f3ced5; color: #62283b; }
 .popup-virus-stage {

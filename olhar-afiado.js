@@ -82,6 +82,8 @@
   let copySource;
   let imageRequest = 0;
 
+  const report = (type, detail = {}) => document.dispatchEvent(new CustomEvent("frontarcade:event", { detail: { type, ...detail } }));
+
   function readProgress() {
     const initial = { matched: [], unlocked: false };
     const isChallenge = index => Number.isInteger(index) && Boolean(challenges[index]);
@@ -389,6 +391,7 @@
     form.hidden = true;
     chooseImage.hidden = true;
     find("color-game-title").focus();
+    report("color-opened");
   });
   find("start-color").addEventListener("click", showGallery);
   find("back-to-games").addEventListener("click", () => {
@@ -409,6 +412,7 @@
     if (score < passScore) {
       feedback.dataset.result = "retry";
       feedback.textContent = `${displayed}% de semelhança. Ajuste a cor e tente de novo.`;
+      report("color-miss", { score });
       return;
     }
     roundPassed = true;
@@ -423,6 +427,7 @@
       ? `${displayed}% de semelhança. 10 acertos! Próximo jogo desbloqueado.`
       : alreadyMatched ? `${displayed}% de semelhança. Esta imagem já está entre seus acertos.`
         : `${displayed}% de semelhança. Você acertou!`;
+    report("color-hit", { score, unlocked: justUnlocked, repeat: alreadyMatched, hits: progress.matched.length });
     channels.forEach(channel => { channel.disabled = true; });
     check.hidden = true;
     next.hidden = false;

@@ -38,6 +38,8 @@
   let step = 0;
   let phoneNumber = 0;
 
+  const report = (type, detail = {}) => document.dispatchEvent(new CustomEvent("frontarcade:event", { detail: { type, ...detail } }));
+
   function completedBefore() {
     try {
       return localStorage.getItem(completionKey) === "true";
@@ -137,8 +139,10 @@
           clearInterval(timer);
           running = false;
           alert.showModal();
+          report("popups-virus");
         } else {
           resetForm("A ficha voltou para a primeira etapa.");
+          report("popups-trap");
         }
       });
     }
@@ -229,6 +233,7 @@
       play.textContent = "Jogar novamente";
     }
     get("popup-end-title").focus();
+    report("popups-ended", { won });
   }
 
   form.addEventListener("submit", event => {
@@ -246,6 +251,7 @@
       finish(true);
     } else {
       resetForm("Envio recusado. Preencha a ficha novamente.");
+      report("popups-refused");
     }
   });
   year.addEventListener("input", () => { get("patience-year-value").value = year.value; });
@@ -263,6 +269,7 @@
     library.hidden = true;
     game.hidden = false;
     get("popup-game-title").focus();
+    report("popups-opened");
   });
   get("back-from-popups").addEventListener("click", () => {
     resetGameView();
