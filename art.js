@@ -16,6 +16,15 @@ function styleChoices(...labels) {
   return labels.map(label => ({ label }));
 }
 
+const hairColors = colorChoices(
+  ["Preto", "#302839", "#574659"], ["Castanho", "#754444", "#a66854"],
+  ["Loiro", "#d38943", "#ffe08d"], ["Roxo", "#7146bc", "#ae87ef"],
+  ["Ruivo", "#a74632", "#f28757"], ["Rosa", "#ce4c79", "#ff99bd"],
+  ["Azul", "#2879ac", "#76c7ea"], ["Prata", "#8c859e", "#dbd6e4"],
+  ["Verde", "#277b68", "#69c5a8"], ["Cobre", "#9c542d", "#eca474"],
+  ["Branco", "#cdd5eb", "#fdf5ea"]
+);
+
 const avatarScenes = [
   { label: "Cor sólida" },
   { label: "Praia", effect: ["Ver pôr do sol", "Voltar ao dia"] },
@@ -81,14 +90,11 @@ const avatarOptions = {
   },
   hairColor: {
     category: "hair", label: "Cor do cabelo",
-    choices: colorChoices(
-      ["Preto", "#302839", "#574659"], ["Castanho", "#754444", "#a66854"],
-      ["Loiro", "#d38943", "#ffe08d"], ["Roxo", "#7146bc", "#ae87ef"],
-      ["Ruivo", "#a74632", "#f28757"], ["Rosa", "#ce4c79", "#ff99bd"],
-      ["Azul", "#2879ac", "#76c7ea"], ["Prata", "#8c859e", "#dbd6e4"],
-      ["Verde", "#277b68", "#69c5a8"], ["Cobre", "#9c542d", "#eca474"],
-      ["Branco", "#cdd5eb", "#fdf5ea"]
-    ),
+    choices: hairColors,
+  },
+  hairGradient: {
+    category: "hair", label: "Degradê das mechas",
+    choices: [{ label: "Sem degradê", color: "repeating-linear-gradient(135deg, #fff 0 6px, #dce4ed 6px 12px)" }, ...hairColors],
   },
   outfit: {
     category: "clothes", label: "Modelo", crop: [12, 41, 40, 34],
@@ -165,10 +171,26 @@ function paintAvatar(canvas, avatar, crop = [0, 0, 64, 80], { frame = 0, alterna
   result.drawImage(avatarBuffer, ...crop, 0, 0, canvas.width, canvas.height);
 }
 
+function paintHairPalette(ctx, style, base, tint) {
+  if (!tint?.shade) return base;
+
+  const tip = [27, 44, 23, 24, 37, 41, 25, 30, 42, 45, 27, 19, 25, 24, 21, 45][style];
+  const gradient = (root, end, start) => {
+    const fill = ctx.createLinearGradient(27, Math.min(13, tip - 12), 35, tip);
+    fill.addColorStop(start, root);
+    fill.addColorStop(1, end);
+    return fill;
+  };
+  return {
+    color: gradient(base.color, tint.color, 0.35),
+    shade: gradient(base.shade, tint.shade, 0),
+  };
+}
+
 function paintCharacter(ctx, box, avatar, itemFrame) {
   const palette = key => avatarOptions[key].choices[avatar[key]];
   const skin = palette("skin");
-  const hair = palette("hairColor");
+  const hair = paintHairPalette(ctx, avatar.hair, palette("hairColor"), palette("hairGradient"));
   const eye = palette("eyeColor").color;
   const hairStyle = avatar.hair;
   const ink = "#232940";
