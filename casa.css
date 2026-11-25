@@ -1,0 +1,523 @@
+/* A Casa Assombrada do Dark UX: a dark, indigo mansion. The porch with Pepi as a nervous
+   ghost hunter; the intro; the floor plan; the rooms, little websites in the dark lit by
+   a lantern; the boss arena; the ending; and the creepy unlock sequence over the desktop. */
+
+.house-game {
+  --house-bg: #120c22;
+  --house-panel: #1c1433;
+  --house-line: #3a2d5c;
+  --house-text: #ece6ff;
+  --house-muted: #b3a8d6;
+  --house-gold: #f6c445;
+  --house-pink: #ff5c8a;
+  --house-mint: #8ffcf0;
+  padding: clamp(18px, 3vw, 34px);
+  color: var(--house-text);
+  background:
+    radial-gradient(ellipse at 80% -10%, #3b2a6b66, #0000 55%),
+    radial-gradient(ellipse at 10% 110%, #1f5b5b33, #0000 50%),
+    var(--house-bg);
+  min-height: 100%;
+}
+.house-game h2, .house-game h3, .house-game h4 { color: var(--house-text); }
+.house-game .color-game-header p, .house-muted { color: var(--house-muted); }
+.house-game :focus-visible { outline: 3px solid var(--house-gold); outline-offset: 3px; }
+.house-game [tabindex="-1"]:focus { outline: none; }
+.house-game .secondary-button { border-color: #5a4a86; color: var(--house-text); background: #241a3e; }
+.house-game .secondary-button:hover { border-color: #b9a2ff; background: #2e2250; }
+.house-game kbd { padding: 0 6px; border: 1px solid #5a4a86; border-bottom-width: 3px; border-radius: 5px; color: var(--house-text); background: #2a1f47; font: 700 .8em var(--mono); }
+.house-header { align-items: flex-start; }
+.house-header-tools { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+.house-lights { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border: 1px solid var(--house-line); border-radius: 999px; color: var(--house-text); background: var(--house-panel); font: inherit; font-weight: 650; cursor: pointer; }
+.house-lights svg { width: 18px; height: 18px; color: var(--house-gold); }
+.house-lights[aria-pressed="true"] { border-color: var(--house-gold); background: #3a2e14; }
+.house-link-button { padding: 4px 10px; border: 1px solid var(--house-line); border-radius: 999px; color: var(--house-muted); background: none; font: 650 .78rem var(--mono); cursor: pointer; }
+.house-link-button:hover { color: var(--house-text); border-color: var(--house-muted); }
+.house-kicker { margin: 0; color: var(--house-gold); font: 700 .72rem var(--mono); letter-spacing: .06em; text-transform: uppercase; }
+
+/* Pixel bits. */
+.house-ghost { display: block; image-rendering: pixelated; }
+.house-ghost.is-mini { width: 22px; height: auto; }
+.house-ghost.is-tiny { width: 26px; height: auto; }
+.house-ghost.is-pop { width: 34px; height: auto; filter: drop-shadow(0 0 6px #b9a2ffcc); }
+.house-heart { width: 22px; height: auto; }
+.house-hearts { display: inline-flex; align-items: center; gap: 3px; }
+
+/* ---------- The porch ---------- */
+
+.house-porch {
+  position: relative;
+  height: 118px;
+  margin-top: 12px;
+  overflow: hidden;
+  border: 1px solid var(--house-line);
+  border-radius: 14px;
+  background:
+    linear-gradient(#0000 70%, #0a0614 70%) 0 0 / 100% 100%,
+    repeating-linear-gradient(90deg, #2a1f47 0 22px, #241a3e 22px 24px) bottom / 100% 30% no-repeat,
+    linear-gradient(#1a1236, #2b1f52);
+}
+.house-moon { position: absolute; top: 14px; right: 46px; width: 46px; height: 46px; border-radius: 50%; background: #fff6d6; box-shadow: 0 0 30px #fff6d677, inset -10px -6px 0 #e9dca8; }
+.house-bats { position: absolute; top: 30px; right: 140px; opacity: .6; animation: house-float 4s ease-in-out infinite; }
+.house-host { position: absolute; left: 26px; bottom: 10px; z-index: 2; --pepi-px: 1.75; }
+.house-pepi { animation: house-tremble 3s infinite; }
+.house-pepi .pepi-art { filter: drop-shadow(1.5px 0 0 #fff) drop-shadow(-1.5px 0 0 #fff) drop-shadow(0 1.5px 0 #fff) drop-shadow(0 -1.5px 0 #fff); }
+.house-props { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+@keyframes house-tremble {
+  0%, 70%, 100% { translate: 0 0; }
+  72% { translate: -1px 0; }
+  74% { translate: 1px 0; }
+  76% { translate: -1px 0; }
+  78% { translate: 1px 0; }
+  80% { translate: 0 0; }
+}
+@keyframes house-float { 50% { translate: 0 -8px; } }
+.house-bubble {
+  position: absolute;
+  top: 18px;
+  left: 132px;
+  z-index: 3;
+  display: grid;
+  gap: 2px;
+  width: max-content;
+  max-width: min(520px, calc(100% - 230px));
+  margin: 0;
+  padding: 8px 12px;
+  border: 2px solid #3b2838;
+  border-radius: 12px;
+  color: #1c2b40;
+  background: #fff;
+  box-shadow: 0 3px 0 #3b2838;
+  font-size: .92rem;
+  line-height: 1.4;
+}
+.house-bubble strong { color: #b52f68; font: 700 .68rem var(--mono); }
+.house-bubble::after { content: ""; position: absolute; top: 16px; right: 100%; border: 9px solid #0000; border-right-color: #3b2838; }
+.house-game:is([data-view="room"], [data-view="boss"]) .house-porch { height: 76px; }
+.house-game:is([data-view="room"], [data-view="boss"]) .house-host { --pepi-px: 1.1; bottom: 8px; }
+.house-game:is([data-view="room"], [data-view="boss"]) .house-bubble { top: 10px; left: 96px; padding: 5px 10px; font-size: .84rem; }
+.house-game:is([data-view="room"], [data-view="boss"]) .house-bubble strong { display: none; }
+.house-game:is([data-view="room"], [data-view="boss"]) .house-moon { top: 12px; width: 34px; height: 34px; }
+
+/* ---------- Intro ---------- */
+
+.house-intro, .house-map-view, .house-room-view, .house-boss-view, .house-end { margin-top: 18px; }
+.house-intro { display: grid; gap: 16px; }
+.house-intro-lead { display: grid; gap: 6px; max-width: 76ch; }
+.house-intro-lead h3, .house-end h3 { margin: 0; font-size: 1.35rem; letter-spacing: -.02em; }
+.house-intro-lead p { margin: 0; color: var(--house-muted); line-height: 1.6; }
+.house-rules { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin: 0; padding: 0; list-style: none; }
+.house-rules li { display: grid; align-content: start; gap: 8px; padding: 14px; border: 1px solid var(--house-line); border-radius: 14px; background: var(--house-panel); }
+.house-rules span { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 10px; color: var(--house-gold); background: #2a1f47; }
+.house-rules span svg:not(.house-heart):not(.house-ghost) { width: 22px; height: 22px; }
+.house-rules p { margin: 0; color: var(--house-muted); font-size: .9rem; line-height: 1.5; }
+.house-rules strong { color: var(--house-text); }
+.house-start { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+.house-goal { margin: 0; color: var(--house-muted); }
+.house-cta { background: #6b4fa0; border-color: #6b4fa0; box-shadow: 0 0 0 0 #b9a2ff66; animation: house-call 2.4s ease-in-out infinite; }
+@keyframes house-call { 50% { box-shadow: 0 0 0 8px #b9a2ff00, 0 0 22px #b9a2ff66; } }
+
+/* ---------- The floor plan ---------- */
+
+.house-map-head, .house-room-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 10px 20px; }
+.house-map-head h3, .house-room-head h3 { margin: 2px 0 0; font-size: 1.2rem; }
+.house-map-head p, .house-room-head p { margin: 2px 0 0; }
+.house-map-tools, .house-room-status { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.house-score-chip, .house-found { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; color: var(--house-text); background: #2a1f47; font: 700 .78rem var(--mono); }
+.house-plan { position: relative; max-width: 760px; margin: 18px auto 0; }
+.house-roof { height: 64px; margin: 0 18px; background: repeating-linear-gradient(90deg, #3a2d5c 0 12px, #33285a 12px 14px), #3a2d5c; clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+.house-plan-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-areas:
+    ". . boss boss . ."
+    "attic attic attic attic attic attic"
+    "bed bed bed lib lib lib"
+    "hall hall dine dine kitchen kitchen"
+    "cellar cellar cellar cellar cellar cellar";
+  gap: 6px;
+  padding: 6px;
+  border: 4px solid #3a2d5c;
+  border-top: 0;
+  background: repeating-linear-gradient(0deg, #1e1638 0 10px, #241a42 10px 12px);
+}
+.house-plan-grid .is-boss { margin-top: -70px; }
+.house-tile {
+  position: relative;
+  display: grid;
+  justify-items: start;
+  gap: 2px;
+  min-height: 88px;
+  padding: 10px 12px;
+  border: 2px solid #3a2d5c;
+  border-radius: 6px;
+  color: var(--house-muted);
+  background: #150f29;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: transform .15s, border-color .15s, background-color .3s;
+}
+.house-tile strong { color: var(--house-text); font-size: .95rem; }
+.house-tile small { font-size: .78rem; }
+.house-tile em { margin-top: auto; font: 700 .72rem var(--mono); font-style: normal; }
+.house-window { position: absolute; top: 10px; right: 10px; display: flex; gap: 3px; }
+.house-window i { width: 12px; height: 16px; border: 2px solid #3a2d5c; background: #0b0717; }
+.house-tile.is-locked { cursor: not-allowed; opacity: .55; }
+.house-tile.is-locked em::before { content: "🔒 "; }
+.house-tile.is-open { border-color: #8b6fe0; box-shadow: 0 0 18px #8b6fe055; }
+.house-tile.is-open:hover { transform: translateY(-2px); }
+.house-tile.is-open .house-window i { background: #6b4fa0; animation: house-candle 2.2s ease-in-out infinite; }
+.house-tile.is-open em { color: var(--house-gold); }
+.house-tile.is-clear { border-color: #c9a53c; background: linear-gradient(#3a2e14, #2a2210); }
+.house-tile.is-clear .house-window i { border-color: #c9a53c; background: #ffe08a; box-shadow: 0 0 10px #ffe08a; }
+.house-tile.is-clear em { color: #ffe08a; }
+.house-tile.is-boss { justify-items: center; text-align: center; background: #241339; }
+.house-tile.is-boss .house-ghost { width: 34px; }
+.house-boss-icon { animation: house-float 2.6s ease-in-out infinite; }
+@keyframes house-candle { 50% { background: #8b6fe0; } }
+
+/* ---------- A room ---------- */
+
+.house-room-body { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(260px, 1fr); gap: 16px; align-items: start; margin-top: 14px; }
+.house-screen {
+  --x: 50%;
+  --y: 40%;
+  position: relative;
+  overflow: hidden;
+  border: 2px solid var(--house-line);
+  border-radius: 12px;
+  background: #f4f1ea;
+  box-shadow: 0 18px 40px #0008;
+}
+.house-browser { display: flex; align-items: center; gap: 6px; padding: 8px 12px; border-bottom: 1px solid #d9d2c3; background: #e8e3d8; }
+.house-browser i { width: 10px; height: 10px; border-radius: 50%; background: #c4bcaa; }
+.house-browser span { margin-left: 8px; padding: 2px 10px; border-radius: 999px; color: #5d5670; background: #fff; font: 600 .74rem var(--mono); }
+.house-dark {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  background: #07040ff2;
+  -webkit-mask: radial-gradient(circle 130px at var(--x) var(--y), #0000 0, #0000 45%, #000a 75%, #000 100%);
+  mask: radial-gradient(circle 130px at var(--x) var(--y), #0000 0, #0000 45%, #000a 75%, #000 100%);
+  pointer-events: none;
+  transition: opacity .5s;
+}
+.house-game.lights-on .house-dark, .house-screen.is-cleared .house-dark { opacity: 0; }
+.house-screen-hint { margin: 8px 0 0; font-size: .82rem; }
+
+/* The mock website inside each room. */
+.house-page {
+  --site: #6b4fa0;
+  position: relative;
+  display: grid;
+  justify-items: start;
+  gap: 12px;
+  min-height: 330px;
+  padding: 22px 22px 26px;
+  color: #241c33;
+  font-size: .95rem;
+}
+.house-page.is-biblioteca { --site: #8a5a2b; }
+.house-page.is-cozinha { --site: #2f7d4f; }
+.house-page.is-jantar { --site: #b3402a; }
+.house-page.is-quarto { --site: #2a4aa8; }
+.house-page.is-porao { --site: #5d4a2f; }
+.house-page.is-sotao { --site: #6b4fa0; }
+.house-page .m-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.house-page .m-hero { display: grid; gap: 4px; }
+.house-page .m-text { margin: 0; color: #3b3448; }
+.house-spot-wrap { position: relative; display: inline-grid; max-width: 100%; }
+.house-spot { display: inline-grid; max-width: 100%; padding: 4px; border: 2px dashed #0000; border-radius: 8px; color: inherit; background: none; font: inherit; text-align: left; cursor: pointer; }
+.house-spot:hover { border-color: #6b4fa055; }
+.house-spot:focus-visible { outline: 3px solid var(--house-gold); outline-offset: 2px; }
+.house-spot.is-safe { border-color: #2f9e6b66; cursor: default; }
+.house-spot.is-cleansed { border-color: #c9a53c; background: #fff8e0; cursor: default; }
+.house-spot.is-found { border-color: #b9a2ff; background: #efe9ff; animation: house-haunted 1.4s ease-in-out infinite; }
+@keyframes house-haunted { 50% { box-shadow: 0 0 0 4px #b9a2ff55, 0 0 18px #b9a2ff88; } }
+.house-haunt-mark { position: absolute; top: -30px; left: 50%; z-index: 4; translate: -50% 0; pointer-events: none; animation: house-float 1.8s ease-in-out infinite; }
+.house-clean-mark { position: absolute; top: -9px; right: -9px; z-index: 4; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; color: #3a2e14; background: var(--house-gold); font: 800 .75rem var(--mono); box-shadow: 0 0 10px #f6c445aa; }
+
+.m-title { color: #1d1530; font-weight: 800; font-size: 1.35rem; letter-spacing: -.02em; }
+.m-text.is-faint { padding: 4px 8px; border-radius: 4px; color: #a7a3b0; background: #bcb8c4; }
+.m-text.is-strong { padding: 4px 8px; border-radius: 4px; color: #1d1530; background: #e7e3ee; }
+.m-btn { display: inline-block; padding: 8px 16px; border-radius: 9px; color: #fff; background: var(--site); font-weight: 750; line-height: 1.2; }
+.m-btn.is-ghost { border: 1.5px solid var(--site); color: var(--site); background: #fff; }
+.m-btn.is-green { padding: 10px 20px; background: #2f9e6b; font-size: 1.05rem; }
+.m-btn.is-grey { color: #8f8a99; background: #dedbe3; }
+.m-btn.is-danger { border: 1.5px solid #c2344f; color: #c2344f; background: #fff; }
+.m-btn.is-busy { opacity: .75; }
+.m-btn.is-busy::before { content: "◌ "; }
+.m-btn.is-fake { border-radius: 4px; }
+.m-btn.is-ring { outline: 3px solid var(--house-gold); outline-offset: 3px; }
+.m-link { color: #2056a4; font-weight: 650; text-decoration: underline; text-underline-offset: 3px; }
+.m-link.is-camo { color: #3b3448; font-weight: 400; text-decoration: none; }
+.m-link.is-muted { color: #6d667c; font-size: .86rem; }
+.m-field { display: grid; gap: 3px; min-width: 200px; }
+.m-field small { font-weight: 700; font-size: .78rem; }
+.m-field > span { padding: 7px 10px; border: 1.5px solid #a9a3b6; border-radius: 7px; background: #fff; }
+.m-field.is-red > span { border-color: #e03a4a; }
+.m-field.is-error > span { border-color: #c2344f; }
+.m-field em { color: #b3263f; font-size: .8rem; font-style: normal; font-weight: 650; }
+.m-check { display: inline-flex; align-items: center; gap: 8px; }
+.m-check i { display: grid; place-items: center; width: 18px; height: 18px; border: 2px solid #6d667c; border-radius: 4px; background: #fff; color: #fff; font-style: normal; font-weight: 800; font-size: .75rem; }
+.m-check.is-on i { border-color: var(--site); background: var(--site); }
+.m-float { position: absolute; top: 46px; right: 14px; }
+.m-pop { display: grid; gap: 4px; width: 190px; padding: 12px 14px; border-radius: 10px; color: #fff; background: #2a1f47; box-shadow: 0 10px 24px #0005; }
+.m-pop small { color: #d9d0ff; }
+.m-pop.is-gentle { color: #1d1530; background: #fff; border: 1px solid #d9d2c3; }
+.m-pop.is-gentle small { color: #5d5670; }
+.m-shift { display: grid; gap: 6px; width: min(100%, 300px); }
+.m-shift i { display: block; padding: 10px; border-radius: 6px; color: #fff; background: repeating-linear-gradient(45deg, #c2344f 0 8px, #a82a43 8px 16px); font: 700 .74rem var(--mono); font-style: normal; }
+.m-shift.is-reserved i { border: 2px dashed #a9a3b6; color: #6d667c; background: #ece9f1; }
+.m-card { padding: 10px 12px; border: 1px solid #d9d2c3; border-radius: 8px; background: #fff; }
+.m-spin { display: inline-flex; align-items: center; gap: 8px; color: #5d5670; }
+.m-spinner { width: 18px; height: 18px; border: 3px solid #d9d2c3; border-top-color: var(--site); border-radius: 50%; animation: house-spin 1s linear infinite; }
+@keyframes house-spin { to { rotate: 1turn; } }
+.m-bar { display: block; width: 80px; height: 8px; overflow: hidden; border-radius: 4px; background: #d9d2c3; }
+.m-bar b { display: block; width: 66%; height: 100%; background: var(--site); }
+.m-select { display: grid; gap: 4px; width: min(100%, 420px); padding: 10px 12px; border: 1.5px solid #a9a3b6; border-radius: 8px; background: #fff; }
+.m-select small { overflow: hidden; color: #6d667c; text-overflow: ellipsis; white-space: nowrap; }
+.m-chips { display: flex; flex-wrap: wrap; gap: 6px; max-width: 440px; }
+.m-chips i { padding: 4px 10px; border: 1px solid #c9c3d4; border-radius: 999px; background: #fff; font-style: normal; font-size: .82rem; }
+.m-chips i.is-pick { border-color: var(--site); color: #fff; background: var(--site); font-weight: 700; }
+.m-dots { display: grid; place-items: center; width: 36px; height: 30px; border: 1px solid #c9c3d4; border-radius: 8px; background: #fff; font-weight: 800; }
+.m-filter { display: inline-flex; padding: 6px 12px; border: 1.5px solid var(--site); border-radius: 999px; color: var(--site); background: #fff; font-weight: 650; font-size: .85rem; }
+.m-crumb { color: #5d5670; font: 650 .85rem var(--mono); }
+.m-toggle { display: inline-flex; align-items: center; gap: 10px; font-weight: 650; }
+.m-toggle i { position: relative; width: 38px; height: 22px; border-radius: 999px; background: var(--site); }
+.m-toggle i::after { content: ""; position: absolute; top: 3px; right: 3px; width: 16px; height: 16px; border-radius: 50%; background: #fff; }
+.m-iconbtn { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border: 1px solid #c9c3d4; border-radius: 8px; background: #fff; font-weight: 650; }
+.m-iconbtn svg { width: 18px; height: 18px; }
+.m-iconbtn small { color: #8f8a99; font-weight: 500; }
+.m-modal { display: grid; gap: 8px; width: min(100%, 300px); padding: 14px; border: 1px solid #d9d2c3; border-radius: 12px; background: #fff; box-shadow: 0 10px 24px #0002; }
+.m-modal small { color: #8f8a99; font-family: var(--mono); font-size: .74rem; }
+.m-img { display: grid; justify-items: center; gap: 4px; padding: 8px; border: 1px solid #d9d2c3; border-radius: 8px; background: #fff; }
+.m-img .house-chest { width: 64px; height: auto; }
+.m-img small { color: #6d667c; font: .72rem var(--mono); }
+.m-empty { display: grid; justify-items: start; gap: 4px; width: min(100%, 360px); padding: 14px; border: 1.5px dashed #c9c3d4; border-radius: 10px; }
+.m-empty.is-cold { color: #c2344f; font: 700 .9rem var(--mono); }
+.m-empty small { color: #6d667c; }
+.m-empty u { color: var(--site); font-weight: 700; }
+.m-skip { padding: 4px 10px; border-radius: 6px; color: #1d1530; background: var(--house-gold); font-weight: 750; font-size: .85rem; }
+.m-invisible { display: block; width: 130px; height: 30px; }
+.m-invisible.is-gone { width: auto; height: auto; color: #8f8a99; font: .74rem var(--mono); }
+
+/* The ghost hunter's notebook. */
+.house-notes { position: sticky; top: 12px; display: grid; gap: 10px; padding: 16px; border: 1px solid var(--house-line); border-radius: 14px; background: var(--house-panel); outline: none; }
+.house-notes h4 { margin: 0; font-size: .95rem; }
+.house-note-idle { margin: 0; color: var(--house-muted); }
+.house-note-list { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.house-note-list li { display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 8px; color: var(--house-muted); background: #150f29; }
+.house-note-list li span { display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: #2a1f47; font: 800 .72rem var(--mono); }
+.house-note-list li.is-done { color: #ffe08a; }
+.house-note-list li.is-done span { color: #3a2e14; background: var(--house-gold); }
+.house-note-title { display: flex; align-items: center; gap: 8px; margin: 2px 0 0; color: var(--house-text); font-weight: 800; font-size: 1.05rem; }
+.house-question, .house-note-safe, .house-note-good, .house-note-cleared, .house-note-fled { display: grid; gap: 8px; outline: none; }
+.house-question p, .house-note-safe p, .house-note-good p, .house-note-cleared p, .house-note-fled p { margin: 0; line-height: 1.5; }
+.house-ask { color: var(--house-gold); font-weight: 700; }
+.house-fixes, .house-options { display: grid; gap: 8px; }
+.house-fix { padding: 10px 12px; border: 1.5px solid #5a4a86; border-radius: 10px; color: var(--house-text); background: #241a3e; font: inherit; font-weight: 600; text-align: left; cursor: pointer; transition: border-color .15s, background-color .15s; }
+.house-fix:hover:not(:disabled) { border-color: #b9a2ff; background: #2e2250; }
+.house-fix:disabled { cursor: default; }
+.house-fix.is-wrong { border-color: #c2344f; color: #ffb4c2; background: #2a1220; text-decoration: line-through; }
+.house-fix.is-right { border-color: var(--house-gold); color: #ffe08a; background: #3a2e14; }
+.house-fix-result.is-bad, .house-attack-result.is-bad { color: #ffb4c2; }
+.house-attack-result.is-good { color: #ffe08a; }
+.house-note-safe .house-note-title { color: #8fe0b8; }
+.house-note-good .house-note-title, .house-note-cleared .house-note-title { color: #ffe08a; }
+.house-note-fled .house-note-title { color: #ffb4c2; }
+.house-note-cleared .primary-button, .house-note-fled .primary-button { justify-self: start; }
+
+/* ---------- The boss ---------- */
+
+.house-arena { position: relative; display: grid; gap: 14px; padding: 16px; overflow: hidden; border: 2px solid #5a3a8f; border-radius: 16px; background: radial-gradient(ellipse at 50% 0, #3b1f6b, #120a24 70%); box-shadow: inset 0 0 60px #000a; }
+.house-arena[data-phase="2"] { border-color: #8f3a8a; background: radial-gradient(ellipse at 50% 0, #5a1f6b, #140a24 70%); }
+.house-arena[data-phase="3"] { border-color: #b3263f; background: radial-gradient(ellipse at 50% 0, #6b1f3d, #160a1a 70%); }
+.house-arena-bg { position: absolute; inset: 0; opacity: .14; pointer-events: none; }
+.house-arena-bg > * { position: absolute; color: #fff; font: 700 .8rem var(--mono); }
+.house-arena-bg .bg-pop { top: 18%; left: 4%; padding: 10px; border-radius: 8px; background: #fff3; rotate: -8deg; }
+.house-arena-bg .bg-faint { top: 62%; left: 6%; color: #aaa; }
+.house-arena-bg .bg-spin { top: 30%; right: 8%; width: 40px; height: 40px; border: 5px solid #fff4; border-top-color: #fff; border-radius: 50%; animation: house-spin 1.4s linear infinite; }
+.house-arena-bg .bg-chips { bottom: 12%; right: 5%; rotate: 6deg; }
+.house-arena-bg .bg-trash { top: 70%; right: 30%; width: 36px; }
+.house-arena-bg .bg-err { top: 10%; right: 30%; color: #ff5c8a; }
+.house-boss-top { position: relative; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 14px; }
+.house-boss-name { display: grid; }
+.house-boss-name strong { font-size: 1.05rem; }
+.house-boss-name span { color: var(--house-gold); font: 700 .74rem var(--mono); text-transform: uppercase; }
+.house-hp { height: 16px; overflow: hidden; border: 2px solid #1a0f2e; border-radius: 6px; background: #2a1830; }
+.house-hp i { display: block; width: 100%; height: 100%; background: repeating-linear-gradient(90deg, #ff5c8a 0 18px, #e0406f 18px 20px); transition: width .5s cubic-bezier(.3, 1.3, .5, 1); }
+.house-boss-stage { position: relative; display: grid; justify-items: center; gap: 6px; min-height: 150px; }
+.house-boss-ghost { width: 128px; filter: drop-shadow(0 0 18px #b9a2ffaa); animation: house-boss-float 3s ease-in-out infinite; }
+.house-boss-ghost svg { display: block; width: 100%; height: auto; }
+.house-arena[data-phase="3"] .house-boss-ghost { filter: drop-shadow(0 0 22px #ff5c8acc); animation-duration: 1.6s; }
+.house-boss-ghost.is-hit { filter: brightness(2.4) drop-shadow(0 0 30px #fff); }
+@keyframes house-boss-float { 50% { translate: 0 -12px; } }
+.house-taunt { max-width: 46ch; min-height: 1.5em; margin: 0; padding: 6px 12px; border-radius: 10px; color: #ffd6e2; background: #0006; font-style: italic; text-align: center; }
+.house-attack { position: relative; display: grid; gap: 10px; padding: 16px; border: 1px solid #5a4a86; border-radius: 14px; background: #1c1433ee; outline: none; }
+.house-attack:focus-visible { outline: 3px solid var(--house-gold); }
+.house-attack-head h3 { margin: 2px 0 0; font-size: 1.15rem; }
+.house-attack-why { margin: 0; color: var(--house-muted); line-height: 1.5; }
+.house-timer { height: 8px; overflow: hidden; border-radius: 999px; background: #2a1f47; }
+.house-timer i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #ff5c8a, #f6c445); transform-origin: left; }
+.house-options { display: flex; flex-wrap: wrap; }
+.house-options .house-fix { flex: 1 1 200px; }
+.house-attack-warn { margin: 0; padding: 8px 12px; border-radius: 8px; color: #1a0f2e; background: var(--house-mint); font-weight: 700; }
+.house-attack.is-keyboard .house-fix { cursor: not-allowed; }
+.house-attack-result { min-height: 1.4em; margin: 0; font-weight: 650; }
+
+/* ---------- The ending ---------- */
+
+.house-end { display: grid; gap: 12px; }
+.house-end-art { display: grid; place-items: center; padding: 10px 0 4px; background: radial-gradient(ellipse at 50% 100%, #6b4fa044, #0000 60%); }
+.house-end-house { width: 120px; height: auto; }
+.house-end-house.is-free { filter: drop-shadow(0 0 18px #ffe08a88); }
+.house-game.is-free .house-end-art { background: radial-gradient(ellipse at 50% 100%, #ffe08a55, #0000 62%); }
+.house-end-verdict { margin: 0; padding: 10px 14px; border-radius: 10px; line-height: 1.5; }
+.house-end-verdict.is-pass { border: 1px solid #c9a53c; color: #ffe8a8; background: #3a2e14; }
+.house-end-verdict.is-fail { border: 1px solid #8f3a8a; background: #2a1438; }
+.house-end-row { display: grid; grid-template-columns: auto 1fr; gap: 24px; align-items: center; padding: 16px 18px; border: 1px solid var(--house-line); border-radius: 14px; background: var(--house-panel); }
+.house-end-score { display: grid; justify-items: center; }
+.house-end-score strong { font-size: 3rem; letter-spacing: -.04em; line-height: 1; }
+.house-end-score span { color: var(--house-muted); font: .78rem var(--mono); }
+.house-end-bars { display: grid; gap: 6px; }
+.house-end-bars p { margin: 4px 0 0; font-size: .82rem; }
+.house-bar { display: grid; grid-template-columns: 11em 1fr 3.4em; align-items: center; gap: 10px; font-size: .86rem; }
+.house-bar i { height: 10px; overflow: hidden; border-radius: 4px; background: #2a1f47; }
+.house-bar b { display: block; width: calc(var(--share) * 100%); height: 100%; border-radius: 4px; background: var(--house-gold); transform-origin: left; }
+.house-bar.is-boss b { background: var(--house-pink); }
+.house-bar em { font: 700 .82rem var(--mono); font-style: normal; text-align: right; }
+.house-end-lesson { max-width: 80ch; margin: 0; color: var(--house-muted); line-height: 1.6; }
+.house-end-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+
+/* ---------- The card, right after the unlock sequence ---------- */
+
+.game-card.is-haunted-reveal { animation: house-card-glow 1.6s ease-in-out 4; }
+@keyframes house-card-glow {
+  0%, 100% { box-shadow: 0 0 0 0 #6b4fa000; }
+  50% { box-shadow: 0 0 0 6px #6b4fa055, 0 0 40px #6b4fa0aa; }
+}
+
+/* ---------- The unlock sequence ---------- */
+
+.house-haunt { position: fixed; inset: 0; z-index: 2147483000; display: grid; place-items: center; overflow: hidden; color: #e9e4ff; transition: opacity .7s; }
+.house-haunt.is-leaving { opacity: 0; }
+.house-haunt-dark { position: absolute; inset: 0; background: #05030c; opacity: 0; transition: opacity .18s; }
+.house-haunt.is-calm .house-haunt-dark { transition: opacity 1s; }
+.house-haunt-fog { position: absolute; inset: -20%; background: radial-gradient(ellipse at 30% 70%, #3b2a6b55, #0000 50%), radial-gradient(ellipse at 70% 30%, #1f5b5b33, #0000 50%); opacity: .8; animation: house-fog 9s ease-in-out infinite alternate; pointer-events: none; }
+@keyframes house-fog { to { translate: 6% -4%; } }
+.house-haunt-ghost { position: relative; width: min(46vmin, 380px); opacity: 0; scale: .7; filter: blur(8px); transition: opacity 2.2s ease-in, scale 2.6s ease-out, filter 2.2s ease-out; }
+.house-haunt-ghost.is-rising { opacity: .95; scale: 1; filter: blur(0) drop-shadow(0 0 30px #8b6fe0aa); }
+.house-haunt-ghost svg { display: block; width: 100%; height: auto; }
+.house-haunt-ghost.is-rising svg { animation: house-boss-float 3.2s ease-in-out infinite; }
+/* Its eyes glow and pulse (the eye pixels are the mint ones), and a vignette closes in. */
+.house-haunt-ghost rect[fill="#8ffcf0"] { animation: house-eyes 2.4s ease-in-out infinite; }
+@keyframes house-eyes { 50% { fill: #e8fffb; } }
+.house-haunt::after { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse at center, #0000 35%, #000c 100%); pointer-events: none; }
+.house-haunt-ghost.is-lunge { scale: 1.45; transition: scale .5s cubic-bezier(.5, 0, .7, 1.6); }
+.house-haunt-text {
+  position: absolute;
+  bottom: 16vh;
+  left: 50%;
+  width: max-content;
+  max-width: 92vw;
+  margin: 0;
+  opacity: 0;
+  color: #e9e4ff;
+  font: 800 clamp(1.3rem, 4vw, 2.6rem) var(--mono);
+  letter-spacing: .02em;
+  text-align: center;
+  text-shadow: 0 0 18px #8b6fe0;
+  translate: -50% 0;
+}
+.house-haunt-text.is-on { opacity: 1; }
+/* A slow glitch: offset copies in mint and violet, shifting a few times a second at most. */
+.house-haunt-text::before, .house-haunt-text::after { content: attr(data-text); position: absolute; inset: 0; opacity: .7; }
+.house-haunt-text::before { color: #8ffcf0; translate: -3px 0; clip-path: inset(0 0 55% 0); animation: house-glitch 1.4s steps(2) infinite; }
+.house-haunt-text::after { color: #b9a2ff; translate: 3px 0; clip-path: inset(50% 0 0 0); animation: house-glitch 1.8s steps(2) infinite reverse; }
+@keyframes house-glitch {
+  0% { translate: -3px 0; }
+  50% { translate: 4px 1px; }
+  100% { translate: -2px -1px; }
+}
+.house-haunt.is-calm .house-haunt-text::before, .house-haunt.is-calm .house-haunt-text::after { animation: none; }
+.house-haunt-skip { position: absolute; top: 18px; right: 18px; display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border: 1px solid #5a4a86; border-radius: 999px; color: #e9e4ff; background: #1c1433cc; font: inherit; font-weight: 650; cursor: pointer; }
+.house-haunt-skip kbd { padding: 0 5px; border: 1px solid #5a4a86; border-radius: 4px; font: 700 .72rem var(--mono); }
+.house-haunt-skip:focus-visible { outline: 3px solid #f6c445; outline-offset: 3px; }
+
+/* ---------- Small screens ---------- */
+
+@media (max-width: 960px) {
+  .house-rules { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .house-room-body { grid-template-columns: 1fr; }
+  .house-notes { position: static; }
+}
+@media (max-width: 600px) {
+  .house-rules { grid-template-columns: 1fr; }
+  .house-bubble { left: 100px; max-width: calc(100% - 110px); font-size: .82rem; }
+  .house-host { left: 10px; --pepi-px: 1.4; }
+  .house-moon, .house-bats { display: none; }
+  .house-plan-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas: "boss boss" "attic attic" "bed lib" "hall dine" "kitchen kitchen" "cellar cellar";
+  }
+  .house-plan-grid .is-boss { margin-top: 0; }
+  .house-roof { height: 40px; }
+  .house-page { padding: 16px 14px 20px; }
+  .m-float { position: static; }
+  .house-boss-top { grid-template-columns: 1fr; }
+  .house-end-row { grid-template-columns: 1fr; }
+  .house-bar { grid-template-columns: 8em 1fr 3em; }
+  .house-header-tools { justify-content: flex-start; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .house-pepi, .house-bats, .house-boss-ghost, .house-boss-icon, .house-cta, .house-spot.is-found, .house-haunt-mark, .house-haunt-fog, .m-spinner, .house-arena-bg .bg-spin, .house-tile.is-open .house-window i, .game-card.is-haunted-reveal { animation: none; }
+  .house-haunt-ghost, .house-haunt-ghost.is-lunge { transition: opacity 1s; filter: none; scale: 1; }
+  .house-haunt-ghost rect[fill="#8ffcf0"] { animation: none; }
+}
+.house-haunt-skip, .house-haunt-text { z-index: 2; }
+
+/* ---------- The unlock scene: the house, and the ghost that leaves it to talk ---------- */
+
+.haunt-scene { position: absolute; inset: auto 0 0; height: 62vh; display: grid; place-items: end center; opacity: 0; transition: opacity 1.4s, filter .14s; pointer-events: none; }
+.haunt-scene.is-on { opacity: 1; }
+.haunt-scene.is-dim { opacity: .4; transition: opacity 1.2s; }
+.haunt-scene.is-flash { filter: brightness(2.2) saturate(.6); }
+.haunt-house { width: min(78vmin, 640px); margin-bottom: -1px; filter: drop-shadow(0 0 30px #6b4fa055); }
+.haunt-mansion { display: block; width: 100%; height: auto; }
+.haunt-moon { position: absolute; top: 4vh; right: 18vw; width: 11vmin; height: 11vmin; border-radius: 50%; background: radial-gradient(circle at 38% 38%, #fff8d6, #e9dca2 60%, #c8b778); box-shadow: 0 0 60px #fff3b066; }
+.haunt-window { transition: fill .35s; }
+.haunt-window.is-lit { fill: #ffd166; filter: drop-shadow(0 0 .6px #ffbf1f); }
+.haunt-door { transition: fill .6s; }
+.haunt-door.is-open { fill: #05030c; }
+.haunt-specter { position: fixed; left: 50%; top: 34%; z-index: 1; width: min(34vmin, 300px); translate: -50% -50%; opacity: 0; pointer-events: none; }
+.haunt-specter.is-out { opacity: 1; filter: drop-shadow(0 0 28px #8b6fe0aa); }
+.haunt-specter svg { display: block; width: 100%; height: auto; }
+.haunt-specter.is-out svg { animation: house-boss-float 3.2s ease-in-out infinite; }
+.haunt-specter rect[fill="#8ffcf0"] { animation: house-eyes 2.4s ease-in-out infinite; }
+.haunt-specter.is-lunge { scale: 1.45; transition: scale .5s cubic-bezier(.5, 0, .7, 1.6); }
+.haunt-say { position: fixed; left: 50%; top: 58%; z-index: 2; display: grid; gap: 4px; width: min(88vw, 560px); margin: 0; padding: 12px 16px; border: 2px solid #8b6fe0; border-radius: 14px; color: #f1ecff; background: #1c1433f2; box-shadow: 0 0 30px #8b6fe055; font-size: 1.05rem; line-height: 1.45; translate: -50% 0; }
+.haunt-say[hidden] { display: none; }
+.haunt-say::before { content: ""; position: absolute; left: 50%; bottom: 100%; border: 10px solid #0000; border-bottom-color: #8b6fe0; translate: -50% 0; }
+.haunt-say strong { color: #8ffcf0; font: 700 .72rem var(--mono); letter-spacing: .06em; text-transform: uppercase; }
+.house-boss-ghost.is-vanishing { opacity: .15; translate: 0 -30px; scale: .6; filter: blur(3px); transition: opacity 2.6s ease-in, translate 2.6s ease-in, scale 2.6s ease-in, filter 2.6s ease-in; }
+@media (prefers-reduced-motion: reduce) {
+  .haunt-scene, .haunt-window, .haunt-door, .house-boss-ghost.is-vanishing { transition: none; }
+  .haunt-specter svg, .haunt-specter rect[fill="#8ffcf0"] { animation: none; }
+}
+
+/* A hit on the ghost: its cry and the damage pop over it, then float away. */
+.house-hurt-pop { position: absolute; top: 0; left: calc(50% + 64px); z-index: 3; display: grid; justify-items: start; gap: 2px; pointer-events: none; rotate: var(--tilt, 0deg); animation: house-hurt 1.3s ease-out forwards; }
+.house-hurt-pop b { padding: 2px 10px; border: 2px solid #1a0f2e; border-radius: 10px; color: #1a0f2e; background: #ffe08a; box-shadow: 0 3px 0 #1a0f2e; font: 800 clamp(1rem, 3vw, 1.5rem) var(--mono); white-space: nowrap; }
+.house-hurt-pop i { color: #ff5c8a; font: 800 1.1rem var(--mono); font-style: normal; text-shadow: 0 2px 0 #1a0f2e; }
+@keyframes house-hurt {
+  0% { opacity: 0; transform: translateY(16px) scale(.6); }
+  18% { opacity: 1; transform: translateY(-6px) scale(1.15); }
+  30% { transform: translateY(0) scale(1); }
+  75% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-36px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .house-hurt-pop { animation: none; }
+}
