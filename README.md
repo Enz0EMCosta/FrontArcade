@@ -221,3 +221,7 @@ npm run dev
 ```
 
 Depois abra [localhost:3000](http://localhost:3000). Não há nada para instalar: o projeto não tem dependências. A pasta **Sobre Nós** fica abaixo de **Jogos**. Na primeira visita, feche ou salve o editor de avatar para acessá-la.
+
+### Publicação
+
+Em produção, o site é estático: na Vercel, os arquivos são servidos como estão, sem build nem função. O [vercel.json](vercel.json) desliga a detecção de framework e de build, e o [.vercelignore](.vercelignore) deixa de fora o `server.js` e o `package.json`, que só existem para rodar localmente. Sem isso, a Vercel tomaria o `server.js` por um servidor Node e tentaria executá-lo como função a cada acesso, o que termina em `500 FUNCTION_INVOCATION_FAILED`.

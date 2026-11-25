@@ -1,0 +1,5 @@
+# The site is static: Vercel serves the files as they are. server.js and package.json
+# are only for running it locally (node server.js); left in, Vercel would take
+# server.js for a Node server and run it as a function, which fails on every request.
+server.js
+package.json
