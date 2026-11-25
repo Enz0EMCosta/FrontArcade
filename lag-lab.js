@@ -1,11 +1,28 @@
 (() => {
   const get = id => document.getElementById(id);
   const delays = [0, 100, 400, 1000];
+  // Each theme: its name, how hard it is to trace, and the outline (320 × 240 canvas).
   const themes = {
-    arcos: ["Arcos da Atalaia", "M35 182V139a34 34 0 0168 0v43M103 182v-61a57 57 0 01114 0v61M217 182v-43a34 34 0 0168 0v43"],
-    peixe: ["Peixe", "M232 121Q160 36 81 112L38 81v78l43-30q79 78 151-8ZM202 104a4 4 0 11-8 0a4 4 0 018 0"],
-    foguete: ["Foguete", "M159 29q41 29 41 86v42h-80v-42q0-57 39-86ZM120 118l-34 45h34m80-45l34 45h-34M159 111a16 16 0 100-32a16 16 0 000 32Zm-14 58l14 38 15-38"],
+    coracao: ["Coração", "Fácil", "M160 205C100 165 58 128 70 88C82 50 135 45 160 85C185 45 238 50 250 88C262 128 220 165 160 205Z"],
+    estrela: ["Estrela", "Fácil", "M160 33L183.5 95.6L250.4 98.6L198 140.4L215.8 204.9L160 168L104.2 204.9L122 140.4L69.6 98.6L136.5 95.6Z"],
+    casa: ["Casinha", "Fácil", "M70 205V112L160 45L250 112V205ZM138 205V150H182V205M92 128H122V155H92ZM198 128H228V155H198ZM205 79V52H227V95"],
+    arcos: ["Arcos da Atalaia", "Médio", "M35 182V139a34 34 0 0168 0v43M103 182v-61a57 57 0 01114 0v61M217 182v-43a34 34 0 0168 0v43"],
+    peixe: ["Peixe", "Médio", "M232 121Q160 36 81 112L38 81v78l43-30q79 78 151-8ZM202 104a4 4 0 11-8 0a4 4 0 018 0"],
+    barco: ["Barco", "Médio", "M55 165H265L232 200H88ZM160 165V35M168 45L240 150H168ZM152 62L98 150H152ZM40 218q15-10 30 0t30 0t30 0t30 0t30 0t30 0t30 0t30 0"],
+    foguete: ["Foguete", "Difícil", "M159 29q41 29 41 86v42h-80v-42q0-57 39-86ZM120 118l-34 45h34m80-45l34 45h-34M159 111a16 16 0 100-32a16 16 0 000 32Zm-14 58l14 38 15-38"],
+    coqueiro: ["Coqueiro", "Difícil", "M148 220Q140 150 170 72M168 220Q160 150 186 74M178 68Q130 40 85 75M178 68Q140 75 115 120M178 68Q225 35 265 70M178 68Q220 80 240 125M178 68Q178 38 150 24M162 88a8 8 0 1 0 16 0a8 8 0 1 0-16 0M180 92a8 8 0 1 0 16 0a8 8 0 1 0-16 0M60 220H270"],
+    gato: ["Gato", "Difícil", "M95 105L100 45L140 78Q160 72 180 78L220 45L225 105Q235 190 160 200Q85 190 95 105ZM121 125a7 7 0 1 0 14 0a7 7 0 1 0-14 0M185 125a7 7 0 1 0 14 0a7 7 0 1 0-14 0M152 148H168L160 157ZM160 157Q160 169 146 169M160 157Q160 169 174 169M120 152H80M122 162L84 172M200 152H240M198 162L236 172"],
   };
+  const themeList = get("lag-themes");
+  // The choice of drawing shows each outline, so the player sees it before starting.
+  themeList.insertAdjacentHTML("beforeend", Object.entries(themes).map(([key, [name, level, lines]], index) => `
+    <label class="lag-theme">
+      <input type="radio" name="lag-theme" value="${key}"${index === 3 ? " checked" : ""}>
+      <svg viewBox="0 0 320 240" aria-hidden="true" focusable="false"><path d="${lines}"/></svg>
+      <span class="lag-theme-name">${name}</span>
+      <span class="lag-theme-level is-${level === "Fácil" ? "easy" : level === "Médio" ? "mid" : "hard"}">${level}</span>
+    </label>`).join(""));
+  const chosenTheme = () => themeList.querySelector("input:checked")?.value ?? "arcos";
   const play = get("play-lag");
   const game = get("lag-game");
   const library = get("game-library");
@@ -49,7 +66,7 @@
   }
 
   function drawReference() {
-    const [name, lines] = themes[get("lag-theme").value];
+    const [name, , lines] = themes[chosenTheme()];
     reference.setAttribute("aria-label", name);
     model.clearRect(0, 0, width, height);
     Object.assign(model, { strokeStyle: "#28596b", lineWidth: 6, lineCap: "round", lineJoin: "round" });
