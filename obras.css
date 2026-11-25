@@ -1,7 +1,18 @@
-/* Tela em Obras: the building site with Pepi as the foreman, the bricks (Lego-like, one
-   colour per kind of block), the app screen where they are stacked, and the audit. */
+/* Tela em Obras: the building site with Pepi as the foreman; the intro that teaches the
+   recipe of an empty state and the idea of a badge (what a screen reader knows); the
+   round, with the pieces shown as they look, grouped by kind, and the app screen they
+   are stacked on; and the inspection, with pins on the screen and a screen reader that
+   can be listened to. One colour per kind of piece, used only as a cue. */
 
-.obra-game { padding: clamp(18px, 3vw, 34px); }
+.obra-game {
+  --obra-heading: #2f6fc4;
+  --obra-text: #2b7f57;
+  --obra-image: #d39a12;
+  --obra-action: #c2346f;
+  --obra-field: #7a52bd;
+  --obra-ink: #1c2b40;
+  padding: clamp(18px, 3vw, 34px);
+}
 
 /* ---------- The building site: hazard stripes, Pepi and his speech bubble ---------- */
 
@@ -28,7 +39,7 @@
   display: grid;
   gap: 2px;
   width: max-content;
-  max-width: min(460px, calc(100% - 150px));
+  max-width: min(520px, calc(100% - 150px));
   margin: 0;
   padding: 8px 12px;
   border: 2px solid #3b2838;
@@ -41,131 +52,242 @@
 .obra-bubble strong { color: #b52f68; font: 700 .68rem var(--mono); }
 .obra-bubble::after { content: ""; position: absolute; top: 16px; right: 100%; border: 9px solid #0000; border-right-color: #3b2838; }
 
-/* ---------- Intro ---------- */
+/* While a screen is being built, the building site shrinks so the board fits. */
+.obra-game:has(.obra-round:not([hidden])) .obra-site { height: 74px; }
+.obra-game:has(.obra-round:not([hidden])) .obra-host { --pepi-px: 1.1; bottom: 8px; }
+.obra-game:has(.obra-round:not([hidden])) .obra-bubble { top: 10px; left: 96px; padding: 5px 10px; font-size: .84rem; }
+.obra-game:has(.obra-round:not([hidden])) .obra-bubble strong { display: none; }
+.obra-game:has(.obra-round:not([hidden])) .obra-round { margin-top: 12px; }
+
+/* ---------- Shared pieces: the badge and how each piece looks ---------- */
+
+/* The badge: a dark tag with what a screen reader knows. Plain words by default; the
+   code shows instead when "Ver código" is on. */
+.obra-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  max-width: 100%;
+  padding: 3px 8px 3px 6px;
+  border-radius: 6px;
+  color: #fff;
+  background: var(--obra-ink);
+  font: 650 .72rem/1.3 var(--mono);
+  text-align: left;
+}
+.obra-badge svg { flex: none; width: 12px; height: 12px; color: #ffd166; }
+.obra-badge-plain { font-family: "MuseoModerno", "Segoe UI", system-ui, sans-serif; font-weight: 700; letter-spacing: .01em; overflow-wrap: anywhere; }
+.obra-alt { display: -webkit-box; max-width: 100%; overflow: hidden; color: #56657a; font-size: .74rem; font-style: italic; line-height: 1.35; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.obra-game.show-code .obra-alt, .obra-game.hide-badges .obra-alt { display: none; }
+.obra-badge-code { display: none; color: #ffd166; font: inherit; overflow-wrap: anywhere; }
+.obra-game.show-code .obra-badge-plain { display: none; }
+.obra-game.show-code .obra-badge-code { display: inline; }
+.obra-game.hide-badges :is(.obra-card, .obra-placed, .obra-page-h1) .obra-badge { display: none; }
+
+/* What a piece looks like on the screen (also used in the inspection). */
+.obra-view-art svg { display: block; width: 84px; height: auto; }
+.obra-view-heading { margin: 0; color: var(--obra-ink); font-weight: 750; letter-spacing: -.02em; line-height: 1.2; }
+.obra-view-heading.is-h1 { font-size: 1.5rem; }
+.obra-view-heading.is-h2 { font-size: 1.2rem; }
+.obra-view-heading.is-h3 { font-size: 1.05rem; }
+.obra-view-heading.is-h4 { font-size: .9rem; }
+.obra-view-fake { margin: 0; color: var(--obra-ink); font-weight: 750; font-size: 1.2rem; letter-spacing: -.02em; line-height: 1.2; }
+.obra-view-fake.is-span { letter-spacing: .06em; }
+.obra-view-text { max-width: 36ch; margin: 0; color: #56657a; line-height: 1.5; }
+.obra-view-button { display: inline-block; padding: 9px 18px; border-radius: 9px; color: #fff; background: #2056a4; font-weight: 700; line-height: 1.2; }
+.obra-view-field { display: grid; gap: 4px; width: min(100%, 300px); text-align: left; }
+.obra-view-field small { color: var(--obra-ink); font-weight: 700; font-size: .78rem; }
+.obra-view-field > span { display: flex; align-items: center; gap: 6px; padding: 8px 10px; border: 1.5px solid #9fb0c4; border-radius: 8px; background: #fff; color: var(--obra-ink); }
+.obra-view-field svg { flex: none; width: 15px; height: 15px; color: #7b8aa0; }
+.obra-view-none { margin: 0; color: var(--muted); font-style: italic; }
+
+/* ---------- Intro: the recipe, the badges and how to play ---------- */
 
 .obra-intro, .obra-round, .obra-audit, .obra-results { margin-top: 18px; }
-.obra-intro { display: grid; gap: 10px; max-width: 76ch; }
+.obra-intro { display: grid; gap: 16px; }
 .obra-intro h3, .obra-audit h3, .obra-results h3 { font-size: 1.3rem; letter-spacing: -.02em; }
-.obra-intro p { color: var(--muted); line-height: 1.6; }
-.obra-intro .primary-button { justify-self: start; margin-top: 4px; }
-.obra-criteria { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 10px; }
-.obra-criteria div { padding: 10px 14px; border: 1px solid var(--line); border-radius: 10px; background: #fff; }
-.obra-criteria h4 { margin: 0 0 6px; font: 700 .75rem var(--mono); letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
-.obra-criteria ul { display: grid; gap: 4px; margin: 0; padding-left: 18px; }
-.obra-goal { padding: 8px 12px; border-left: 4px solid #2f9e6b; border-radius: 6px; background: #eaf7f0; color: var(--navy) !important; }
+.obra-intro-lead { display: grid; gap: 6px; max-width: 72ch; }
+.obra-intro-lead p { color: var(--muted); line-height: 1.6; }
+.obra-learn { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.obra-lesson-card { display: grid; align-content: start; gap: 10px; margin: 0; padding: 14px 16px 16px; border: 1px solid var(--line); border-radius: 14px; background: #fff; }
+.obra-lesson-card figcaption { display: flex; align-items: center; gap: 8px; font-weight: 750; }
+.obra-chip { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; color: #3a2a05; background: #f6c445; font: 800 .78rem var(--mono); }
+.obra-lesson-text { margin: 0; color: var(--muted); font-size: .92rem; line-height: 1.55; }
 
-/* ---------- The round: pieces on the left, the app screen on the right ---------- */
+/* The recipe: a little empty state, each part lighting up with its step in turn. */
+.obra-recipe { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1fr); gap: 14px; align-items: center; }
+.obra-recipe-screen { display: grid; justify-items: center; gap: 6px; padding: 14px 10px; border: 1px solid #d5dde6; border-radius: 10px; background: #fafcff; text-align: center; counter-reset: part; }
+.obra-recipe-screen > * { position: relative; padding: 2px 6px; border-radius: 6px; font-style: normal; text-decoration: none; animation: obra-spot 8s infinite; }
+.obra-recipe-screen > :nth-child(2), .obra-recipe-steps li:nth-child(2) { animation-delay: 2s; }
+.obra-recipe-screen > :nth-child(3), .obra-recipe-steps li:nth-child(3) { animation-delay: 4s; }
+.obra-recipe-screen > :nth-child(4), .obra-recipe-steps li:nth-child(4) { animation-delay: 6s; }
+.obra-recipe-art svg { display: block; width: 46px; height: auto; }
+.obra-recipe-screen b { color: var(--obra-ink); font-size: .95rem; }
+.obra-recipe-screen i { color: #56657a; font-size: .74rem; line-height: 1.4; }
+.obra-recipe-screen u { padding: 5px 12px; color: #fff; background: #2056a4; font-weight: 700; font-size: .76rem; }
+.obra-recipe-steps { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; counter-reset: step; }
+.obra-recipe-steps li { position: relative; padding: 6px 8px 6px 36px; border-radius: 8px; font-size: .86rem; line-height: 1.4; counter-increment: step; animation: obra-spot 8s infinite; }
+.obra-recipe-steps li::before { content: counter(step); position: absolute; left: 8px; top: 6px; display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; color: #fff; background: var(--obra-ink); font: 800 .7rem var(--mono); }
+@keyframes obra-spot {
+  0%, 25% { background-color: #fff3c8; box-shadow: 0 0 0 2px #f6c445; }
+  30%, 100% { background-color: #0000; box-shadow: 0 0 0 0 #f6c44500; }
+}
 
-.obra-hud { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font: 650 .82rem var(--mono); }
-.obra-hud > span { padding: 5px 10px; border-radius: 999px; background: #eef2f6; }
-.obra-brief { font-family: inherit; font-weight: 500; }
-.obra-brief strong { font-weight: 750; }
-#obra-clock { margin-left: auto; min-width: 6ch; color: #fff; background: var(--navy); text-align: center; font-variant-numeric: tabular-nums; }
-.obra-timer { height: 8px; margin: 10px 0 12px; overflow: hidden; border-radius: 999px; background: #e3e9f0; }
+/* Two buttons that look the same and wear different badges. */
+.obra-twins { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.obra-twins > div { display: grid; justify-items: center; gap: 8px; padding: 12px 8px; border: 1px dashed #c8d2de; border-radius: 10px; background: #fafcff; text-align: center; }
+.obra-twins small { font-size: .78rem; line-height: 1.4; font-weight: 600; }
+.obra-twins .is-ok { color: #1f7a52; }
+.obra-twins .is-bad { color: #b3402a; }
+
+.obra-how { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 0; padding: 0; list-style: none; }
+.obra-how li { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 12px; background: #eef3f9; }
+.obra-how span { flex: none; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 8px; color: #fff; background: var(--obra-heading); font: 800 .85rem var(--mono); }
+.obra-how p { margin: 0; font-size: .9rem; line-height: 1.45; }
+.obra-start { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+.obra-goal { margin: 0; padding: 8px 12px; border-left: 4px solid #2f9e6b; border-radius: 6px; background: #eaf7f0; color: var(--navy); }
+
+/* ---------- The round ---------- */
+
+.obra-hud { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.obra-step-label { font: 700 .78rem var(--mono); letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+.obra-step-label:focus { outline: none; }
+.obra-steps { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.obra-steps li { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px 4px 4px; border-radius: 999px; color: var(--muted); background: #eef2f6; font-size: .8rem; font-weight: 650; }
+.obra-steps span { display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; color: var(--muted); background: #fff; font: 800 .7rem var(--mono); }
+.obra-steps .is-now { color: #3a2a05; background: #ffe7a3; }
+.obra-steps .is-now span { color: #3a2a05; background: #f6c445; }
+.obra-steps .is-done { color: #1f7a52; background: #e3f4eb; }
+.obra-steps .is-done span { color: #fff; background: #2f9e6b; }
+.obra-clock-wrap { display: inline-flex; align-items: center; gap: 6px; margin-left: auto; padding: 5px 12px; border-radius: 999px; color: #fff; background: var(--navy); font: 700 .9rem var(--mono); font-variant-numeric: tabular-nums; }
+.obra-clock-wrap svg { width: 16px; height: 16px; }
+#obra-clock { display: inline-block; min-width: 3.5ch; text-align: right; }
+.obra-round.is-tight .obra-clock-wrap { background: #c2344f; }
+.obra-brief { margin: 10px 0 0; font-size: 1rem; }
+.obra-brief strong { margin-right: 4px; font-weight: 800; }
+.obra-timer { height: 8px; margin: 8px 0 14px; overflow: hidden; border-radius: 999px; background: #e3e9f0; }
 .obra-timer i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #2f9e6b, #63c6a1); transform-origin: left; }
-.obra-timer.is-tight i { background: linear-gradient(90deg, #d33a50, #e0742c); }
+.obra-round.is-tight .obra-timer i { background: linear-gradient(90deg, #d33a50, #e0742c); }
 
-.obra-board { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 16px; align-items: start; }
-.obra-bin { padding: 12px; border: 1px solid var(--line); border-radius: 12px; background: #f6f8fb; }
-.obra-bin h3 { margin: 0; font: 700 .75rem var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
-.obra-hint { margin: 2px 0 10px; color: var(--muted); font-size: .82rem; }
-.obra-palette { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 190px), 1fr)); gap: 14px 10px; margin: 0; padding: 8px 0 0; list-style: none; }
-.obra-palette li { display: grid; }
+.obra-board { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+.obra-panel-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 12px; margin-bottom: 10px; }
+.obra-panel-head h3 { margin: 0; font-size: 1.05rem; letter-spacing: -.01em; }
+.obra-hint { margin: 0; color: var(--muted); font-size: .84rem; }
+.obra-bin { padding: 14px; border: 1px solid var(--line); border-radius: 14px; background: #f6f8fb; }
+.obra-palette { display: grid; gap: 8px; }
 
-/* A brick: a coloured block with studs on top, the kind, the HTML tag and the content. */
-.obra-brick {
-  --brick: #2f6fc4;
-  --brick-dark: #1d4c8c;
-  --brick-ink: #fff;
+/* A row per kind of piece: what that kind is for, and the pieces to choose from. */
+.obra-row { --kind: var(--obra-heading); padding: 8px 10px 10px; border: 1px solid #e1e7ef; border-radius: 12px; background: #fff; transition: border-color .2s, box-shadow .2s; }
+.obra-row.is-text { --kind: var(--obra-text); }
+.obra-row.is-image { --kind: var(--obra-image); }
+.obra-row.is-action { --kind: var(--obra-action); }
+.obra-row.is-field { --kind: var(--obra-field); }
+.obra-row.is-done { border-color: color-mix(in srgb, var(--kind) 45%, #fff); box-shadow: inset 4px 0 0 var(--kind); }
+.obra-row header { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; margin-bottom: 6px; }
+.obra-row-icon { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 7px; color: #fff; background: var(--kind); }
+.obra-row-icon svg { width: 16px; height: 16px; }
+.obra-row h4 { margin: 0; font-size: .95rem; }
+.obra-row small { color: var(--muted); font-size: .8rem; }
+.obra-row-state { margin-left: auto; padding: 2px 8px; border-radius: 999px; color: var(--muted); background: #eef2f6; font: 700 .7rem var(--mono); }
+.obra-row.is-done .obra-row-state { color: #fff; background: var(--kind); }
+.obra-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 132px), 1fr)); gap: 8px; margin: 0; padding: 0; list-style: none; }
+.obra-cards li { display: grid; }
+
+/* A card: the piece as it looks, and its badge. */
+.obra-card {
+  --kind: var(--obra-heading);
   position: relative;
   display: grid;
-  gap: 4px;
+  grid-template-rows: 1fr auto;
+  gap: 6px;
   width: 100%;
-  min-height: 58px;
-  margin-top: 6px;
-  padding: 8px 10px 9px;
-  border: 0;
-  border-radius: 6px;
-  color: var(--brick-ink);
-  background: var(--brick);
-  box-shadow: inset 0 -5px 0 var(--brick-dark), 0 2px 0 #14284222;
+  padding: 8px;
+  border: 1.5px solid #dbe3ec;
+  border-radius: 10px;
+  color: inherit;
+  background: #fbfcfe;
   font: inherit;
-  text-align: left;
+  text-align: center;
   cursor: grab;
   touch-action: none;
   user-select: none;
+  transition: border-color .15s, box-shadow .15s, translate .15s;
 }
-.obra-brick::before {
-  content: "";
-  position: absolute;
-  top: -6px;
-  left: 12px;
-  width: 54px;
-  height: 7px;
-  border-radius: 3px 3px 0 0;
-  background: radial-gradient(circle at 7px 7px, var(--brick) 0 6px, #0000 6.5px) 0 0 / 20px 7px repeat-x;
-}
-.obra-brick.is-heading { --brick: #2f6fc4; --brick-dark: #1d4c8c; }
-.obra-brick.is-text { --brick: #2b7f57; --brick-dark: #1c5a3d; }
-.obra-brick.is-image { --brick: #f2c54b; --brick-dark: #c59a24; --brick-ink: #3a2a05; }
-.obra-brick.is-action { --brick: #c2346f; --brick-dark: #8f2553; }
-.obra-brick.is-field { --brick: #7a52bd; --brick-dark: #553594; }
-button.obra-brick:hover { filter: brightness(1.06); translate: 0 -2px; }
-button.obra-brick:focus-visible, .obra-controls button:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
-.obra-brick-head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
-.obra-kind { font: 800 .68rem var(--mono); letter-spacing: .05em; text-transform: uppercase; opacity: .9; }
-.obra-tag { padding: 1px 6px; border-radius: 5px; color: var(--navy); background: #ffffffe6; font: 700 .72rem var(--mono); }
-.obra-text { font-weight: 600; font-size: .88rem; line-height: 1.35; overflow-wrap: anywhere; }
+.obra-card.is-text { --kind: var(--obra-text); }
+.obra-card.is-image { --kind: var(--obra-image); }
+.obra-card.is-action { --kind: var(--obra-action); }
+.obra-card.is-field { --kind: var(--obra-field); }
+.obra-card:hover { border-color: var(--kind); box-shadow: 0 6px 14px #1428421a; translate: 0 -2px; }
+.obra-card[aria-pressed="true"] { border-color: var(--kind); background: color-mix(in srgb, var(--kind) 9%, #fff); box-shadow: 0 0 0 2px var(--kind); }
+.obra-card:focus-visible, .obra-controls button:focus-visible, .obra-toggle:focus-visible, .obra-listen:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+.obra-card .obra-look { display: grid; place-items: center; min-height: 44px; }
+.obra-card .obra-view-heading.is-h1, .obra-card .obra-view-fake { font-size: 1.15rem; }
+.obra-card .obra-view-heading.is-h2 { font-size: 1rem; }
+.obra-card .obra-view-heading.is-h3 { font-size: .9rem; }
+.obra-card .obra-view-heading.is-h4 { font-size: .78rem; }
+.obra-card .obra-view-text { font-size: .76rem; line-height: 1.35; }
+.obra-card .obra-view-art svg { width: 40px; }
+.obra-card .obra-view-button { padding: 7px 14px; font-size: .85rem; }
+.obra-card .obra-view-field { font-size: .82rem; }
+.obra-card .obra-badge { justify-self: center; }
+.obra-card-on { position: absolute; top: -8px; right: -8px; display: grid; place-items: center; width: 22px; height: 22px; border: 2px solid #fff; border-radius: 50%; color: #fff; background: var(--kind); font: 800 .7rem var(--mono); }
 .obra-brick.is-lifted { opacity: .35; }
-.obra-ghost { position: fixed; z-index: 9999; margin: 0; pointer-events: none; rotate: -2deg; box-shadow: inset 0 -5px 0 var(--brick-dark), 0 14px 26px #14284240; list-style: none; }
+.obra-ghost { position: fixed; z-index: 9999; margin: 0; pointer-events: none; rotate: -2deg; box-shadow: 0 16px 30px #14284240; list-style: none; }
 .obra-game.is-dragging, .obra-game.is-dragging * { cursor: grabbing; }
 
-/* The app screen: a browser bar, the page's fixed <h1> and the empty state's stack. */
-.obra-screen { position: relative; overflow: hidden; border: 1px solid #b9c5d2; border-radius: 12px; background: #fff; box-shadow: 0 10px 26px #14284214; transition: box-shadow .15s, border-color .15s; }
-.obra-screen.is-target { border-color: #2f6fc4; box-shadow: 0 0 0 3px #b9d3f3, 0 10px 26px #14284214; }
-.obra-screen-bar { display: flex; align-items: center; gap: 6px; padding: 8px 12px; border-bottom: 1px solid var(--line); background: #f3f6fa; color: var(--muted); font: 600 .75rem var(--mono); }
+/* The app screen: a browser bar, the page's own title and the empty state being built. */
+.obra-side { position: sticky; top: 12px; }
+.obra-toggles { display: flex; gap: 6px; }
+.obra-toggle { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border: 1px solid #cfd8e3; border-radius: 999px; color: var(--muted); background: #fff; font: 650 .78rem var(--mono); cursor: pointer; }
+.obra-toggle svg { width: 14px; height: 14px; }
+.obra-toggle[aria-pressed="true"] { border-color: var(--obra-ink); color: #fff; background: var(--obra-ink); }
+.obra-screen { position: relative; overflow: hidden; border: 1px solid #b9c5d2; border-radius: 14px; background: #fff; box-shadow: 0 12px 28px #14284218; transition: box-shadow .15s, border-color .15s; }
+.obra-screen.is-target { border-color: var(--obra-heading); box-shadow: 0 0 0 4px #b9d3f3, 0 12px 28px #14284218; }
+.obra-screen-bar { display: flex; align-items: center; gap: 6px; padding: 8px 12px; border-bottom: 1px solid var(--line); background: #f3f6fa; color: var(--muted); font: 600 .74rem var(--mono); }
 .obra-screen-bar i { width: 10px; height: 10px; border-radius: 50%; background: #d0d8e2; }
-.obra-screen-bar span { margin-left: 8px; }
-.obra-page-h1 { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-bottom: 1px dashed var(--line); font-weight: 750; font-size: 1.05rem; }
-.obra-page-h1 code { padding: 1px 6px; border-radius: 5px; color: #fff; background: #5d6878; font: 700 .7rem var(--mono); }
-.obra-stage { display: grid; align-content: start; gap: 12px; min-height: 280px; margin: 0; padding: 18px 14px 16px; list-style: none; background: radial-gradient(#c9d5e0 1px, #0000 1.2px) 0 0 / 16px 16px; }
-.obra-stage .obra-brick { grid-template-columns: 1fr auto; align-items: center; cursor: grab; }
-.obra-brick-body { display: grid; gap: 4px; min-width: 0; }
-.obra-controls { display: flex; gap: 4px; }
-.obra-controls button {
-  width: 30px;
-  height: 30px;
-  border: 0;
-  border-radius: 6px;
-  color: var(--navy);
-  background: #ffffffd9;
-  font: 800 .95rem var(--mono);
-  cursor: pointer;
-}
-.obra-controls button:hover { background: #fff; }
+.obra-screen-bar span { overflow: hidden; margin-left: 8px; padding: 2px 10px; border-radius: 999px; background: #fff; text-overflow: ellipsis; white-space: nowrap; }
+.obra-page-h1 { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 10px 14px; border-bottom: 1px dashed var(--line); color: var(--obra-ink); font-weight: 800; font-size: 1.15rem; }
+.obra-page-h1 .obra-badge { background: #5d6878; }
+.obra-stage { display: grid; align-content: start; justify-items: center; gap: 6px; min-height: 300px; margin: 0; padding: 16px 14px 18px; list-style: none; text-align: center; }
+.obra-placed { position: relative; display: grid; justify-items: center; gap: 6px; width: 100%; padding: 10px 44px; border: 1.5px dashed #0000; border-radius: 10px; cursor: grab; touch-action: none; user-select: none; transition: border-color .15s, background-color .15s; }
+.obra-placed:hover, .obra-placed:focus-within { border-color: #c8d2de; background: #f7f9fc; }
+.obra-placed .obra-badge { justify-self: center; }
+.obra-controls { position: absolute; top: 50%; right: 6px; display: grid; gap: 3px; translate: 0 -50%; opacity: .35; transition: opacity .15s; }
+.obra-placed:hover .obra-controls, .obra-placed:focus-within .obra-controls { opacity: 1; }
+.obra-controls button { display: grid; place-items: center; width: 28px; height: 26px; border: 1px solid #cfd8e3; border-radius: 6px; color: var(--navy); background: #fff; font: 800 .85rem var(--mono); cursor: pointer; }
+.obra-controls button:hover:not(:disabled) { border-color: var(--navy); }
+.obra-controls button:disabled { opacity: .3; cursor: default; }
+.obra-controls [data-remove] { color: #b3402a; }
 .obra-stage-empty {
   position: absolute;
-  inset: 100px 14px 16px;
+  inset: 104px 14px 16px;
   display: none;
   place-items: center;
   margin: 0;
+  padding: 20px;
   border: 2px dashed #b9c5d2;
-  border-radius: 10px;
+  border-radius: 12px;
   color: var(--muted);
   font: 650 .9rem var(--mono);
+  text-align: center;
   pointer-events: none;
 }
 .obra-stage.is-empty + .obra-stage-empty { display: grid; }
-.obra-marker { height: 6px; margin: -3px 0; border-radius: 999px; background: #2f6fc4; box-shadow: 0 0 0 3px #b9d3f3; list-style: none; }
-.obra-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 12px; margin-top: 14px; }
-#obra-count { color: var(--muted); font: 650 .82rem var(--mono); }
+.obra-marker { width: 100%; height: 6px; margin: -3px 0; border-radius: 999px; background: var(--obra-heading); box-shadow: 0 0 0 3px #b9d3f3; list-style: none; }
+.obra-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-top: 12px; }
+#obra-count { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); font: 650 .8rem var(--mono); }
+.obra-dots { display: flex; gap: 4px; }
+.obra-dots i { width: 10px; height: 10px; border-radius: 50%; background: #d5dde6; transition: background-color .2s; }
+.obra-dots i.is-on { background: #2f9e6b; }
+#obra-hand-in.is-ready { animation: obra-ready 1.6s ease-in-out infinite; }
+@keyframes obra-ready { 50% { box-shadow: 0 0 0 6px #2056a433; } }
 
-/* ---------- The audit ---------- */
+/* ---------- The inspection ---------- */
 
 .obra-audit-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
 #obra-time-note { margin-top: 2px; color: var(--muted); }
 .obra-score { display: flex; align-items: center; gap: 14px; }
-.obra-score strong { font-size: 2.6rem; letter-spacing: -.04em; line-height: 1; }
+.obra-score strong { font-size: 2.6rem; letter-spacing: -.04em; line-height: 1; font-variant-numeric: tabular-nums; }
 .obra-stamp {
   padding: 6px 12px;
   border: 3px solid currentColor;
@@ -174,55 +296,61 @@ button.obra-brick:focus-visible, .obra-controls button:focus-visible { outline: 
   letter-spacing: .1em;
   text-transform: uppercase;
   rotate: -8deg;
+  opacity: 0;
 }
+.obra-stamp.is-in { opacity: 1; }
 .obra-stamp.is-good { color: #1f7a52; background: #eaf7f0; }
 .obra-stamp.is-fix { color: #b3402a; background: #fff1ea; }
 .obra-audit-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-top: 14px; }
-.obra-panel { margin: 0; padding: 12px; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
-.obra-panel figcaption { margin-bottom: 8px; font-weight: 700; }
+.obra-panel { margin: 0; padding: 12px; border: 1px solid var(--line); border-radius: 14px; background: #fff; }
+.obra-panel figcaption { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 10px; margin-bottom: 10px; font-weight: 750; }
+.obra-panel figcaption small { flex-basis: 100%; color: var(--muted); font-weight: 500; font-size: .82rem; }
+.obra-panel.is-reader { color: #e9f1fb; background: #16233a; border-color: #16233a; }
 
-/* The finished empty state, as a person would see it. */
+/* The finished screen, as a person would see it, with pins on what failed. */
 .obra-view { overflow: hidden; border: 1px solid #d5dde6; border-radius: 10px; }
-.obra-view-bar { padding: 8px 12px; border-bottom: 1px solid #e3e9f0; background: #f7f9fc; font-weight: 750; }
-.obra-view-body { display: grid; justify-items: center; gap: 8px; padding: 18px 16px 20px; text-align: center; }
-.obra-view-art svg { width: 84px; height: auto; }
-.obra-view-heading { margin: 0; font-weight: 750; letter-spacing: -.02em; }
-.obra-view-heading.is-h1 { font-size: 1.5rem; }
-.obra-view-heading.is-h2 { font-size: 1.2rem; }
-.obra-view-heading.is-h3 { font-size: 1.05rem; }
-.obra-view-heading.is-h4 { font-size: .95rem; }
-.obra-view-fake { margin: 0; font-weight: 800; font-size: 1.15rem; }
-.obra-view-fake.is-span { letter-spacing: .06em; }
-.obra-view-text { max-width: 36ch; margin: 0; color: var(--muted); line-height: 1.5; }
-.obra-view-button, .obra-view-div { padding: 9px 16px; border-radius: 9px; color: #fff; background: #2056a4; font-weight: 700; }
-.obra-view-div { background: #7f8ea1; }
-.obra-view-field { display: grid; gap: 3px; justify-self: stretch; text-align: left; }
-.obra-view-field small { color: var(--muted); font-weight: 650; }
-.obra-view-field span { padding: 8px 10px; border: 1px solid #b9c5d2; border-radius: 8px; }
-.obra-view-none { margin: 0; color: var(--muted); font-style: italic; }
+.obra-view-bar { padding: 8px 12px; border-bottom: 1px solid #e3e9f0; background: #f7f9fc; color: var(--obra-ink); font-weight: 800; transition: background-color .2s; }
+.obra-view-body { display: grid; justify-items: center; gap: 6px; padding: 16px 16px 20px; text-align: center; }
+.obra-view-item { position: relative; display: grid; justify-items: center; width: 100%; padding: 6px; border-radius: 8px; transition: background-color .2s, box-shadow .2s; }
+.obra-view-item.is-flagged { box-shadow: inset 0 0 0 2px #f3b6c2; background: #fff7f9; }
+.obra-pins { position: absolute; top: -8px; right: -6px; display: flex; gap: 3px; }
+.obra-pin { display: grid; place-items: center; width: 22px; height: 22px; border: 2px solid #fff; border-radius: 50% 50% 50% 0; color: #fff; background: #c2344f; font: 800 .68rem var(--mono); box-shadow: 0 2px 4px #0003; }
+.obra-view-item.is-reading, .obra-view-bar.is-reading { background: #fff3c8; box-shadow: inset 0 0 0 2px #f6c445; }
 
 /* What the screen reader says, one announcement per line. */
+.obra-listen { padding: 6px 12px; border: 0; border-radius: 999px; color: #16233a; background: #ffd166; font: 700 .78rem var(--mono); cursor: pointer; }
+.obra-listen:hover { background: #ffe199; }
 .obra-reader { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; counter-reset: said; }
 .obra-reader li {
   position: relative;
+  display: grid;
+  gap: 2px;
   padding: 7px 10px 7px 36px;
   border-radius: 8px;
   color: #e9f1fb;
-  background: #1b2a40;
+  background: #22334f;
   font: .82rem/1.45 var(--mono);
   counter-increment: said;
+  transition: background-color .2s, color .2s;
 }
-.obra-reader li::before { content: counter(said); position: absolute; left: 10px; top: 7px; color: #8fb3e0; font-weight: 700; }
+.obra-reader li::before { content: counter(said); position: absolute; left: 12px; top: 7px; color: #8fb3e0; font-weight: 700; }
+.obra-reader small { color: #ffb4a8; font-size: .74rem; }
+.obra-reader .is-skipped { color: #8fa3bf; font-style: italic; }
+.obra-reader li.is-reading { color: #16233a; background: #ffd166; }
+.obra-reader li.is-reading::before, .obra-reader li.is-reading small { color: #16233a; }
 
 .obra-checklist { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin: 14px 0; padding: 0; list-style: none; }
-.obra-check-group h4 { margin: 0 0 8px; font: 700 .75rem var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.obra-check-group h4 { margin: 0 0 8px; font: 700 .74rem var(--mono); letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
 .obra-check-group ul { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
-.obra-check-group li { display: flex; gap: 10px; padding: 9px 11px; border: 1px solid var(--line); border-radius: 10px; background: #fff; }
+.obra-check-group li { display: flex; gap: 10px; padding: 9px 11px; border: 1px solid var(--line); border-radius: 10px; background: #fff; opacity: 0; translate: 0 8px; transition: opacity .25s, translate .25s; }
+.obra-check-group li.is-in { opacity: 1; translate: none; }
 .obra-check-group li.is-bad { border-color: #f3b6c2; background: #fff7f9; }
-.obra-check-group p { margin-top: 2px; color: var(--muted); font-size: .86rem; line-height: 1.45; }
-.obra-mark { display: grid; flex: none; place-items: center; width: 22px; height: 22px; border-radius: 50%; color: #fff; font: 800 .75rem var(--mono); }
+.obra-check-group strong { margin-right: 6px; }
+.obra-check-group code { padding: 1px 6px; border-radius: 5px; color: #56657a; background: #eef2f6; font: 650 .7rem var(--mono); white-space: nowrap; }
+.obra-check-group p { margin-top: 3px; color: var(--muted); font-size: .86rem; line-height: 1.45; }
+.obra-mark { display: grid; flex: none; place-items: center; width: 22px; height: 22px; border-radius: 50%; color: #fff; font: 800 .72rem var(--mono); }
 .is-ok > .obra-mark { background: #287b66; }
-.is-bad > .obra-mark { background: #c2344f; }
+.is-bad > .obra-mark { border-radius: 50% 50% 50% 0; background: #c2344f; }
 
 /* ---------- Final results ---------- */
 
@@ -237,12 +365,16 @@ button.obra-brick:focus-visible, .obra-controls button:focus-visible { outline: 
 .obra-bar { display: grid; grid-template-columns: 9.5em 1fr 3.5em; align-items: center; gap: 10px; }
 .obra-bar-label { font-weight: 650; font-size: .9rem; }
 .obra-bar-track { height: 14px; overflow: hidden; border-radius: 4px; background: #eef2f6; }
-.obra-bar-fill { display: block; width: calc(var(--share) * 100%); height: 100%; border-radius: 4px; background: #2f6fc4; }
+.obra-bar-fill { display: block; width: calc(var(--share) * 100%); height: 100%; border-radius: 4px; background: #2f6fc4; transform-origin: left; }
 .obra-bar-value { font: 700 .85rem var(--mono); font-variant-numeric: tabular-nums; text-align: right; }
 .obra-lesson { max-width: 80ch; margin: 16px 0; line-height: 1.6; }
 
-@media (max-width: 860px) {
-  .obra-board, .obra-audit-grid, .obra-checklist { grid-template-columns: 1fr; }
+@media (max-width: 960px) {
+  .obra-board, .obra-audit-grid, .obra-checklist, .obra-learn { grid-template-columns: 1fr; }
+  .obra-side { position: static; }
+}
+@media (max-width: 700px) {
+  .obra-how, .obra-recipe { grid-template-columns: 1fr; }
   .obra-bubble { left: 100px; font-size: .82rem; }
   .obra-host { left: 10px; --pepi-px: 1.4; }
   .obra-final-row { grid-template-columns: 1fr; }
@@ -252,9 +384,10 @@ button.obra-brick:focus-visible, .obra-controls button:focus-visible { outline: 
   .obra-site { height: 96px; }
   .obra-host { --pepi-px: 1.4; bottom: 8px; }
   .obra-bubble { top: 12px; left: 108px; padding: 6px 10px; font-size: .85rem; }
-  .obra-stage { min-height: 230px; }
-  .obra-brick { min-height: 50px; padding: 6px 9px 8px; }
+  .obra-stage { min-height: 260px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  button.obra-brick:hover { translate: none; }
+  .obra-card:hover { translate: none; }
+  .obra-recipe-screen > *, .obra-recipe-steps li, #obra-hand-in.is-ready { animation: none; }
+  .obra-check-group li { transition: none; }
 }
