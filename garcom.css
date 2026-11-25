@@ -1,0 +1,326 @@
+/* Garçom Relâmpago: the dining room with Pepi as the waiter, the order ticket, the
+   table's patience, the menu (with category filters in the last round) and the results. */
+
+.waiter-game { padding: clamp(18px, 3vw, 34px); }
+
+/* ---------- The dining room ---------- */
+
+.waiter-room {
+  position: relative;
+  height: 160px;
+  margin-top: 12px;
+  overflow: hidden;
+  border: 1px solid #d8c3a0;
+  border-radius: 14px;
+  background:
+    repeating-linear-gradient(90deg, #00000009 0 2px, #0000 2px 46px) top / 100% 64% no-repeat,
+    linear-gradient(#fff6e6, #fbe6c6) top / 100% 64% no-repeat,
+    repeating-conic-gradient(#e6c391 0 25%, #d6ae79 0 50%) 0 100% / 32px 32px;
+}
+/* Festive bunting along the top. */
+.waiter-room::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 16px;
+  background: repeating-linear-gradient(90deg, #e4405f 0 24px, #edc45b 24px 48px, #2f6fc4 48px 72px, #63c6a1 72px 96px);
+  mask: conic-gradient(from 135deg at top, #000 90deg, #0000 0) top / 24px 100%;
+}
+.waiter-counter {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 150px;
+  height: 58px;
+  border-top: 8px solid #c98a5c;
+  border-radius: 0 10px 0 0;
+  background: repeating-linear-gradient(90deg, #8a5a3c 0 28px, #7d5034 28px 30px);
+}
+.waiter-counter span {
+  position: absolute;
+  bottom: 92px;
+  left: 16px;
+  padding: 4px 10px;
+  border: 3px solid #a0703f;
+  border-radius: 4px;
+  color: #fff;
+  background: #2f3a2f;
+  font: 700 .72rem var(--mono);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.waiter-host { position: absolute; left: 142px; bottom: 8px; z-index: 2; --pepi-px: 1.7; }
+.waiter-pepi .pepi-art {
+  filter: drop-shadow(1.5px 0 0 #fff) drop-shadow(-1.5px 0 0 #fff) drop-shadow(0 1.5px 0 #fff) drop-shadow(0 -1.5px 0 #fff);
+}
+.waiter-props { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.waiter-dish { position: absolute; left: 83%; bottom: 31.5%; width: calc(9px * var(--pepi-px)); filter: drop-shadow(0 0 2px #fff); }
+.waiter-dish svg, .waiter-served svg, .waiter-group-icon svg { display: block; width: 100%; height: auto; }
+
+.waiter-bubble {
+  position: absolute;
+  top: 26px;
+  left: 238px;
+  z-index: 3;
+  display: grid;
+  gap: 2px;
+  width: max-content;
+  max-width: min(300px, calc(100% - 640px));
+  min-width: 170px;
+  margin: 0;
+  padding: 8px 12px;
+  border: 2px solid #3b2838;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 3px 0 #3b2838;
+  font-size: .92rem;
+  line-height: 1.4;
+}
+.waiter-bubble strong { color: #b52f68; font: 700 .68rem var(--mono); }
+.waiter-bubble::after {
+  content: "";
+  position: absolute;
+  top: 16px;
+  right: 100%;
+  border: 9px solid #0000;
+  border-right-color: #3b2838;
+}
+
+.waiter-tables {
+  position: absolute;
+  left: 560px;
+  right: 14px;
+  bottom: 4px;
+  display: flex;
+  justify-content: space-around;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.waiter-table-spot { position: relative; display: grid; justify-items: center; width: 78px; }
+.waiter-table-spot canvas { width: 58px; height: 71px; image-rendering: pixelated; transition: filter .2s; }
+.waiter-table-top {
+  position: relative;
+  width: 78px;
+  height: 12px;
+  margin-top: -14px;
+  border-top: 4px solid #e0a477;
+  border-radius: 3px;
+  background: #b77b52;
+  box-shadow: 0 6px 0 -2px #6b452c;
+}
+.waiter-served { position: absolute; left: 50%; bottom: 100%; width: 22px; translate: -50% 0; opacity: 0; }
+.is-served .waiter-served { animation: waiter-plate 2.2s ease forwards; }
+.waiter-table-number { margin-top: 5px; color: #6b452c; font: 700 .7rem var(--mono); }
+.waiter-call {
+  position: absolute;
+  top: -2px;
+  right: 2px;
+  z-index: 1;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  color: #fff;
+  background: #e4405f;
+  font: 800 .85rem/22px var(--mono);
+  text-align: center;
+  opacity: 0;
+  scale: .4;
+  transition: opacity .2s, scale .2s;
+}
+.is-ordering .waiter-call { opacity: 1; scale: 1; animation: waiter-call .5s ease-in-out infinite alternate; }
+.is-ordering canvas { filter: drop-shadow(0 0 5px #ffcf5a); }
+
+/* ---------- Intro, order ticket and menu ---------- */
+
+.waiter-intro, .waiter-round, .waiter-results { margin-top: 18px; }
+.waiter-intro { display: grid; gap: 10px; max-width: 72ch; }
+.waiter-intro h3, .waiter-results h3 { font-size: 1.3rem; letter-spacing: -.02em; }
+.waiter-intro p { color: var(--muted); line-height: 1.6; }
+.waiter-intro .primary-button { justify-self: start; margin-top: 4px; }
+
+.waiter-hud { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font: 650 .82rem var(--mono); }
+.waiter-hud span { padding: 5px 10px; border-radius: 999px; background: #eef2f6; }
+.waiter-hud span:empty { display: none; }
+#waiter-clock { margin-left: auto; min-width: 7ch; color: #fff; background: var(--navy); text-align: center; font-variant-numeric: tabular-nums; }
+.waiter-ticket {
+  margin: 12px 0;
+  padding: 12px 16px;
+  border: 2px dashed #e0b97f;
+  border-radius: 10px;
+  background: #fff8ea;
+  font-size: 1.1rem;
+}
+.waiter-ticket strong { font-size: 1.35rem; letter-spacing: -.02em; }
+.waiter-ticket.is-announce { border-color: var(--line); background: #f3f6fa; }
+.waiter-ticket.is-announce strong { font-size: inherit; }
+
+.waiter-menu { display: grid; grid-template-columns: repeat(var(--columns, 4), minmax(0, 1fr)); gap: 8px; }
+.waiter-item {
+  min-height: 44px;
+  padding: 8px 10px;
+  border: 1px solid #d8c8a8;
+  border-radius: 8px;
+  color: var(--navy);
+  background: #fffdf8;
+  box-shadow: 0 2px 0 #e3d4b5;
+  font: 600 .9rem/1.2 inherit;
+  cursor: pointer;
+}
+.waiter-item:hover { border-color: #c9a66b; background: #fff3dc; }
+.waiter-item:active { translate: 0 1px; box-shadow: 0 1px 0 #e3d4b5; }
+.waiter-item:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+.waiter-item.is-right { border-color: #287b66; background: #dff3ea; box-shadow: 0 2px 0 #287b66; }
+.waiter-item.is-wrong { border-color: #e4405f; background: #ffe3e8; animation: waiter-shake .3s; }
+
+/* The table's patience: drains in 7 s and turns orange near the end. */
+.waiter-patience { height: 8px; margin: 10px 0 0; overflow: hidden; border-radius: 999px; background: #efe3cf; }
+.waiter-patience i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #2f9e6b, #63c6a1); transform-origin: left; }
+.waiter-patience.is-tight i { background: linear-gradient(90deg, #d33a50, #e0742c); }
+
+/* The filter round: a chip per category above the same 32 options. */
+.waiter-filters { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 10px; }
+.waiter-filter-label { color: var(--muted); font: 700 .75rem var(--mono); letter-spacing: .05em; text-transform: uppercase; }
+.waiter-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 38px;
+  padding: 6px 14px;
+  border: 2px solid var(--tone, #9fb4c8);
+  border-radius: 999px;
+  color: var(--navy);
+  background: #fff;
+  font: 650 .88rem inherit;
+  cursor: pointer;
+}
+.waiter-filter .waiter-group-icon { width: 18px; }
+.waiter-filter:hover { background: #f6f1e7; }
+.waiter-filter:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+.waiter-filter[aria-pressed="true"] { color: #fff; background: var(--tone, var(--navy)); border-color: var(--tone, var(--navy)); }
+.waiter-filter[aria-pressed="true"] .waiter-group-icon { filter: drop-shadow(0 0 1px #fff) drop-shadow(0 0 1px #fff); }
+.waiter-filter.is-salgado { --tone: #b8691f; }
+.waiter-filter.is-doce { --tone: #c2346f; }
+.waiter-filter.is-bebida { --tone: #2f6fc4; }
+.waiter-filter.is-regional { --tone: #3f8160; }
+.waiter-item:disabled { cursor: default; opacity: .45; }
+.waiter-item.is-missed { opacity: 1; border-color: #e0742c; background: #fff0dc; box-shadow: 0 0 0 3px #f6c48a; }
+
+/* Near the end of the wait the customer gets impatient; when it runs out, they leave. */
+.is-impatient .waiter-call { background: #d33a50; animation-duration: .18s; }
+.is-impatient canvas { filter: drop-shadow(0 0 5px #ff6b6b); }
+.is-leaving canvas { opacity: .25; translate: 14px 0; transition: opacity .6s, translate .6s; }
+.is-leaving .waiter-call { opacity: 1; scale: 1; background: #5d6878; }
+.is-leaving .waiter-call::after { content: "…"; position: absolute; inset: 0; background: inherit; border-radius: inherit; }
+
+.waiter-goal { padding: 8px 12px; border-left: 4px solid #2f9e6b; border-radius: 6px; background: #eaf7f0; color: var(--navy) !important; }
+
+/* ---------- Results: the time grows with the options ---------- */
+
+.waiter-chart { margin: 14px 0 0; padding: 16px 18px 12px; border: 1px solid var(--line); border-radius: 14px; background: #fff; }
+.waiter-chart figcaption { font-weight: 700; }
+.waiter-legend { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 6px 0 12px; color: var(--muted); font: .8rem var(--mono); }
+.waiter-legend span { display: inline-flex; align-items: center; gap: 7px; }
+.waiter-legend span::before { content: ""; width: 11px; height: 11px; border-radius: 2px; background: var(--bar); }
+.waiter-chart .is-flat { --bar: #2f6fc4; }
+.waiter-chart .is-filtered { --bar: #d6407e; }
+.waiter-legend .is-limit::before { height: 0; border-top: 2px dashed #e0742c; border-radius: 0; background: none; }
+/* The table's patience as a dashed line across the bars. */
+.waiter-bars { position: relative; }
+.waiter-bars::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 calc(var(--limit, 2) * (100% - 52px)) 0;
+  border-top: 2px dashed #e0742c;
+  pointer-events: none;
+}
+.waiter-verdict { display: block; margin: 10px 0 0; padding: 10px 14px; border-radius: 10px; line-height: 1.5; }
+.waiter-verdict:empty { display: none; }
+.waiter-verdict.is-pass { border: 1px solid #8fcfb0; background: #eaf7f0; }
+.waiter-verdict.is-fail { border: 1px solid #f0b37e; background: #fff3e4; }
+.waiter-bars {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 14px;
+  height: 200px;
+  margin-bottom: 40px;
+  padding-top: 26px;
+  border-bottom: 1px solid #b9c5d2;
+  background: repeating-linear-gradient(to top, #eef2f6 0 1px, #0000 1px 46px);
+}
+.waiter-bar { position: relative; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; min-width: 0; outline: none; }
+.waiter-bar-value { margin-bottom: 4px; color: var(--navy); font: 700 .85rem var(--mono); font-variant-numeric: tabular-nums; }
+.waiter-bar-fill {
+  width: min(58px, 72%);
+  height: calc(var(--share) * (100% - 26px));
+  border-radius: 4px 4px 0 0;
+  background: var(--bar);
+  transition: height .9s cubic-bezier(.2, .8, .2, 1);
+}
+.waiter-bar-label { position: absolute; top: 100%; margin-top: 8px; color: var(--muted); font: .78rem/1.2 var(--mono); text-align: center; }
+.waiter-bar-tip {
+  position: absolute;
+  bottom: calc(var(--share) * (100% - 26px) + 32px);
+  left: 50%;
+  z-index: 1;
+  padding: 6px 9px;
+  border-radius: 8px;
+  color: #fff;
+  background: var(--navy);
+  font: .75rem var(--mono);
+  white-space: nowrap;
+  translate: -50% 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .15s;
+}
+.waiter-bar:hover .waiter-bar-tip, .waiter-bar:focus-visible .waiter-bar-tip { opacity: 1; }
+.waiter-bar:focus-visible .waiter-bar-fill { outline: 3px solid var(--blue); outline-offset: 2px; }
+.waiter-bar:first-child .waiter-bar-tip { left: 0; translate: 0 0; }
+.waiter-bar:last-child .waiter-bar-tip { left: auto; right: 0; translate: 0 0; }
+.waiter-summary { max-width: 78ch; margin: 14px 0; line-height: 1.6; }
+.waiter-table { margin-bottom: 16px; }
+.waiter-table summary { color: var(--blue); font-weight: 650; cursor: pointer; }
+.waiter-table table { margin-top: 10px; border-collapse: collapse; font-size: .9rem; }
+.waiter-table th, .waiter-table td { padding: 6px 14px 6px 0; border-bottom: 1px solid var(--line); text-align: left; }
+.waiter-table td { font-variant-numeric: tabular-nums; }
+
+@keyframes waiter-call { to { translate: 0 -3px; } }
+@keyframes waiter-shake { 25% { translate: -4px 0; } 50% { translate: 4px 0; } 75% { translate: -2px 0; } }
+@keyframes waiter-plate { 0% { opacity: 0; scale: .3; } 15% { opacity: 1; scale: 1.2; } 25%, 80% { opacity: 1; scale: 1; } 100% { opacity: 0; scale: 1; } }
+
+@media (max-width: 720px) {
+  .waiter-room { height: 160px; }
+  .waiter-counter { width: 90px; }
+  .waiter-host { left: 70px; --pepi-px: 1.4; }
+  .waiter-tables { left: 46%; right: 8px; gap: 4px; }
+  .waiter-table-spot { width: 56px; }
+  .waiter-table-spot canvas { width: 44px; height: 54px; }
+  .waiter-table-top { width: 56px; }
+  .waiter-bubble { top: 22px; left: 10px; min-width: 0; max-width: 44%; font-size: .8rem; }
+  .waiter-bubble::after { top: 100%; right: auto; left: 70px; border-right-color: #0000; border-top-color: #3b2838; }
+  .waiter-menu { grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); }
+  .waiter-bars { gap: 6px; }
+  .waiter-bar-label { font-size: .68rem; }
+}
+/* Short screens: a lower room and tighter buttons, so the whole menu fits while timed. */
+@media (max-height: 820px) {
+  .waiter-room { height: 122px; }
+  .waiter-host { --pepi-px: 1.35; }
+  .waiter-table-spot canvas { width: 46px; height: 56px; }
+  .waiter-bubble { top: 20px; padding: 6px 10px; font-size: .85rem; }
+  .waiter-counter { height: 44px; }
+  .waiter-counter span { bottom: 66px; }
+  .waiter-round { margin-top: 12px; }
+  .waiter-ticket { margin: 8px 0; padding: 8px 14px; }
+  .waiter-item { min-height: 38px; padding: 5px 8px; font-size: .84rem; }
+  .waiter-menu { gap: 6px; }
+  .waiter-filter { min-height: 32px; padding: 3px 11px; }
+  .waiter-filters { margin-bottom: 6px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .is-ordering .waiter-call, .waiter-item.is-wrong { animation: none; }
+  .is-leaving canvas { transition: none; }
+  .waiter-bar-fill { transition: none; }
+}
