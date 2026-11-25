@@ -1,102 +1,303 @@
-.site-draft {
-  --site-accent: #4259a5;
-  --site-paper: #fffdf7;
-  --site-radius: 14px;
-  container-type: inline-size;
+/* Crie Meu Site: the portfolio itself. The same stylesheet dresses the page inside the
+   editor and the HTML file the player downloads. Three styles (data-theme) set fonts and
+   colours; every page block (section) has a tone: 0 paper, 1 highlight, 2 dark. The
+   layout follows the width of the site, not the screen (container queries), so the
+   "phone" view in the editor and a real phone look the same. */
+
+.cms-site {
+  --paper: #e9e9e6;
+  --ink: #121212;
+  --muted: #4a4a4a;
+  --accent: #2f6fe4;
+  --accent-ink: #ffffff;
+  --tone1: linear-gradient(180deg, #2f6fe4, #4d86f5 70%, #6f9ff7);
+  --tone1-ink: #121212;
+  --dark: #121212;
+  --dark-ink: #f2f2ef;
+  --hl: #2f6fe4;
+  --hl-bg: none;
+  --line: #12121233;
+  --display: "Fraunces", Georgia, serif;
+  --display-style: italic;
+  --display-weight: 900;
+  --display-case: none;
+  --serif: "Fraunces", Georgia, serif;
+  --sans: "Inter", "Segoe UI", system-ui, sans-serif;
+  --mono: "Space Mono", ui-monospace, "Cascadia Code", Consolas, monospace;
+  --radius: 4px;
+  container: site / inline-size;
+  position: relative;
   box-sizing: border-box;
   overflow: hidden;
-  color: var(--site-ink, #1e2940);
-  background: var(--site-paper);
-  font: 1rem/1.5 system-ui, sans-serif;
+  color: var(--ink);
+  background: var(--paper);
+  font: 400 1rem/1.55 var(--sans);
 }
-.site-draft *, .site-draft *::before, .site-draft *::after { box-sizing: inherit; }
-.site-draft :is(h1, h2, h3, p, blockquote, figure) { margin: 0; }
-.site-draft :is(h1, h2, h3, p, a, strong) { overflow-wrap: anywhere; }
-.site-draft a:focus-visible { outline: 2px solid #293c75; outline-offset: 4px; }
-.site-draft[data-style="editorial"] { font-family: Georgia, serif; --site-radius: 5px; }
-.site-draft[data-style="bold"] { --site-radius: 3px; }
-.site-draft[data-style="bold"] :is(h1, h2, h3) { letter-spacing: -.045em; font-weight: 850; }
-.site-part {
-  --block-tone: var(--site-accent);
-  --block-ink: #252d3d;
-  padding: clamp(17px, 5cqw, 42px);
-  border-bottom: 1px solid #3037491a;
+.cms-site *, .cms-site *::before, .cms-site *::after { box-sizing: border-box; }
+.cms-site[data-theme="revista"] {
+  --paper: #ffffff;
+  --ink: #222222;
+  --muted: #555555;
+  --accent: #b9d65a;
+  --accent-ink: #1f2b06;
+  --tone1: #b9d65a;
+  --tone1-ink: #1f2b06;
+  --dark: #2b2b2b;
+  --dark-ink: #f4f4f0;
+  --hl: #3f6b0e;
+  --display: "Fraunces", Georgia, serif;
+  --display-style: normal;
+  --display-weight: 600;
+  --display-case: uppercase;
+  --radius: 0px;
 }
-.site-nav, .site-brand, .site-nav-links { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
-.site-nav { justify-content: space-between; padding-block: 13px; }
-.site-brand strong { font-size: 1.05rem; }
-.site-mark, .site-emblem, .site-card-icon { display: inline-grid; flex: 0 0 auto; place-items: center; color: var(--logo-ink, #fff); background: var(--logo-color, var(--site-accent)); font-weight: 800; }
-.site-mark { width: 33px; height: 33px; border-radius: 8px; }
-.site-mark[data-shape="circle"] { border-radius: 50%; }
-.site-mark[data-shape="badge"] { clip-path: polygon(50% 0, 100% 23%, 100% 72%, 50% 100%, 0 72%, 0 23%); border-radius: 0; }
-.site-nav-links a, .site-footer a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 3px; font-size: .875rem; }
-.site-hero {
-  display: grid;
-  grid-template-columns: minmax(0, 1.45fr) minmax(0, .8fr);
-  align-items: center;
-  gap: 16px;
-  background: color-mix(in srgb, var(--block-tone) 13%, var(--site-paper));
+.cms-site[data-theme="minimal"] {
+  --paper: #fdfbf0;
+  --ink: #1b1b1b;
+  --muted: #555248;
+  --accent: #f9c80e;
+  --accent-ink: #1b1b1b;
+  --tone1: #fff3c4;
+  --tone1-ink: #1b1b1b;
+  --dark: #1b1b1b;
+  --dark-ink: #fdfbf0;
+  --hl: #1b1b1b;
+  --hl-bg: linear-gradient(transparent 62%, var(--accent) 62% 92%, transparent 92%);
+  --display: "Bodoni Moda", "Didot", Georgia, serif;
+  --display-style: normal;
+  --display-weight: 900;
+  --serif: "Bodoni Moda", "Didot", Georgia, serif;
+  --radius: 0px;
 }
-.site-hero h1 { font-size: clamp(1.55rem, 6.25cqw, 4rem); line-height: 1.02; letter-spacing: -.042em; }
-.site-part h2 { font-size: clamp(1.3rem, 4.55cqw, 2.3rem); line-height: 1.13; }
-.site-hero p, .site-part h2 + p { margin-top: 9px; color: var(--site-muted, #46516a); }
-.site-hero-art {
-  display: grid;
-  place-items: center;
-  aspect-ratio: 1.12;
-  min-height: 88px;
-  border-radius: var(--site-radius);
-  background:
-    radial-gradient(circle at 50% 50%, #ffffff7d 0 39%, transparent 40%),
-    repeating-linear-gradient(0deg, transparent 0 17px, #ffffff44 17px 18px),
-    color-mix(in srgb, var(--block-tone) 30%, #fff);
+
+.cms-site[data-theme="caderno"] {
+  --paper: #f5f2ea;
+  --ink: #2b2a28;
+  --muted: #5d5850;
+  --accent: #e3a21a;
+  --accent-ink: #2b2a28;
+  --tone1: #fdfcf8;
+  --tone1-ink: #2b2a28;
+  --dark: #2b2a28;
+  --dark-ink: #f5f2ea;
+  --hl: #b97b06;
+  --display: "Gluten", "Comic Sans MS", cursive;
+  --display-style: normal;
+  --display-weight: 800;
+  --display-case: none;
+  --serif: "Fraunces", Georgia, serif;
+  --radius: 3px;
 }
-.site-emblem { width: 52%; aspect-ratio: 1; border-radius: var(--site-radius); rotate: -9deg; background: var(--block-tone); color: var(--block-ink); font-size: clamp(1.6rem, 8cqw, 4rem); }
-.site-cta-button {
+
+/* A colour palette recolours any style: the page brings paper, ink and accent, and
+   everything else is mixed from them here. */
+.cms-site[data-palette] {
+  --muted: color-mix(in srgb, var(--ink) 72%, var(--paper));
+  --tone1: color-mix(in srgb, var(--accent) 24%, var(--paper));
+  --tone1-ink: var(--ink);
+  --tone1-label: var(--accent-ink);
+  --dark: var(--ink);
+  --dark-ink: var(--paper);
+  --hl: color-mix(in srgb, var(--accent) 72%, var(--ink));
+  --line: color-mix(in srgb, var(--ink) 20%, transparent);
+  --title-ink: var(--ink);
+  --title-stroke: var(--paper);
+}
+.cms-site[data-theme="azul"][data-palette] { --tone1: linear-gradient(180deg, var(--accent), color-mix(in srgb, var(--accent) 70%, #fff)); }
+.cms-site[data-theme="revista"][data-palette] { --tone1: var(--accent); --tone1-ink: var(--accent-ink); }
+.cms-site[data-theme="minimal"][data-palette] { --hl: var(--ink); }
+.cms-site[data-theme="caderno"][data-palette] { --tone1: color-mix(in srgb, var(--paper) 50%, #fff); }
+
+/* ---------- Page blocks and tones ---------- */
+
+.cms-section { position: relative; overflow: hidden; padding: clamp(28px, 7cqi, 72px) clamp(20px, 6cqi, 64px); }
+.cms-section[data-tone="1"] { color: var(--tone1-ink); background: var(--tone1); }
+.cms-section[data-tone="2"] { --hl: var(--accent); --muted: color-mix(in srgb, var(--dark-ink) 75%, var(--dark)); --line: #ffffff33; color: var(--dark-ink); background: var(--dark); }
+.cms-site[data-theme="minimal"] .cms-section[data-tone="2"] { --hl: var(--dark-ink); }
+.cms-inner { position: relative; z-index: 1; max-width: 1040px; margin: 0 auto; }
+.cms-t { white-space: pre-line; overflow-wrap: anywhere; }
+.cms-section p, .cms-section h1, .cms-section h2, .cms-section h3, .cms-section figure, .cms-section blockquote { margin: 0; }
+.cms-label { font: 700 clamp(.7rem, 1.6cqi, .85rem)/1.3 var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+.cms-title {
+  font: var(--display-style) var(--display-weight) clamp(2rem, 7cqi, 4.2rem)/.98 var(--display);
+  letter-spacing: -.02em;
+  text-transform: var(--display-case);
+}
+.cms-hl { justify-self: start; width: fit-content; color: var(--hl); background: var(--hl-bg); font: italic 500 1em/1.1 var(--serif); }
+.cms-text { max-width: 60ch; color: var(--muted); font-size: clamp(.95rem, 2cqi, 1.1rem); }
+
+/* Photo frames: an empty frame shows a soft placeholder until a picture arrives. */
+.cms-photo { position: relative; display: grid; place-items: center; overflow: hidden; min-height: 120px; border-radius: var(--radius); background: color-mix(in srgb, currentColor 10%, transparent); }
+.cms-photo img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.cms-photo-empty { display: grid; justify-items: center; gap: 6px; padding: 12px; color: color-mix(in srgb, currentColor 65%, transparent); font: 700 .8rem/1.3 var(--mono); text-align: center; }
+.cms-photo-empty svg { width: 34px; height: 34px; }
+.cms-caption { margin-top: 8px !important; font: 400 .78rem/1.4 var(--mono); letter-spacing: .03em; }
+
+/* ---------- Capa (cover) ---------- */
+
+.cms-cover { min-height: clamp(380px, 62cqi, 620px); display: grid; align-items: center; }
+.cms-cover-inner { display: grid; grid-template-columns: 1fr auto; grid-template-areas: "kicker year" "title title" "name name" "photo photo"; gap: 14px 20px; width: 100%; }
+.cms-cover-kicker { grid-area: kicker; }
+.cms-cover-year { grid-area: year; text-align: right; }
+.cms-cover-title {
+  grid-area: title;
+  margin: 8px 0 0 !important;
+  font: var(--display-style) var(--display-weight) clamp(3rem, 15cqi, 9rem)/.92 var(--display);
+  letter-spacing: -.035em;
+  text-transform: var(--display-case);
+  overflow-wrap: anywhere;
+}
+.cms-cover-name { grid-area: name; font: 700 clamp(.8rem, 2cqi, 1.05rem)/1.3 var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+.cms-cover-photo { grid-area: photo; width: min(280px, 70%); aspect-ratio: 4 / 5; justify-self: end; rotate: 3deg; box-shadow: 0 14px 30px #0003; background-color: color-mix(in srgb, var(--paper) 70%, transparent); }
+@container site (min-width: 720px) {
+  .cms-cover-inner { grid-template-columns: 1fr 1fr 30%; grid-template-areas: "kicker kicker year" "title title photo" "name name photo"; }
+  .cms-cover-photo { width: 100%; align-self: center; }
+  .cms-cover-title { font-size: clamp(3rem, 10cqi, 8rem); }
+}
+/* Azul editorial: the title is a sticker, black letters with a thick pale outline. */
+.cms-site[data-theme="azul"] .cms-cover-title { color: var(--title-ink, #161616); -webkit-text-stroke: .16em var(--title-stroke, #e9e9e6); paint-order: stroke fill; text-shadow: 0 .06em .08em #0005; padding-left: .12em; }
+.cms-site[data-theme="azul"] .cms-cover[data-tone="1"] .cms-cover-kicker,
+.cms-site[data-theme="azul"] .cms-cover[data-tone="1"] .cms-cover-name,
+.cms-site[data-theme="azul"] .cms-cover[data-tone="1"] .cms-cover-year { color: var(--tone1-label, #f2f5ff); }
+/* Revista: a solid colour block across the top, the title set under it. */
+.cms-site[data-theme="revista"] .cms-cover { background: linear-gradient(var(--accent) 0 46%, var(--paper) 46%); color: var(--ink); align-items: end; }
+.cms-site[data-theme="revista"] .cms-cover[data-tone="2"] { background: linear-gradient(var(--accent) 0 46%, var(--dark) 46%); color: var(--dark-ink); }
+.cms-site[data-theme="revista"] .cms-cover-title { font-size: clamp(2.6rem, 11cqi, 7rem); }
+/* Minimal: a big didone title with a yellow sun behind the photo. */
+.cms-site[data-theme="minimal"] .cms-cover-title { font-style: normal; }
+.cms-site[data-theme="minimal"] .cms-cover-photo { rotate: 0deg; box-shadow: none; border: 1px solid var(--ink); background: radial-gradient(circle at 30% 28%, var(--accent) 0 34%, transparent 34.5%), color-mix(in srgb, var(--paper) 80%, transparent); }
+.cms-site[data-theme="minimal"] .cms-cover-kicker { font: 400 clamp(1rem, 2.4cqi, 1.4rem)/1.1 var(--sans); letter-spacing: 0; text-transform: none; }
+
+/* ---------- Sobre mim (about) ---------- */
+
+.cms-about-inner { display: grid; grid-template-columns: 1fr; gap: 6px; }
+.cms-about-big { font: 600 clamp(1.8rem, 6.4cqi, 3.8rem)/1.08 var(--sans); letter-spacing: -.04em; }
+.cms-about-intro { text-align: right; }
+.cms-about-name { font-size: clamp(2rem, 7cqi, 4.2rem); }
+.cms-about-photo { aspect-ratio: 16 / 9; margin: 10px 0 !important; }
+.cms-site[data-theme="azul"] .cms-about-photo img { filter: grayscale(1) contrast(1.1); }
+.cms-about-role { text-align: right; }
+.cms-about-bio { margin-top: 14px !important; }
+@container site (min-width: 720px) {
+  .cms-about-inner { grid-template-columns: 1fr 1fr; grid-template-areas: "hello intro" "name photo" "role photo" "bio bio"; column-gap: 32px; }
+  .cms-about-hello { grid-area: hello; }
+  .cms-about-intro { grid-area: intro; }
+  .cms-about-name { grid-area: name; align-self: end; }
+  .cms-about-role { grid-area: role; align-self: start; text-align: left; }
+  .cms-about-photo { grid-area: photo; aspect-ratio: auto; min-height: 180px; margin: 6px 0 !important; }
+  .cms-about-bio { grid-area: bio; justify-self: end; }
+}
+
+/* ---------- Projeto em destaque (feature): photo page + text page, like a magazine spread ---------- */
+
+.cms-feature-inner { display: grid; gap: 18px; }
+.cms-feature-photo { aspect-ratio: 4 / 3; }
+.cms-feature-text { display: grid; align-content: start; gap: 12px; }
+.cms-feature-body { column-gap: 28px; }
+@container site (min-width: 720px) {
+  .cms-feature-inner { grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--line); }
+  .cms-feature-photo { aspect-ratio: auto; min-height: 420px; border-radius: 0; }
+  .cms-feature-text { padding: 28px; }
+  .cms-feature-body { columns: 2; }
+  /* Without a photo the text takes the whole spread. */
+  .cms-feature-inner:not(:has(.cms-feature-photo)) { grid-template-columns: 1fr; }
+}
+.cms-site[data-theme="revista"] .cms-feature-photo { background-color: var(--accent); }
+
+/* ---------- Galeria (grid): three frames, collage style ---------- */
+
+.cms-grid-inner { display: grid; gap: 18px; }
+.cms-gallery { display: grid; grid-template-columns: 1fr; gap: 18px; }
+.cms-gallery figure { display: grid; align-content: start; }
+.cms-gallery .cms-photo { aspect-ratio: 4 / 3; }
+@container site (min-width: 720px) {
+  .cms-gallery { grid-template-columns: 1.3fr 1fr; grid-template-rows: auto auto; }
+  .cms-gallery figure:first-child { grid-row: span 2; }
+  .cms-gallery figure:first-child .cms-photo { aspect-ratio: 3 / 4; }
+  .cms-gallery figure:nth-child(2) { rotate: 1.5deg; }
+  .cms-gallery figure:nth-child(3) { rotate: -1.5deg; width: 85%; }
+}
+.cms-site[data-theme="revista"] .cms-gallery .cms-photo { background-color: var(--accent); }
+
+/* ---------- O que eu faço (skills) ---------- */
+
+.cms-skills-inner { display: grid; gap: 22px; }
+.cms-skill-list { display: grid; gap: 14px; }
+.cms-skill { display: grid; align-content: start; gap: 8px; padding: 18px; border: 1px solid var(--line); border-radius: var(--radius); }
+.cms-skill-icon { display: grid; place-items: center; width: 48px; height: 48px; padding: 0; border: 0; border-radius: 50%; color: var(--accent-ink); background: var(--accent); }
+.cms-skill-icon svg { width: 26px; height: 26px; }
+.cms-skill h3 { font: 700 1.1rem/1.25 var(--sans); }
+.cms-site[data-theme="minimal"] .cms-skill { border-width: 0 0 0 2px; border-color: var(--accent); border-radius: 0; }
+@container site (min-width: 720px) { .cms-skill-list { grid-template-columns: repeat(3, 1fr); } }
+
+/* ---------- Frase (quote) and Texto livre (text) ---------- */
+
+.cms-quote-inner { display: grid; gap: 16px; max-width: 900px; text-align: center; }
+.cms-quote-text { font: var(--display-style) var(--display-weight) clamp(1.6rem, 5.4cqi, 3.4rem)/1.12 var(--display); letter-spacing: -.02em; }
+.cms-site[data-theme="revista"] .cms-quote-text { text-transform: none; }
+.cms-text-inner { display: grid; gap: 14px; max-width: 760px; }
+
+/* ---------- Contato (contact) ---------- */
+
+.cms-contact-inner { display: grid; gap: 14px; justify-items: start; }
+.cms-contact-title { font-size: clamp(2.2rem, 9cqi, 6rem); }
+.cms-contact-lines { display: grid; gap: 4px; font: 700 clamp(.9rem, 2.2cqi, 1.15rem)/1.4 var(--mono); }
+.cms-contact-lines a { color: inherit; }
+.cms-button {
   display: inline-block;
-  margin-top: 13px;
-  padding: 7px 12px;
-  border-radius: var(--site-radius);
-  background: var(--block-tone);
-  color: var(--block-ink);
-  font-size: .9rem;
-  font-weight: 750;
+  margin-top: 6px;
+  padding: 12px 22px;
+  border-radius: 999px;
+  color: var(--accent-ink);
+  background: var(--accent);
+  font: 700 1rem/1.2 var(--sans);
   text-decoration: none;
 }
-.site-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; margin-top: 13px; }
-.site-tile { min-width: 0; padding: 10px; border: 1px solid #28335824; border-radius: var(--site-radius); color: #1e2940; background: #fffaf6; }
-.site-tile h3 { margin-top: 6px; font-size: .95rem; }
-.site-tile p { color: #46516a; margin-top: 3px; font-size: .85rem; }
-.site-card-icon { width: 25px; height: 25px; border-radius: 5px; background: var(--block-tone); color: var(--block-ink); }
-.site-gallery-swatch {
-  display: grid;
-  place-items: center;
-  min-height: 65px;
-  border-radius: var(--site-radius);
-  background: radial-gradient(circle at 28% 33%, #ffffffaa 0 19%, transparent 20%), color-mix(in srgb, var(--block-tone) 32%, #fff);
-  font-size: 1.35rem;
+.cms-section[data-tone="1"] .cms-button { color: var(--paper); background: var(--ink); }
+.cms-site[data-theme="revista"] .cms-button, .cms-site[data-theme="minimal"] .cms-button { border-radius: 0; }
+
+/* ---------- Caderno: textured paper, hand lettering, label pills and polaroids ---------- */
+
+.cms-site[data-theme="caderno"], .cms-site[data-theme="caderno"] .cms-section { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E"); }
+.cms-site[data-theme="caderno"] .cms-section[data-tone="1"] { background-color: var(--tone1); }
+.cms-site[data-theme="caderno"] .cms-section[data-tone="2"] { background-color: var(--dark); }
+.cms-site[data-theme="caderno"] .cms-cover-title { color: var(--accent); rotate: -2deg; letter-spacing: -.01em; }
+.cms-site[data-theme="caderno"] .cms-label {
+  justify-self: start;
+  width: fit-content;
+  padding: .35em 1.1em;
+  border: 1.5px solid currentColor;
+  border-radius: 999px;
+  font: 500 clamp(.68rem, 1.6cqi, .82rem)/1.2 var(--serif);
+  letter-spacing: .32em;
 }
-.site-quote { background: color-mix(in srgb, var(--block-tone) 10%, var(--site-paper)); }
-.site-quote blockquote { margin: 8px 0; padding-inline-start: 11px; border-inline-start: 3px solid var(--block-tone); font-size: 1.1rem; }
-.site-quote cite { font-size: .875rem; color: var(--site-muted, #46516a); }
-.site-callout { text-align: center; background: color-mix(in srgb, var(--block-tone) 14%, var(--site-paper)); }
-.site-footer p { margin-top: 5px; font-size: .875rem; color: var(--site-muted, #46516a); }
-.site-sticker-row { background: color-mix(in srgb, var(--block-tone) 8%, var(--site-paper)); }
-.site-draft .site-media {
-  width: var(--media-width, 60%);
-  margin-inline-start: var(--media-offset, 20%);
+.cms-site[data-theme="caderno"] .cms-cover-year { justify-self: end; }
+.cms-site[data-theme="caderno"] .cms-cover-name { font: 600 clamp(.9rem, 2.2cqi, 1.2rem)/1.3 var(--serif); letter-spacing: .12em; }
+.cms-site[data-theme="caderno"] .cms-hl { color: var(--hl); font-family: var(--display); font-style: normal; font-weight: 700; }
+.cms-site[data-theme="caderno"] .cms-photo { padding: 10px 10px 32px; border-radius: 2px; background-color: #fffefb; box-shadow: 0 8px 18px #2b2a2826; }
+.cms-site[data-theme="caderno"] .cms-photo img { border-radius: 1px; }
+.cms-site[data-theme="caderno"] .cms-about-photo { rotate: -1.5deg; }
+.cms-site[data-theme="caderno"] .cms-feature-photo { rotate: 1deg; }
+.cms-site[data-theme="caderno"] .cms-gallery figure:first-child { rotate: -2deg; }
+.cms-site[data-theme="caderno"] .cms-skill { border-style: dashed; border-width: 2px; border-radius: 10px; background: color-mix(in srgb, var(--paper) 60%, #fff); }
+.cms-site[data-theme="caderno"] .cms-section[data-tone="2"] .cms-skill { background: transparent; }
+.cms-site[data-theme="caderno"] .cms-feature-inner { border: 0; }
+.cms-site[data-theme="caderno"] .cms-quote-text { color: var(--hl); }
+.cms-site[data-theme="caderno"] .cms-section[data-tone="2"] .cms-quote-text { color: var(--accent); }
+
+/* ---------- Stickers: collage pieces placed freely over a block ---------- */
+
+.cms-layer { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+.cms-sticker {
+  position: absolute;
+  left: calc(var(--x) * 1%);
+  top: calc(var(--y) * 1%);
+  width: clamp(18px, calc(var(--s) * 1cqi), 420px);
+  translate: -50% -50%;
+  rotate: calc(var(--r) * 1deg);
+  line-height: 0;
 }
-.site-media img { display: block; max-width: 100%; width: 100%; height: auto; image-rendering: auto; }
-.site-media figcaption { margin-top: 8px; color: var(--site-muted, #46516a); font-size: .9rem; overflow-wrap: anywhere; }
-.site-photo-row h2 { margin-bottom: 10px; }
-.site-media-photo img { box-shadow: 1px 3px 8px #342c301c; }
-.site-photo-placeholder { padding: 15px; border: 1px dashed #b4aa9c; border-radius: 8px; background: #fff4e8; }
-.site-media-sticker img { transform: rotate(var(--media-angle)); }
-.site-media-sticker figcaption { text-align: center; }
-@container (max-width: 440px) {
-  .site-hero { grid-template-columns: 1fr; }
-  .site-hero-art { aspect-ratio: 2.3; }
-  .site-emblem { width: 25%; }
-  .site-grid { grid-template-columns: 1fr; }
-  .site-gallery-swatch { min-height: 78px; }
-}
+.cms-sticker svg, .cms-sticker img { display: block; width: 100%; height: auto; }
+.cms-sticker img { filter: drop-shadow(0 3px 2px #0003); }
+
+.cms-footer { padding: 18px; color: var(--muted); background: var(--paper); font: .75rem var(--mono); text-align: center; }
