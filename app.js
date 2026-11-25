@@ -55,8 +55,10 @@ function report(type, detail = {}) {
   document.dispatchEvent(new CustomEvent("frontarcade:event", { detail: { type, ...detail } }));
 }
 
+// Each author's pixel portrait, and a résumé to download or a portfolio to visit.
 const authorAssets = {
   Enzo: { portrait: paintEnzoPortrait, resume: "Curriculo-Enzo-Costa.pdf" },
+  PP: { portrait: paintPPPortrait, site: { href: "https://ippod.vercel.app", label: "Abrir o portfólio (iPPod)" } },
 };
 
 function loadProfile() {
@@ -173,7 +175,7 @@ async function openAboutFile(button) {
     title.textContent = name.trim();
     const identity = document.createElement("div");
     identity.append(title);
-    const { portrait, resume } = authorAssets[file] ?? {};
+    const { portrait, resume, site } = authorAssets[file] ?? {};
     if (portrait) {
       const canvas = document.createElement("canvas");
       canvas.width = canvas.height = 64;
@@ -193,6 +195,21 @@ async function openAboutFile(button) {
       icon.setAttribute("aria-hidden", "true");
       download.prepend(icon);
       identity.append(download);
+    }
+    if (site) {
+      // An external portfolio opens in a new tab, without access back to this page.
+      const visit = document.createElement("a");
+      visit.className = "resume-download portfolio-link";
+      visit.href = site.href;
+      visit.target = "_blank";
+      visit.rel = "noopener noreferrer";
+      visit.textContent = site.label;
+      visit.setAttribute("aria-label", `${site.label}, abre em uma nova aba`);
+      const icon = document.createElement("span");
+      icon.className = "external-icon";
+      icon.setAttribute("aria-hidden", "true");
+      visit.prepend(icon);
+      identity.append(visit);
     }
     header.append(identity);
     authorProfile.replaceChildren(header);

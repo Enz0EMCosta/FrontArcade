@@ -380,6 +380,14 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--blue); outl
   background: currentColor;
   clip-path: polygon(38% 0, 62% 0, 62% 38%, 82% 38%, 50% 69%, 18% 38%, 38% 38%, 38% 0, 0 0, 0 62%, 12% 62%, 12% 86%, 88% 86%, 88% 62%, 100% 62%, 100% 100%, 0 100%, 0 0);
 }
+/* An arrow leaving a box: the link opens another site. */
+.external-icon {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  background: currentColor;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5'/%3E%3C/svg%3E") center / contain no-repeat;
+}
 .profile-files {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(108px, 148px));
