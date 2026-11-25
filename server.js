@@ -5,6 +5,10 @@ const { join } = require("node:path");
 const assets = new Map([
   ["/", ["index.html", "text/html"]],
   ["/index.html", ["index.html", "text/html"]],
+  ["/favicon.svg", ["favicon.svg", "image/svg+xml"]],
+  ["/favicon.png", ["favicon.png", "image/png"]],
+  ["/favicon.ico", ["favicon.png", "image/png"]],
+  ["/apple-touch-icon.png", ["apple-touch-icon.png", "image/png"]],
   ["/styles.css", ["styles.css", "text/css"]],
   ["/art.js", ["art.js", "text/javascript"]],
   ["/app.js", ["app.js", "text/javascript"]],
