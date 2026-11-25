@@ -87,8 +87,10 @@ function setGamesWindow(open) {
 }
 
 function setBuilderWindow(open) {
+  const wasOpen = !builderWindow.hidden;
   if (!open) leaveWindowFullscreen(builderWindow);
   builderWindow.hidden = !open;
+  if (wasOpen && !open) report("builder-closed");
   builderShortcut.setAttribute("aria-expanded", String(open));
 }
 
@@ -378,27 +380,92 @@ function openEditor() {
   updatePreviewAnimation();
 }
 
+// The games window opens on a choice of mode: the individual track (which ends in the
+// surprise prize) or the duo and group games. Each list has a way back to the choice.
+const gameSections = {
+  modes: document.querySelector("#games-modes"),
+  solo: document.querySelector("#games-solo"),
+  group: document.querySelector("#games-group"),
+};
+const soloProgress = document.querySelector("#mode-solo-progress");
+
+// The mode cards are portraits: "Individual" shows the player's own avatar, and "Duo e
+// grupo" a stack of three friends drawn from the avatar editor's parts (picked once per
+// visit, each with a different backdrop).
+const groupFaces = (() => {
+  const pick = key => Math.floor(Math.random() * avatarOptions[key].choices.length);
+  const backdrops = [...avatarOptions.backdrop.choices.keys()].sort(() => Math.random() - .5);
+  return [0, 1, 2].map(index => ({
+    ...Object.fromEntries(fields.map(([key]) => [key, 0])),
+    skin: pick("skin"), eyes: pick("eyes"), eyeColor: pick("eyeColor"), mouth: pick("mouth"), hair: pick("hair"),
+    hairColor: pick("hairColor"), outfit: pick("outfit"), shirt: pick("shirt"), backdrop: backdrops[index % backdrops.length],
+  }));
+})();
+
+function paintModeArt() {
+  const portrait = [10, 4, 44, 44];
+  const me = profile ?? Object.fromEntries(fields.map(([key]) => [key, 0]));
+  paintAvatar(document.querySelector("#mode-solo .mode-face"), { ...me, sceneAlternate: false, itemActionActive: false }, portrait);
+  document.querySelectorAll("#mode-group .mode-face").forEach((canvas, index) => paintAvatar(canvas, groupFaces[index], portrait));
+}
+
+function showGamesMode(mode, { focus = true } = {}) {
+  for (const [key, section] of Object.entries(gameSections)) section.hidden = key !== mode;
+  if (mode === "modes") {
+    paintModeArt();
+    const trail = window.FrontArcadeTrail?.progress();
+    if (trail) {
+      const words = ["Zero", "Um", "Dois", "Três", "Quatro", "Cinco", "Seis", "Sete", "Oito"];
+      document.querySelector("#mode-solo-count").textContent = `${words[trail.total] ?? trail.total} jogos para completar no seu ritmo.`;
+      soloProgress.textContent = trail.done === trail.total
+        ? "Prêmio liberado! Ele está esperando por você"
+        : `${trail.done} de ${trail.total} concluídos · prêmio surpresa no fim`;
+    }
+  }
+  if (focus) gameSections[mode].querySelector("h2").focus();
+  if (mode !== "modes") report("games-mode", { mode });
+}
+
+document.querySelector("#mode-solo").addEventListener("click", () => showGamesMode("solo"));
+document.querySelector("#mode-group").addEventListener("click", () => showGamesMode("group"));
+for (const button of document.querySelectorAll(".games-back")) {
+  button.addEventListener("click", () => {
+    const from = button.closest("#games-solo") ? "#mode-solo" : "#mode-group";
+    showGamesMode("modes", { focus: false });
+    document.querySelector(from).focus();
+  });
+}
+
 function openGames() {
   setBuilderWindow(false);
   if (!aboutWindow.hidden) setAboutWindow("minimized");
+  if (gamesWindow.hidden) showGamesMode("modes", { focus: false });
   setGamesWindow(true);
   gamesTitle.focus();
   report("games-opened");
 }
 
-powerButton.addEventListener("click", () => {
+function bootDesktop({ delay, editor = true }) {
+  if (powerButton.disabled) return;
   powerButton.disabled = true;
   bootStatus.textContent = "Preparando a área de trabalho…";
-  bootScreen.classList.add("is-booting");
+  if (delay) bootScreen.classList.add("is-booting");
 
   setTimeout(() => {
     bootScreen.hidden = true;
     desktop.hidden = false;
     (profile ? desktopShortcut : editAvatarButton).focus({ preventScroll: true });
-    if (!profile) openEditor();
+    if (!profile && editor) openEditor();
     report("desktop-ready", { hasProfile: Boolean(profile) });
-  }, motionPreference.matches ? 150 : Number.parseInt(getComputedStyle(bootScreen).getPropertyValue("--boot-duration"), 10));
+  }, delay);
+}
+
+powerButton.addEventListener("click", () => {
+  bootDesktop({ delay: motionPreference.matches ? 150 : Number.parseInt(getComputedStyle(bootScreen).getPropertyValue("--boot-duration"), 10) });
 });
+// Pepi's intro brings the player in with its own transition: the desktop switches on
+// at once, under the intro, and Pepi opens the avatar editor himself afterwards.
+document.addEventListener("frontarcade:boot", () => bootDesktop({ delay: 0, editor: false }));
 
 desktopShortcut.addEventListener("click", openGames);
 builderShortcut.addEventListener("click", () => {

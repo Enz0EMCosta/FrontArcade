@@ -540,6 +540,239 @@ canvas { display: block; image-rendering: pixelated; }
 }
 .is-unlocked .lock-icon { background: #287b66; }
 .is-unlocked .lock-icon::before { left: 11px; border-color: #287b66; transform: translateY(-2px); }
+/* Every game has its own round emblem, like Olhar Afiado's colour wheel. The lock is a
+   small badge on it: closed while the game waits for the one before, open once it is
+   free, and a check after the game is finished. */
+.game-icon {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border: 5px solid #fbfff9;
+  border-radius: 50%;
+  background: var(--icon-bg, #eef2f6);
+  box-shadow: 0 0 0 1px var(--icon-ring, #b9c6d3);
+}
+.game-emblem { display: block; transition: filter .3s, opacity .3s; }
+.game-icon .lock-icon {
+  position: absolute;
+  right: -7px;
+  bottom: -5px;
+  margin: 0;
+  scale: .58;
+  transform-origin: 100% 100%;
+  outline: 4px solid #fff;
+}
+.next-game-card:not(.is-unlocked) .game-emblem { filter: grayscale(1); opacity: .5; }
+.is-done .game-icon .lock-icon { display: none; }
+.color-game-mark { position: relative; }
+.game-card[data-game="popup"] { --icon-bg: #e3eefb; --icon-ring: #a9c4e8; }
+.game-card[data-game="lag"] { --icon-bg: #fff1c9; --icon-ring: #e6cf8a; }
+.game-card[data-game="waiter"] { --icon-bg: #ffe6d5; --icon-ring: #eab48f; }
+.game-card[data-game="habit"] { --icon-bg: #ece6fb; --icon-ring: #c3b2e6; }
+.game-card[data-game="obra"] { --icon-bg: #fff0d9; --icon-ring: #e9b97a; }
+.game-card[data-game="popup"].is-unlocked { background: #f2f7fd; border-color: #b5cbe8; }
+.game-card[data-game="lag"].is-unlocked { background: #fffaeb; border-color: #e8d28f; }
+.game-card[data-game="waiter"].is-unlocked { background: #fff6ef; border-color: #efc2a3; }
+.game-card[data-game="habit"].is-unlocked { background: #f7f4fe; border-color: #cfc1ec; }
+.game-card[data-game="obra"].is-unlocked { background: #fff8ee; border-color: #edc79a; }
+/* A finished game: the icon turns green and a "Concluído" tag sits on the card's top edge. */
+.game-card.is-done { --icon-bg: #d9f2e4; --icon-ring: #2f9e6b; position: relative; }
+.game-card.is-done .game-icon { box-shadow: 0 0 0 2px var(--icon-ring); }
+.game-card.is-done .color-game-mark { box-shadow: 0 0 0 2px #2f9e6b; }
+.game-card.is-done::before {
+  content: "✓ Concluído";
+  position: absolute;
+  top: -11px;
+  right: 16px;
+  padding: 3px 10px;
+  border: 2px solid #fff;
+  border-radius: 999px;
+  color: #fff;
+  background: #2f9e6b;
+  box-shadow: 0 2px 0 #1f6e4a;
+  font: 800 .72rem/1.2 var(--mono);
+  letter-spacing: .03em;
+}
+/* Text for screen readers only. */
+.visually-hidden { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+/* The certificate: a medal in the library (grey until the three games are done) and a
+   view with the drawn certificate and its downloads. */
+.certificate-card { background: repeating-linear-gradient(-45deg, #fff 0 12px, #fdf6fa 12px 24px); border: 1px dashed #e3a9c5; }
+.certificate-card.is-unlocked { background: linear-gradient(135deg, #fff3f8, #fff8e6); border: 1px solid #e8a5c4; }
+.certificate-card { position: relative; }
+.certificate-mark { position: relative; width: 46px; height: 52px; }
+/* Locked: a wrapped gift box that wobbles now and then. */
+.certificate-mark::before {
+  content: "";
+  position: absolute;
+  left: 6px;
+  top: 20px;
+  width: 34px;
+  height: 28px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #0000 42%, #edc45b 42% 58%, #0000 58%), #d6407e;
+  box-shadow: inset 0 -5px #b52f68;
+}
+.certificate-mark::after {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 10px;
+  width: 42px;
+  height: 11px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #0000 42%, #edc45b 42% 58%, #0000 58%), #e8619a;
+  box-shadow: 0 -6px 0 -3px #edc45b;
+}
+.certificate-card:not(.is-unlocked) .certificate-mark { animation: gift-wobble 3.2s ease-in-out infinite; }
+/* Unlocked: the box becomes a medal with a ribbon. */
+.certificate-card.is-unlocked .certificate-mark::before {
+  left: 11px;
+  top: 22px;
+  width: 24px;
+  height: 30px;
+  border-radius: 0;
+  background: linear-gradient(90deg, #d6407e 0 50%, #b52f68 50%);
+  box-shadow: none;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 78%, 0 100%);
+}
+.certificate-card.is-unlocked .certificate-mark::after {
+  left: 7px;
+  top: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fff4c7 0 18%, #edc45b 19% 62%, #c58f22 63%);
+  box-shadow: 0 0 0 3px #fff;
+}
+.certificate-card.is-unlocked .certificate-mark { animation: certificate-shine 2.4s ease-in-out infinite; }
+.certificate-card.is-revealing { animation: gift-reveal .9s cubic-bezier(.3, 1.5, .5, 1); }
+.certificate-card.is-revealing .certificate-mark { animation: gift-open .9s ease-out; }
+.certificate-view { padding: clamp(18px, 3vw, 34px); }
+.certificate-sheet {
+  width: min(100%, calc((100dvh - 330px) * 1.4144));
+  min-width: min(100%, 320px);
+  margin: 18px auto 0;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fbf6ea;
+  box-shadow: 0 0 0 1px var(--line), 0 14px 34px #14284233;
+}
+.certificate-sheet canvas { width: 100%; height: auto; image-rendering: auto; }
+.certificate-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 18px; }
+.certificate-actions button { display: inline-flex; align-items: center; gap: 9px; }
+@keyframes certificate-shine { 50% { translate: 0 -3px; rotate: -4deg; } }
+@keyframes gift-wobble { 0%, 80%, 100% { rotate: 0deg; } 84% { rotate: -9deg; } 88% { rotate: 8deg; } 92% { rotate: -5deg; } 96% { rotate: 3deg; } }
+@keyframes gift-reveal { 0% { scale: .96; box-shadow: 0 0 0 0 #f0a8cc; } 40% { scale: 1.04; box-shadow: 0 0 0 10px #f0a8cc66; } 100% { scale: 1; box-shadow: 0 0 0 18px #f0a8cc00; } }
+@keyframes gift-open { 0% { scale: 1; rotate: 0deg; } 30% { scale: 1.5; rotate: -12deg; } 60% { scale: .8; rotate: 8deg; } 100% { scale: 1; rotate: 0deg; } }
+
+/* The games window opens on a choice of mode. */
+.games-lead { margin-top: 4px; color: var(--muted); font-size: 1.05rem; }
+.mode-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 16px; margin-top: 20px; }
+.mode-card {
+  display: grid;
+  justify-items: start;
+  align-content: start;
+  gap: 6px;
+  padding: 22px;
+  border: 2px solid var(--line);
+  border-radius: 16px;
+  color: var(--navy);
+  background: linear-gradient(160deg, #fff 55%, #eef6ff);
+  box-shadow: 0 4px 0 var(--line);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: translate .15s, box-shadow .15s, border-color .15s;
+}
+.mode-card:hover { translate: 0 -2px; border-color: #9fb4c8; box-shadow: 0 6px 0 #9fb4c8; }
+.mode-card:active { translate: 0 2px; box-shadow: 0 1px 0 #9fb4c8; }
+.mode-card:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+.mode-card strong { font-size: 1.55rem; letter-spacing: -.035em; }
+.mode-card > span:not(.mode-art, .mode-note) { color: var(--muted); line-height: 1.5; }
+.mode-solo { border-color: #e8a5c4; background: linear-gradient(160deg, #fff 55%, #fff1f7); box-shadow: 0 4px 0 #e8a5c4; }
+.mode-solo:hover { border-color: #d6407e; box-shadow: 0 6px 0 #d6407e; }
+/* Portraits: the player alone, or a stack of friends, with an arcade "1P" / "2P+" tag. */
+.mode-art { --ring: #e8a5c4; --tag: #d6407e; --tag-shadow: #9e2c5a; position: relative; display: flex; align-items: flex-end; height: 84px; margin-bottom: 10px; }
+.mode-group .mode-art { --ring: #a9c4e8; --tag: #2f6fc4; --tag-shadow: #1d4c8c; }
+.mode-faces { display: flex; }
+.mode-face {
+  width: 76px;
+  height: 76px;
+  border: 4px solid #fff;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 2px var(--ring), 0 6px 14px #14284224;
+  image-rendering: pixelated;
+  transition: translate .25s cubic-bezier(.3, 1.5, .5, 1), rotate .25s;
+}
+.mode-group .mode-face { width: 60px; height: 60px; }
+.mode-group .mode-face + .mode-face { margin-left: -18px; }
+.mode-group .mode-face:nth-child(2) { position: relative; z-index: 1; translate: 0 -6px; }
+.mode-tag {
+  position: absolute;
+  left: calc(100% - 26px);
+  bottom: -4px;
+  z-index: 2;
+  padding: 3px 7px;
+  border: 2px solid #fff;
+  border-radius: 7px;
+  color: #fff;
+  background: var(--tag);
+  box-shadow: 0 3px 0 var(--tag-shadow);
+  font: 800 .78rem/1.2 var(--mono);
+  letter-spacing: .04em;
+}
+.mode-solo:hover .mode-face { translate: 0 -4px; rotate: -4deg; }
+.mode-group:hover .mode-face:nth-child(1) { translate: -6px 0; }
+.mode-group:hover .mode-face:nth-child(2) { translate: 0 -10px; }
+.mode-group:hover .mode-face:nth-child(3) { translate: 6px 0; }
+.mode-note {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 6px 11px;
+  border-radius: 999px;
+  color: #8f2553;
+  background: #fde3ef;
+  font: 650 .8rem/1.3 var(--mono);
+}
+.mode-group .mode-note { color: #1d4c8c; background: #e3eefb; }
+.gift-icon {
+  flex: 0 0 auto;
+  width: 14px;
+  height: 13px;
+  margin-top: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #0000 40%, #edc45b 40% 60%, #0000 60%), #d6407e;
+  box-shadow: 0 -3px 0 -1px #edc45b;
+}
+.library-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+/* Duo and group games that are still on the way. */
+.soon-card { border-style: dashed; background: repeating-linear-gradient(-45deg, #fff 0 12px, #f6f8fb 12px 24px); }
+.soon-mark {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  color: #fff;
+  background: #8ea3ba;
+  font: 800 1.4rem var(--mono);
+}
+.soon-mark::before { content: "?"; }
+.soon-tag {
+  grid-column: 1 / -1;
+  justify-self: start;
+  padding: 5px 10px;
+  border-radius: 999px;
+  color: #1d4c8c;
+  background: #e3eefb;
+  font: 650 .8rem var(--mono);
+}
 .popup-game { padding: clamp(17px, 3vw, 30px); }
 .popup-game-head { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; margin-bottom: 17px; }
 .popup-game-head h2 { margin-top: 5px; font-size: clamp(1.65rem, 4vw, 2.45rem); letter-spacing: -.045em; line-height: 1.12; }
@@ -765,6 +998,9 @@ dialog.popup-reboot[open] { animation: popup-alert-enter 700ms ease-out backward
   dialog.popup-reboot[open], .popup-reboot-scan, .popup-virus, .popup-virus-danger, .popup-virus-log, .popup-virus-stage::after { animation: none; }
   .popup-virus-echo { transform: translate(var(--echo-x), var(--echo-y)) scale(.56); }
   .popup-virus-stage::after { opacity: .23; }
+  .certificate-card:not(.is-unlocked) .certificate-mark, .certificate-card.is-unlocked .certificate-mark,
+  .certificate-card.is-revealing, .certificate-card.is-revealing .certificate-mark { animation: none; }
+  .mode-card { transition: none; }
 }
 @media (max-width: 670px) {
   .game-intro, .popup-lobby, .popup-form-shell { grid-template-columns: 1fr; gap: 10px; }
@@ -790,8 +1026,53 @@ dialog.popup-reboot[open] { animation: popup-alert-enter 700ms ease-out backward
 }
 .lag-intro h3 { font-size: 1.3rem; }
 .lag-intro p, #lag-controls { color: var(--muted); line-height: 1.5; }
-.lag-intro label { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-weight: 700; }
-.lag-intro select { min-height: 42px; max-width: 100%; border: 1px solid #86a7af; border-radius: 6px; padding: 5px 10px; font: inherit; background: #fff; }
+/* The drawings to choose from, each one with its outline as a preview. */
+.lag-intro:has(.lag-themes) { max-width: 860px; }
+.lag-themes { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 132px), 1fr)); gap: 10px; margin: 0; padding: 0; border: 0; }
+.lag-themes legend { margin-bottom: 8px; padding: 0; font-weight: 700; }
+.lag-theme {
+  position: relative;
+  display: grid;
+  justify-items: start;
+  gap: 4px;
+  padding: 8px 8px 10px;
+  border: 2px solid #c3d9dc;
+  border-radius: 10px;
+  background: #fff;
+  font-weight: 650;
+  cursor: pointer;
+  transition: border-color .15s, box-shadow .15s, translate .15s;
+}
+.lag-theme:hover { border-color: #86a7af; translate: 0 -2px; }
+.lag-theme input { position: absolute; opacity: 0; pointer-events: none; }
+.lag-theme svg {
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+  background: radial-gradient(#a1bec560 1px, transparent 1.1px) 0 0 / 12px 12px, #ecf7f4;
+}
+.lag-theme path { fill: none; stroke: #28596b; stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; }
+.lag-theme-name { font-size: .92rem; line-height: 1.2; }
+.lag-theme-level { padding: 2px 8px; border-radius: 999px; font: 700 .68rem var(--mono); }
+.lag-theme-level.is-easy { color: #1f6e4a; background: #dcf2e6; }
+.lag-theme-level.is-mid { color: #7a4310; background: #fde2bd; }
+.lag-theme-level.is-hard { color: #9e2c40; background: #fde1e6; }
+.lag-theme:has(input:checked) { border-color: #28596b; box-shadow: 0 0 0 3px #b9dcd8; }
+.lag-theme:has(input:checked)::after {
+  content: "✓";
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  color: #fff;
+  background: #28596b;
+  font: 800 .75rem var(--mono);
+}
+.lag-theme:has(input:focus-visible) { outline: 3px solid var(--blue); outline-offset: 2px; }
 .lag-intro .primary-button { justify-self: start; }
 .lag-meter, .lag-actions { display: flex; justify-content: space-between; flex-wrap: wrap; align-items: center; gap: 8px; margin-block: 14px; }
 #lag-delay { padding: 5px 9px; border-radius: 5px; color: #28596b; background: #e1f2ee; font: 700 .9rem var(--mono); }

@@ -7,15 +7,25 @@
     <meta name="description" content="Front Arcade, a oficina de boas práticas de front-end em formato de minijogos.">
     <title>Front Arcade</title>
     <link rel="stylesheet" href="./styles.css">
-    <link rel="stylesheet" href="./builder.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,700;0,6..96,900;1,6..96,500&amp;family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,500;1,9..144,900&amp;family=Inter:wght@400;600;700&amp;family=Space+Mono:wght@400;700&amp;family=Gluten:wght@500;700;800&amp;display=swap">
     <link rel="stylesheet" href="./site-preview.css">
+    <link rel="stylesheet" href="./builder.css">
     <link rel="stylesheet" href="./pepi-bolota.css">
     <link rel="stylesheet" href="./pepi-companion.css">
+    <link rel="stylesheet" href="./garcom.css">
+    <link rel="stylesheet" href="./habitos.css">
+    <link rel="stylesheet" href="./obras.css">
     <script src="./art.js" defer></script>
     <script src="./app.js" defer></script>
     <script src="./olhar-afiado.js" defer></script>
     <script src="./popups-infinitos.js" defer></script>
     <script src="./lag-lab.js" defer></script>
+    <script src="./garcom-relampago.js" defer></script>
+    <script src="./habitos.js" defer></script>
+    <script src="./obras.js" defer></script>
+    <script src="./certificado.js" defer></script>
     <script src="./site-builder.js" defer></script>
     <script src="./pepi-scenery.js" defer></script>
     <script src="./pepi-bolota.js" defer></script>
@@ -55,7 +65,7 @@
           </button>
           <button id="open-builder" class="desktop-shortcut builder-shortcut" type="button" aria-controls="builder-window" aria-expanded="false">
             <span class="scrapbook-icon" aria-hidden="true"></span>
-            <span>Construa Meu Site</span>
+            <span>Crie Meu Site</span>
           </button>
         </nav>
 
@@ -69,23 +79,92 @@
           </header>
 
           <div id="game-library" class="library">
-            <h2 tabindex="-1">Jogos da oficina</h2>
-            <div class="game-list">
-              <article class="game-card color-game-card">
-                <div class="color-game-mark" aria-hidden="true"></div>
-                <div><h3>Olhar Afiado</h3><p>Encontre a cor de uma região da imagem.</p></div>
-                <button id="play-color" class="primary-button" type="button">Jogar</button>
-              </article>
-              <article class="game-card next-game-card">
-                <span class="lock-icon" aria-hidden="true"></span>
-                <div><h3>Os Pop-ups Infinitos</h3><p id="next-game-status"></p></div>
-                <button id="play-popups" class="primary-button" type="button" disabled>Jogar</button>
-              </article>
-              <article id="lag-card" class="game-card next-game-card">
-                <span class="lock-icon" aria-hidden="true"></span>
-                <div><h3>Lag Lab</h3><p id="lag-card-status">Conclua Os Pop-ups Infinitos para jogar.</p></div>
-                <button id="play-lag" class="primary-button" type="button" disabled>Jogar</button>
-              </article>
+            <div id="games-modes" class="games-modes">
+              <h2 tabindex="-1">Jogos da oficina</h2>
+              <p class="games-lead">Como você quer jogar hoje?</p>
+              <div class="mode-list">
+                <button id="mode-solo" class="mode-card mode-solo" type="button" aria-describedby="mode-solo-note">
+                  <span class="mode-art" aria-hidden="true">
+                    <span class="mode-faces"><canvas class="mode-face" width="88" height="88"></canvas></span>
+                    <span class="mode-tag">1P</span>
+                  </span>
+                  <strong>Individual</strong>
+                  <span id="mode-solo-count">Seis jogos para completar no seu ritmo.</span>
+                  <span id="mode-solo-note" class="mode-note"><i class="gift-icon" aria-hidden="true"></i><span id="mode-solo-progress">Conclua todos e ganhe um prêmio surpresa</span></span>
+                </button>
+                <button id="mode-group" class="mode-card mode-group" type="button">
+                  <span class="mode-art" aria-hidden="true">
+                    <span class="mode-faces"><canvas class="mode-face" width="72" height="72"></canvas><canvas class="mode-face" width="72" height="72"></canvas><canvas class="mode-face" width="72" height="72"></canvas></span>
+                    <span class="mode-tag">2P+</span>
+                  </span>
+                  <strong>Duo e grupo</strong>
+                  <span>Desafios para jogar junto com os amigos.</span>
+                  <span class="mode-note">Novidades chegando</span>
+                </button>
+              </div>
+            </div>
+
+            <div id="games-solo" class="games-section" hidden>
+              <div class="library-head">
+                <h2 id="solo-title" tabindex="-1">Individual</h2>
+                <button class="secondary-button games-back" type="button">Trocar de modo</button>
+              </div>
+              <div class="game-list">
+                <article class="game-card color-game-card" data-game="color">
+                  <div class="color-game-mark" aria-hidden="true"></div>
+                  <div><h3>Olhar Afiado</h3><p>Encontre a cor de uma região da imagem.</p></div>
+                  <button id="play-color" class="primary-button" type="button">Jogar</button>
+                </article>
+                <article class="game-card next-game-card" data-game="popup">
+                  <span class="game-icon" data-icon="popup" aria-hidden="true"><span class="lock-icon"></span></span>
+                  <div><h3>Os Pop-ups Infinitos</h3><p id="next-game-status"></p></div>
+                  <button id="play-popups" class="primary-button" type="button" disabled>Jogar</button>
+                </article>
+                <article id="lag-card" class="game-card next-game-card" data-game="lag">
+                  <span class="game-icon" data-icon="lag" aria-hidden="true"><span class="lock-icon"></span></span>
+                  <div><h3>Lag Lab</h3><p id="lag-card-status">Conclua Os Pop-ups Infinitos para jogar.</p></div>
+                  <button id="play-lag" class="primary-button" type="button" disabled>Jogar</button>
+                </article>
+                <article id="waiter-card" class="game-card next-game-card" data-game="waiter">
+                  <span class="game-icon" data-icon="waiter" aria-hidden="true"><span class="lock-icon"></span></span>
+                  <div><h3>Garçom Relâmpago</h3><p id="waiter-card-status">Conclua o Lag Lab para jogar.</p></div>
+                  <button id="play-waiter" class="primary-button" type="button" disabled>Jogar</button>
+                </article>
+                <article id="habit-card" class="game-card next-game-card" data-game="habit">
+                  <span class="game-icon" data-icon="habit" aria-hidden="true"><span class="lock-icon"></span></span>
+                  <div><h3>Armadilha dos Hábitos Ruins</h3><p id="habit-card-status">Conclua o Garçom Relâmpago para jogar.</p></div>
+                  <button id="play-habit" class="primary-button" type="button" disabled>Jogar</button>
+                </article>
+                <article id="obra-card" class="game-card next-game-card" data-game="obra">
+                  <span class="game-icon" data-icon="obra" aria-hidden="true"><span class="lock-icon"></span></span>
+                  <div><h3>Tela em Obras</h3><p id="obra-card-status">Conclua a Armadilha dos Hábitos Ruins para jogar.</p></div>
+                  <button id="play-obra" class="primary-button" type="button" disabled>Jogar</button>
+                </article>
+                <article id="certificate-card" class="game-card certificate-card">
+                  <span class="certificate-mark" aria-hidden="true"></span>
+                  <div><h3 id="certificate-name">Prêmio surpresa</h3><p id="certificate-status">Conclua todos os jogos individuais para abrir.</p></div>
+                  <button id="open-certificate" class="primary-button" type="button" disabled>Bloqueado</button>
+                </article>
+              </div>
+            </div>
+
+            <div id="games-group" class="games-section" hidden>
+              <div class="library-head">
+                <h2 id="group-title" tabindex="-1">Duo e grupo</h2>
+                <button class="secondary-button games-back" type="button">Trocar de modo</button>
+              </div>
+              <div class="game-list">
+                <article class="game-card soon-card">
+                  <span class="soon-mark" aria-hidden="true"></span>
+                  <div><h3>Descreve que Eu Monto</h3><p>Uma pessoa descreve uma tela; a outra monta sem ver. Depois, troquem de papel.</p></div>
+                  <span class="soon-tag">Em breve</span>
+                </article>
+                <article class="game-card soon-card">
+                  <span class="soon-mark" aria-hidden="true"></span>
+                  <div><h3>Auditoria Relâmpago</h3><p>Equipes caçam problemas de acessibilidade escondidos num site, contra o relógio.</p></div>
+                  <span class="soon-tag">Em breve</span>
+                </article>
+              </div>
             </div>
           </div>
 
@@ -240,8 +319,8 @@
             <div id="lag-intro" class="lag-intro">
               <h3>Quando a interface demora a responder</h3>
               <p>O Limiar de Doherty associa uma interação mais fluida a respostas rápidas, em torno de 400 ms ou menos. Aqui você sente o que muda ao repetir a mesma tarefa com quatro atrasos diferentes.</p>
-              <p>Escolha um tema e reproduza o desenho. A pontuação considera quanto do contorno você cobriu e quanto do seu traço ficou perto dele.</p>
-              <label>Tema <select id="lag-theme"><option value="arcos">Arcos da Atalaia</option><option value="peixe">Peixe</option><option value="foguete">Foguete</option></select></label>
+              <p>Escolha um desenho e reproduza o contorno. A pontuação considera quanto do contorno você cobriu e quanto do seu traço ficou perto dele.</p>
+              <fieldset id="lag-themes" class="lag-themes"><legend>Escolha o desenho</legend></fieldset>
               <button id="start-lag" class="primary-button" type="button">Começar experimento</button>
             </div>
             <div id="lag-round" hidden>
@@ -270,47 +349,271 @@
               <button id="again-lag" class="primary-button" type="button">Jogar novamente</button>
             </div>
           </section>
+
+          <section id="waiter-game" class="waiter-game" aria-labelledby="waiter-title" hidden>
+            <div class="color-game-header">
+              <div><h2 id="waiter-title" tabindex="-1">Garçom Relâmpago</h2><p>Ache cada pedido no cardápio o mais rápido que puder.</p></div>
+              <button id="back-from-waiter" class="secondary-button" type="button">Voltar aos jogos</button>
+            </div>
+            <div class="waiter-room">
+              <div class="waiter-counter" aria-hidden="true"><span>Cozinha</span></div>
+              <div class="waiter-host"></div>
+              <p class="waiter-bubble" aria-live="polite" hidden><strong>Pepi Bolota</strong><span class="waiter-bubble-text"></span></p>
+              <ol class="waiter-tables" aria-hidden="true"></ol>
+            </div>
+            <div id="waiter-intro" class="waiter-intro">
+              <h3>Quanto mais opções, mais tempo para escolher</h3>
+              <p>A Lei de Hick diz que o tempo para tomar uma decisão cresce com o número de opções. Hoje o Pepi é o garçom: os pedidos chegam, e você encontra cada um em cardápios com 4, 8, 16 e 32 itens.</p>
+              <p>Cada mesa espera no máximo <strong>7 segundos</strong>. Depois vem uma rodada extra com as mesmas 32 opções e <strong>filtros por categoria</strong>, para você comparar.</p>
+              <p class="waiter-goal">Sirva pelo menos <strong>12 dos 20 pedidos</strong> a tempo para concluir o turno e liberar o próximo jogo.</p>
+              <button id="start-waiter" class="primary-button" type="button">Começar o turno</button>
+            </div>
+            <div id="waiter-round" class="waiter-round" hidden>
+              <div class="waiter-hud">
+                <span id="waiter-phase"></span>
+                <span id="waiter-count"></span>
+                <span id="waiter-clock" aria-hidden="true">0,0 s</span>
+              </div>
+              <div class="waiter-patience" aria-hidden="true"><i id="waiter-patience-bar"></i></div>
+              <p id="waiter-ticket" class="waiter-ticket" aria-live="assertive"></p>
+              <div id="waiter-filters" class="waiter-filters" role="group" aria-label="Filtrar o cardápio por categoria" hidden></div>
+              <div id="waiter-menu" class="waiter-menu" role="group" aria-label="Cardápio"></div>
+            </div>
+            <div id="waiter-results" class="waiter-results" hidden>
+              <h3 id="waiter-result-title" tabindex="-1">Turno encerrado!</h3>
+              <p id="waiter-verdict" class="waiter-verdict" role="status"></p>
+              <figure class="waiter-chart">
+                <figcaption>Tempo médio por pedido, em segundos</figcaption>
+                <div class="waiter-legend"><span class="is-flat">Cardápio sem filtro</span><span class="is-filtered">Mesmas 32 opções, com filtros</span><span class="is-limit">Limite de espera (7 s)</span></div>
+                <div id="waiter-bars" class="waiter-bars"></div>
+              </figure>
+              <p id="waiter-summary" class="waiter-summary"></p>
+              <details class="waiter-table">
+                <summary>Ver os números em tabela</summary>
+                <table>
+                  <thead><tr><th scope="col">Cardápio</th><th scope="col">Tempo médio</th><th scope="col">Erros</th><th scope="col">Perdidos</th></tr></thead>
+                  <tbody id="waiter-table-body"></tbody>
+                </table>
+              </details>
+              <button id="again-waiter" class="primary-button" type="button">Jogar novamente</button>
+            </div>
+          </section>
+
+          <section id="habit-game" class="habit-game" aria-labelledby="habit-title" hidden>
+            <div class="color-game-header">
+              <div><h2 id="habit-title" tabindex="-1">Armadilha dos Hábitos Ruins</h2><p>A mesma tarefa, cada vez mais rápido. Até que algo muda.</p></div>
+              <button id="back-from-habit" class="secondary-button" type="button">Voltar aos jogos</button>
+            </div>
+
+            <div id="habit-intro" class="habit-intro">
+              <div class="habit-trap-art" aria-hidden="true"></div>
+              <div class="habit-intro-text">
+                <h3>Quando o automático vira armadilha</h3>
+                <p>Repetir uma tarefa cria um hábito: depois de algumas vezes, a mão vai sozinha para o mesmo lugar. Isso deixa tudo mais rápido, até a interface mudar.</p>
+                <p>Você vai cuidar das inscrições da oficina. A cada pedido, o tempo fica mais curto. Em alguns, a tela muda sem avisar: botões trocam de lugar e de cor, aparecem botões novos, a barra sobe para o topo… e, quanto mais o expediente avança, mais caótico fica.</p>
+                <p class="habit-rule"><span>A regra nunca muda</span>Abra o pedido <strong>novo</strong> na fila e clique em <strong>Aprovar</strong>.</p>
+                <fieldset class="habit-length">
+                  <legend>Quantas repetições?</legend>
+                  <label><input type="radio" name="habit-length" value="8"><span><strong>8</strong> rápida</span></label>
+                  <label><input type="radio" name="habit-length" value="10" checked><span><strong>10</strong> média</span></label>
+                  <label><input type="radio" name="habit-length" value="12"><span><strong>12</strong> longa</span></label>
+                </fieldset>
+                <p class="habit-goal">Responda pelo menos <strong>metade dos pedidos</strong> dentro do tempo para concluir o jogo.</p>
+                <button id="start-habit" class="primary-button" type="button">Começar o expediente</button>
+              </div>
+            </div>
+
+            <div id="habit-round" class="habit-round" hidden>
+              <div class="habit-hud">
+                <span id="habit-count"></span>
+                <span class="habit-hud-rule">Abra o pedido novo e clique em <strong>Aprovar</strong></span>
+                <span id="habit-clock" aria-hidden="true">0,0 s</span>
+              </div>
+              <div class="habit-timer" aria-hidden="true"><i id="habit-timer-bar"></i></div>
+              <div class="habit-app">
+                <div class="habit-app-bar" aria-hidden="true"><i></i><i></i><i></i><span>Painel de inscrições · Oficina</span></div>
+                <div class="habit-app-body">
+                  <section class="habit-queue" aria-labelledby="habit-queue-title">
+                    <h3 id="habit-queue-title">Fila de inscrições</h3>
+                    <ol id="habit-queue"></ol>
+                  </section>
+                  <section id="habit-review" class="habit-review" aria-label="Pedido aberto" aria-live="polite"></section>
+                </div>
+              </div>
+              <p id="habit-feedback" class="habit-feedback" aria-live="assertive"></p>
+            </div>
+
+            <div id="habit-results" class="habit-results" hidden>
+              <h3 id="habit-result-title" tabindex="-1">Expediente encerrado!</h3>
+              <p id="habit-verdict" class="habit-verdict" role="status"></p>
+              <div id="habit-tiles" class="habit-tiles"></div>
+              <figure class="habit-chart">
+                <figcaption>Tempo de cada pedido, em segundos</figcaption>
+                <div class="habit-legend">
+                  <span class="is-normal">Pedido normal</span>
+                  <span class="is-trap">Pedido com armadilha</span>
+                  <span class="is-limit">Limite de tempo</span>
+                </div>
+                <div id="habit-plot" class="habit-plot"></div>
+              </figure>
+              <h4 class="habit-subtitle">As armadilhas, uma a uma</h4>
+              <ul id="habit-traps" class="habit-traps"></ul>
+              <p id="habit-lesson" class="habit-lesson"></p>
+              <details class="waiter-table">
+                <summary>Ver todos os pedidos em tabela</summary>
+                <table>
+                  <thead><tr><th scope="col">Pedido</th><th scope="col">Mudança</th><th scope="col">Tempo</th><th scope="col">Resultado</th></tr></thead>
+                  <tbody id="habit-table-body"></tbody>
+                </table>
+              </details>
+              <button id="again-habit" class="primary-button" type="button">Jogar novamente</button>
+            </div>
+          </section>
+
+          <section id="obra-game" class="obra-game" aria-labelledby="obra-title" hidden>
+            <div class="color-game-header">
+              <div><h2 id="obra-title" tabindex="-1">Tela em Obras</h2><p>Monte estados vazios com blocos semânticos e passe pela auditoria.</p></div>
+              <button id="back-from-obra" class="secondary-button" type="button">Voltar aos jogos</button>
+            </div>
+            <div class="obra-site">
+              <div class="obra-host"></div>
+              <p class="obra-bubble" aria-live="polite" hidden><strong>Pepi Bolota</strong><span class="obra-bubble-text"></span></p>
+            </div>
+
+            <div id="obra-intro" class="obra-intro">
+              <h3>Toda tela vazia também é uma tela</h3>
+              <p>Caixa de entrada sem mensagens, carrinho sem produtos, busca sem resultado: o estado vazio é justamente onde a pessoa mais precisa de ajuda. E quem usa leitor de tela só entende o vazio se o HTML contar a mesma história.</p>
+              <p>Em três obras, monte cada estado vazio encaixando blocos: arraste as peças para a tela (ou clique nelas) e ponha tudo em ordem antes que o tempo acabe. Cuidado: algumas peças parecem certas, mas não são.</p>
+              <div class="obra-criteria">
+                <div><h4>Semântica</h4><ul><li>Hierarquia de títulos</li><li>Rótulos</li><li>Descrições</li><li>Ordem de foco</li></ul></div>
+                <div><h4>Estado vazio</h4><ul><li>Explica o porquê</li><li>Indica a ação</li><li>Tom amigável</li><li>Hierarquia visual</li></ul></div>
+              </div>
+              <p class="obra-goal">Faça pelo menos <strong>60% de média</strong> na auditoria para concluir o jogo.</p>
+              <button id="start-obra" class="primary-button" type="button">Começar a obra</button>
+            </div>
+
+            <div id="obra-round" class="obra-round" hidden>
+              <div class="obra-hud">
+                <span id="obra-step" tabindex="-1"></span>
+                <span id="obra-brief" class="obra-brief"></span>
+                <span id="obra-clock" aria-hidden="true"></span>
+              </div>
+              <div class="obra-timer" aria-hidden="true"><i id="obra-timer-bar"></i></div>
+              <div class="obra-board">
+                <section class="obra-bin" aria-labelledby="obra-bin-title">
+                  <h3 id="obra-bin-title">Peças</h3>
+                  <p class="obra-hint">Arraste para a tela ou clique para encaixar no fim.</p>
+                  <ul id="obra-palette" class="obra-palette"></ul>
+                </section>
+                <section class="obra-screen" aria-labelledby="obra-screen-title">
+                  <div id="obra-screen-art" class="obra-screen-bar"><i></i><i></i><i></i><span>app.exemplo</span></div>
+                  <div class="obra-page-h1"><code>&lt;h1&gt;</code><span id="obra-screen-title"></span></div>
+                  <ol id="obra-stage" class="obra-stage is-empty" aria-label="Estado vazio em construção"></ol>
+                  <p class="obra-stage-empty" aria-hidden="true">Solte as peças aqui</p>
+                </section>
+              </div>
+              <div class="obra-actions">
+                <span id="obra-count"></span>
+                <button id="obra-hand-in" class="primary-button" type="button">Entregar para auditoria</button>
+              </div>
+              <p id="obra-live" class="visually-hidden" aria-live="polite"></p>
+            </div>
+
+            <div id="obra-audit" class="obra-audit" hidden>
+              <div class="obra-audit-head">
+                <div><h3 id="obra-audit-title" tabindex="-1"></h3><p id="obra-time-note"></p></div>
+                <div id="obra-score" class="obra-score"></div>
+              </div>
+              <div class="obra-audit-grid">
+                <figure class="obra-panel"><figcaption>Como fica na tela</figcaption><div id="obra-preview"></div></figure>
+                <figure class="obra-panel"><figcaption>Como o leitor de tela anuncia</figcaption><ol id="obra-reader" class="obra-reader"></ol></figure>
+              </div>
+              <ul id="obra-checklist" class="obra-checklist"></ul>
+              <button id="obra-next" class="primary-button" type="button">Próxima obra</button>
+            </div>
+
+            <div id="obra-results" class="obra-results" hidden>
+              <h3 id="obra-result-title" tabindex="-1">Fim do expediente na obra!</h3>
+              <p id="obra-verdict" class="obra-verdict" role="status"></p>
+              <div class="obra-final-row"><div id="obra-final" class="obra-final"></div><div id="obra-bars" class="obra-bars"></div></div>
+              <p id="obra-lesson" class="obra-lesson"></p>
+              <details class="waiter-table">
+                <summary>Ver as checagens em tabela</summary>
+                <table>
+                  <thead><tr><th scope="col">Checagem</th><th scope="col">Grupo</th><th scope="col">Aprovada em</th></tr></thead>
+                  <tbody id="obra-summary"></tbody>
+                </table>
+              </details>
+              <button id="again-obra" class="primary-button" type="button">Jogar novamente</button>
+            </div>
+          </section>
+
+          <section id="certificate-view" class="certificate-view" aria-labelledby="certificate-title" hidden>
+            <div class="color-game-header">
+              <div><h2 id="certificate-title" tabindex="-1">Seu certificado</h2><p>Você concluiu a trilha individual da oficina. Baixe e compartilhe!</p></div>
+              <button id="back-from-certificate" class="secondary-button" type="button">Voltar aos jogos</button>
+            </div>
+            <figure class="certificate-sheet"><canvas id="certificate-canvas" width="2000" height="1414" role="img" aria-label="Certificado de conclusão do Front Arcade"></canvas></figure>
+            <div class="certificate-actions">
+              <button id="download-certificate-png" class="primary-button" type="button"><span class="download-icon" aria-hidden="true"></span>Baixar imagem (PNG)</button>
+              <button id="download-certificate-pdf" class="secondary-button" type="button"><span class="download-icon" aria-hidden="true"></span>Baixar PDF</button>
+            </div>
+          </section>
         </section>
         <section id="builder-window" class="window builder-window" aria-labelledby="builder-window-title" hidden>
           <header class="window-bar">
-            <div class="window-title"><span class="scrapbook-icon small-scrapbook" aria-hidden="true"></span><h1 id="builder-window-title" tabindex="-1">Construa Meu Site</h1></div>
+            <div class="window-title"><span class="scrapbook-icon small-scrapbook" aria-hidden="true"></span><h1 id="builder-window-title" tabindex="-1">Crie Meu Site</h1></div>
             <div class="window-actions">
               <button class="chrome-button fullscreen" type="button" data-fullscreen="builder-window" aria-label="Tela cheia" title="Tela cheia" aria-pressed="false"></button>
-              <button id="close-builder" class="chrome-button close" type="button" aria-label="Fechar Construa Meu Site"></button>
+              <button id="close-builder" class="chrome-button close" type="button" aria-label="Fechar Crie Meu Site"></button>
             </div>
           </header>
-          <div class="builder-toolbar">
-            <div><h2>Monte sua página</h2><p>Escolha uma peça e personalize na prévia.</p></div>
-            <div class="builder-toolbar-actions">
-              <button id="builder-add-photo" class="primary-button" type="button">Adicionar foto</button>
-              <button id="builder-preview-mode" class="secondary-button" type="button" aria-pressed="false">Ver página</button>
-              <button id="builder-export" class="secondary-button" type="button">Baixar site</button>
-              <input id="builder-photo-input" type="file" accept="image/jpeg,image/png,image/webp" hidden>
-            </div>
-          </div>
-          <p id="builder-status" class="builder-status" role="status"></p>
-          <div id="builder-workbench" class="builder-workbench">
-            <aside class="builder-materials" aria-label="Materiais do scrapbook">
-              <div class="builder-tabs" role="group" aria-label="Categorias de materiais">
-                <button type="button" data-builder-tab="blocks" aria-pressed="true">Peças</button>
-                <button type="button" data-builder-tab="identity" aria-pressed="false">Marca</button>
-                <button type="button" data-builder-tab="stickers" aria-pressed="false">Adesivos</button>
+          <div class="cms-app">
+            <div class="cms-topbar">
+              <div class="cms-brand">
+                <h2>Seu portfólio, do seu jeito</h2>
+                <p>Clique nos textos para escrever, nos quadros para pôr fotos e arraste enfeites como numa colagem.</p>
               </div>
-              <div id="builder-material-list" class="builder-material-list"></div>
-            </aside>
-            <div class="builder-paper">
-              <div class="builder-paper-bar">
-                <p>Prévia do site</p>
-                <button id="builder-size" class="secondary-button" type="button" aria-pressed="false">Como fica no celular</button>
+              <div class="cms-top-actions">
+                <button id="cms-undo" class="cms-tool" type="button" title="Desfazer (Ctrl+Z)" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14L4 9l5-5M4 9h10a6 6 0 0 1 0 12h-3"/></svg><span>Desfazer</span></button>
+                <button id="cms-redo" class="cms-tool" type="button" title="Refazer (Ctrl+Y)" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14l5-5-5-5M20 9H10a6 6 0 0 0 0 12h3"/></svg><span>Refazer</span></button>
+                <div class="cms-segment" role="group" aria-label="Tamanho da prévia">
+                  <button type="button" data-cms-view="desktop" aria-pressed="true">Computador</button>
+                  <button type="button" data-cms-view="phone" aria-pressed="false">Celular</button>
+                </div>
+                <button id="cms-preview" class="cms-tool" type="button" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12ZM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/></svg><span>Ver como visitante</span></button>
+                <button id="cms-export" class="primary-button cms-export" type="button">Baixar meu site</button>
               </div>
-              <div id="builder-page" class="site-draft"></div>
-              <p id="builder-empty" class="builder-empty" hidden>Adicione um recorte para começar a montar a página.</p>
             </div>
-            <aside class="builder-inspector" aria-labelledby="builder-inspector-title">
-              <h3 id="builder-inspector-title">Personalizar</h3>
-              <p id="builder-inspector-empty">Selecione um recorte na prévia para editá-lo.</p>
-              <form id="builder-inspector-form" hidden></form>
-            </aside>
+            <p id="builder-status" class="cms-status" role="status"></p>
+            <div class="cms-body">
+              <aside class="cms-drawer" aria-label="Gaveta de materiais">
+                <div class="cms-drawer-scroll">
+                <section class="cms-steps" aria-labelledby="cms-steps-title">
+                  <div class="cms-steps-head"><h3 id="cms-steps-title">Seu portfólio em 4 passos</h3><span id="cms-steps-count"></span></div>
+                  <div id="cms-steps-bar" class="cms-steps-bar" aria-hidden="true"><i></i></div>
+                  <ol id="cms-steps" class="cms-steps-list"></ol>
+                </section>
+                <div class="cms-tabs" role="tablist" aria-label="Materiais">
+                  <button id="cms-tab-pages" type="button" role="tab" data-cms-tab="pages" aria-controls="cms-drawer-panel" aria-selected="true">Páginas</button>
+                  <button id="cms-tab-stickers" type="button" role="tab" data-cms-tab="stickers" aria-controls="cms-drawer-panel" aria-selected="false" tabindex="-1">Enfeites</button>
+                  <button id="cms-tab-style" type="button" role="tab" data-cms-tab="style" aria-controls="cms-drawer-panel" aria-selected="false" tabindex="-1">Estilo</button>
+                </div>
+                <div id="cms-drawer-panel" class="cms-drawer-panel" role="tabpanel" aria-labelledby="cms-tab-pages"></div>
+                <button id="cms-reset" class="cms-reset" type="button">Recomeçar do modelo</button>
+                </div>
+                <div id="cms-helper" class="cms-helper">
+                  <button type="button" class="cms-helper-host" aria-label="Pedir uma dica ao Pepi" title="Pedir uma dica ao Pepi"></button>
+                  <p class="cms-helper-bubble" aria-live="polite" hidden><strong>Pepi Bolota</strong><span class="cms-helper-text"></span></p>
+                </div>
+              </aside>
+              <div id="cms-canvas" class="cms-canvas">
+                <div id="cms-paper" class="cms-paper">
+                  <div id="builder-page" class="cms-site" data-theme="azul" role="region" aria-label="Prévia do seu site"></div>
+                </div>
+              </div>
+            </div>
+            <input id="builder-photo-input" type="file" accept="image/jpeg,image/png,image/webp" hidden>
           </div>
         </section>
         <section id="about-window" class="window about-window" aria-labelledby="about-window-title" hidden>
@@ -356,11 +659,13 @@
     </div>
 
     <dialog id="intro-dialog" class="intro-dialog" aria-labelledby="intro-title">
-      <!-- Behind the stage: pixel scenery of Aracaju and the UFS (pepi-scenery.js), two
-           small cards about Pepi, the close-up spotlight and the window where he is built. -->
+      <!-- Behind the stage: pixel scenery of Aracaju and the UFS (pepi-scenery.js), the
+           workshop where Pepi is built (it opens onto the seafront when he is ready), two
+           small cards about Pepi, the close-up spotlight and the build window. -->
       <div class="intro-os is-off" aria-hidden="true">
         <div class="scenery"></div>
         <div class="scenery-shade"></div>
+        <div class="intro-lab"><div class="lab-floor"></div><div class="lab-bits"></div></div>
         <div class="os-windows"></div>
         <div class="os-spotlight"></div>
         <div class="intro-build" hidden>
