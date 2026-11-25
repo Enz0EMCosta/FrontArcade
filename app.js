@@ -468,7 +468,57 @@ powerButton.addEventListener("click", () => {
 document.addEventListener("frontarcade:boot", () => bootDesktop({ delay: 0, editor: false }));
 
 desktopShortcut.addEventListener("click", openGames);
+// Crie Meu Site is the reward for the whole individual track: until every game is
+// done (certificado.js keeps the count), its shortcut wears a padlock and a click only
+// explains what is missing. ?site in the address opens it for testing.
+const builderFree = () => new URLSearchParams(location.search).has("site") || window.FrontArcadeTrail?.complete?.() === true;
+let lockNote = null;
+function paintBuilderLock() {
+  const locked = !builderFree();
+  const wasLocked = builderShortcut.classList.contains("is-locked");
+  builderShortcut.classList.toggle("is-locked", locked);
+  builderShortcut.setAttribute("aria-label", locked ? "Crie Meu Site, trancado: conclua todos os jogos individuais para abrir" : "Crie Meu Site");
+  if (wasLocked && !locked) {
+    lockNote?.remove();
+    builderShortcut.classList.add("is-new");
+    builderShortcut.addEventListener("click", () => builderShortcut.classList.remove("is-new"), { once: true });
+  }
+}
+function showBuilderLock() {
+  const { done = 0, total = 8 } = window.FrontArcadeTrail?.progress?.() ?? {};
+  lockNote?.remove();
+  lockNote = document.createElement("div");
+  lockNote.className = "lock-note";
+  lockNote.setAttribute("role", "status");
+  lockNote.innerHTML = `<strong>Crie Meu Site está trancado</strong><p>Ele é o prêmio da trilha: conclua os ${total} jogos individuais para montar o seu portfólio.</p>
+    <span class="lock-note-bar" aria-hidden="true"><i style="width:${Math.round(done / total * 100)}%"></i></span><small>${done} de ${total} jogos concluídos</small>
+    <div class="lock-note-actions"><button type="button" class="primary-button" data-lock="games">Ir para os jogos</button><button type="button" class="secondary-button" data-lock="close">Fechar</button></div>`;
+  builderShortcut.after(lockNote);
+  // Beside the shortcut, or under it when there is no room on the right.
+  const room = innerWidth - builderShortcut.getBoundingClientRect().right > lockNote.offsetWidth + 24;
+  lockNote.style.left = `${room ? builderShortcut.offsetLeft + builderShortcut.offsetWidth + 12 : builderShortcut.offsetLeft}px`;
+  lockNote.style.top = `${room ? builderShortcut.offsetTop : builderShortcut.offsetTop + builderShortcut.offsetHeight + 8}px`;
+  lockNote.querySelector("[data-lock='games']").focus();
+  lockNote.addEventListener("click", event => {
+    const action = event.target.closest("[data-lock]")?.dataset.lock;
+    if (!action) return;
+    lockNote.remove();
+    lockNote = null;
+    if (action === "games") openGames();
+    else builderShortcut.focus();
+  });
+  lockNote.addEventListener("keydown", event => {
+    if (event.key !== "Escape") return;
+    lockNote.remove();
+    lockNote = null;
+    builderShortcut.focus();
+  });
+  report("builder-locked", { done, total });
+}
+addEventListener("load", paintBuilderLock);
+document.addEventListener("frontarcade:event", () => setTimeout(paintBuilderLock, 0));
 builderShortcut.addEventListener("click", () => {
+  if (!builderFree()) return showBuilderLock();
   setGamesWindow(false);
   if (!aboutWindow.hidden) setAboutWindow("minimized");
   setBuilderWindow(true);

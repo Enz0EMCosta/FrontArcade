@@ -17,6 +17,8 @@
     <link rel="stylesheet" href="./garcom.css">
     <link rel="stylesheet" href="./habitos.css">
     <link rel="stylesheet" href="./obras.css">
+    <link rel="stylesheet" href="./labirinto.css">
+    <link rel="stylesheet" href="./casa.css">
     <script src="./art.js" defer></script>
     <script src="./app.js" defer></script>
     <script src="./olhar-afiado.js" defer></script>
@@ -25,7 +27,10 @@
     <script src="./garcom-relampago.js" defer></script>
     <script src="./habitos.js" defer></script>
     <script src="./obras.js" defer></script>
+    <script src="./labirinto.js" defer></script>
+    <script src="./casa.js" defer></script>
     <script src="./certificado.js" defer></script>
+    <script src="./site-stickers.js" defer></script>
     <script src="./site-builder.js" defer></script>
     <script src="./pepi-scenery.js" defer></script>
     <script src="./pepi-bolota.js" defer></script>
@@ -89,7 +94,7 @@
                     <span class="mode-tag">1P</span>
                   </span>
                   <strong>Individual</strong>
-                  <span id="mode-solo-count">Seis jogos para completar no seu ritmo.</span>
+                  <span id="mode-solo-count">Sete jogos para completar no seu ritmo.</span>
                   <span id="mode-solo-note" class="mode-note"><i class="gift-icon" aria-hidden="true"></i><span id="mode-solo-progress">Conclua todos e ganhe um prêmio surpresa</span></span>
                 </button>
                 <button id="mode-group" class="mode-card mode-group" type="button">
@@ -139,6 +144,16 @@
                   <span class="game-icon" data-icon="obra" aria-hidden="true"><span class="lock-icon"></span></span>
                   <div><h3>Tela em Obras</h3><p id="obra-card-status">Conclua a Armadilha dos Hábitos Ruins para jogar.</p></div>
                   <button id="play-obra" class="primary-button" type="button" disabled>Jogar</button>
+                </article>
+                <article id="maze-card" class="game-card next-game-card" data-game="maze">
+                  <span class="game-icon" data-icon="maze" aria-hidden="true"><span class="lock-icon"></span></span>
+                  <div><h3>Labirinto do Tab</h3><p id="maze-card-status">Conclua a Tela em Obras para jogar.</p></div>
+                  <button id="play-maze" class="primary-button" type="button" disabled>Jogar</button>
+                </article>
+                <article id="house-card" class="game-card next-game-card" data-game="house">
+                  <span class="game-icon" data-icon="house" aria-hidden="true"><span class="lock-icon"></span></span>
+                  <div><h3>A Casa Assombrada do Dark UX</h3><p id="house-card-status">Conclua o Labirinto do Tab para entrar… se tiver coragem.</p></div>
+                  <button id="play-house" class="primary-button" type="button" disabled>Jogar</button>
                 </article>
                 <article id="certificate-card" class="game-card certificate-card">
                   <span class="certificate-mark" aria-hidden="true"></span>
@@ -472,7 +487,7 @@
 
           <section id="obra-game" class="obra-game" aria-labelledby="obra-title" hidden>
             <div class="color-game-header">
-              <div><h2 id="obra-title" tabindex="-1">Tela em Obras</h2><p>Monte estados vazios com blocos semânticos e passe pela auditoria.</p></div>
+              <div><h2 id="obra-title" tabindex="-1">Tela em Obras</h2><p>Monte telas vazias com as peças certas e passe pela vistoria do Pepi.</p></div>
               <button id="back-from-obra" class="secondary-button" type="button">Voltar aos jogos</button>
             </div>
             <div class="obra-site">
@@ -481,40 +496,80 @@
             </div>
 
             <div id="obra-intro" class="obra-intro">
-              <h3>Toda tela vazia também é uma tela</h3>
-              <p>Caixa de entrada sem mensagens, carrinho sem produtos, busca sem resultado: o estado vazio é justamente onde a pessoa mais precisa de ajuda. E quem usa leitor de tela só entende o vazio se o HTML contar a mesma história.</p>
-              <p>Em três obras, monte cada estado vazio encaixando blocos: arraste as peças para a tela (ou clique nelas) e ponha tudo em ordem antes que o tempo acabe. Cuidado: algumas peças parecem certas, mas não são.</p>
-              <div class="obra-criteria">
-                <div><h4>Semântica</h4><ul><li>Hierarquia de títulos</li><li>Rótulos</li><li>Descrições</li><li>Ordem de foco</li></ul></div>
-                <div><h4>Estado vazio</h4><ul><li>Explica o porquê</li><li>Indica a ação</li><li>Tom amigável</li><li>Hierarquia visual</li></ul></div>
+              <div class="obra-intro-lead">
+                <h3>Toda tela vazia também é uma tela</h3>
+                <p>Caixa de entrada sem mensagens, carrinho sem produtos, busca sem resultado: é no vazio que a pessoa mais precisa de ajuda. Hoje você monta três desses vazios, peça por peça. Não precisa saber programar.</p>
               </div>
-              <p class="obra-goal">Faça pelo menos <strong>60% de média</strong> na auditoria para concluir o jogo.</p>
-              <button id="start-obra" class="primary-button" type="button">Começar a obra</button>
+              <div class="obra-learn">
+                <figure class="obra-lesson-card">
+                  <figcaption><span class="obra-chip">1</span>A receita de um bom vazio</figcaption>
+                  <div class="obra-recipe">
+                    <div class="obra-recipe-screen" aria-hidden="true">
+                      <span class="obra-recipe-art"></span>
+                      <b>Tudo em dia por aqui!</b>
+                      <i>Quando alguém escrever, as mensagens aparecem aqui.</i>
+                      <u>Escrever mensagem</u>
+                    </div>
+                    <ol class="obra-recipe-steps">
+                      <li><strong>Imagem</strong> mostra que o vazio é esperado.</li>
+                      <li><strong>Título</strong> diz o que aconteceu.</li>
+                      <li><strong>Texto</strong> explica o porquê e o que vem depois.</li>
+                      <li><strong>Botão</strong> leva ao próximo passo.</li>
+                    </ol>
+                  </div>
+                </figure>
+                <figure class="obra-lesson-card">
+                  <figcaption><span class="obra-chip">2</span>Toda peça usa um crachá</figcaption>
+                  <p class="obra-lesson-text">O crachá é o que o <strong>leitor de tela</strong>, o programa que lê a tela em voz alta para quem não enxerga, sabe sobre a peça. Duas peças podem parecer iguais e ter crachás diferentes:</p>
+                  <div class="obra-twins">
+                    <div><span class="obra-view-button" aria-hidden="true">Ver ofertas</span><span class="obra-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 12V4h8l10 10-8 8L3 12ZM7.5 8h.01"/></svg><span class="obra-badge-plain">Botão</span></span><small class="is-ok">O teclado alcança, e o leitor avisa: “botão”.</small></div>
+                    <div><span class="obra-view-button" aria-hidden="true">Ver ofertas</span><span class="obra-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 12V4h8l10 10-8 8L3 12ZM7.5 8h.01"/></svg><span class="obra-badge-plain">Só texto · não é botão</span></span><small class="is-bad">Parece botão, mas o teclado não chega até ele.</small></div>
+                  </div>
+                </figure>
+              </div>
+              <ol class="obra-how" aria-label="Como jogar">
+                <li><span aria-hidden="true">1</span><p>Escolha <strong>uma peça de cada tipo</strong>: clique nela ou arraste até a tela.</p></li>
+                <li><span aria-hidden="true">2</span><p>Arrume as peças na <strong>ordem da receita</strong>, com as setas ou arrastando.</p></li>
+                <li><span aria-hidden="true">3</span><p>Entregue para a <strong>vistoria</strong> do Pepi antes de o tempo acabar.</p></li>
+              </ol>
+              <div class="obra-start">
+                <p class="obra-goal">Faça pelo menos <strong>70% de média</strong> nas três vistorias para concluir o jogo.</p>
+                <button id="start-obra" class="primary-button" type="button">Começar a obra</button>
+              </div>
             </div>
 
             <div id="obra-round" class="obra-round" hidden>
               <div class="obra-hud">
-                <span id="obra-step" tabindex="-1"></span>
-                <span id="obra-brief" class="obra-brief"></span>
-                <span id="obra-clock" aria-hidden="true"></span>
+                <span id="obra-step" class="obra-step-label" tabindex="-1"></span>
+                <ol id="obra-steps" class="obra-steps" aria-label="Obras do dia"></ol>
+                <span class="obra-clock-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M12 21a8 8 0 1 0 0-16 8 8 0 0 0 0 16ZM12 9v4l2 2M10 2h4"/></svg><span id="obra-clock" aria-hidden="true"></span></span>
               </div>
+              <p id="obra-brief" class="obra-brief"></p>
               <div class="obra-timer" aria-hidden="true"><i id="obra-timer-bar"></i></div>
               <div class="obra-board">
                 <section class="obra-bin" aria-labelledby="obra-bin-title">
-                  <h3 id="obra-bin-title">Peças</h3>
-                  <p class="obra-hint">Arraste para a tela ou clique para encaixar no fim.</p>
-                  <ul id="obra-palette" class="obra-palette"></ul>
+                  <div class="obra-panel-head"><h3 id="obra-bin-title">Peças</h3><p class="obra-hint">Uma de cada tipo. Clique para pôr na tela ou trocar; clique de novo para tirar.</p></div>
+                  <div id="obra-palette" class="obra-palette"></div>
                 </section>
-                <section class="obra-screen" aria-labelledby="obra-screen-title">
-                  <div id="obra-screen-art" class="obra-screen-bar"><i></i><i></i><i></i><span>app.exemplo</span></div>
-                  <div class="obra-page-h1"><code>&lt;h1&gt;</code><span id="obra-screen-title"></span></div>
-                  <ol id="obra-stage" class="obra-stage is-empty" aria-label="Estado vazio em construção"></ol>
-                  <p class="obra-stage-empty" aria-hidden="true">Solte as peças aqui</p>
+                <section class="obra-side" aria-labelledby="obra-screen-label">
+                  <div class="obra-panel-head">
+                    <h3 id="obra-screen-label">A tela</h3>
+                    <div class="obra-toggles">
+                      <button type="button" class="obra-toggle" data-obra-view="badges" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 12V4h8l10 10-8 8L3 12ZM7.5 8h.01"/></svg>Crachás</button>
+                      <button type="button" class="obra-toggle" data-obra-view="code" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5"/></svg>Ver código</button>
+                    </div>
+                  </div>
+                  <div class="obra-screen">
+                    <div class="obra-screen-bar"><i></i><i></i><i></i><span id="obra-screen-url">app.exemplo</span></div>
+                    <div class="obra-page-h1"><span class="obra-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 12V4h8l10 10-8 8L3 12ZM7.5 8h.01"/></svg><span class="obra-badge-plain">Título · nível 1</span><code class="obra-badge-code">&lt;h1&gt;</code></span><span id="obra-screen-title"></span></div>
+                    <ol id="obra-stage" class="obra-stage is-empty" aria-label="Tela em construção"></ol>
+                    <p class="obra-stage-empty" aria-hidden="true">Clique nas peças ou arraste-as para cá</p>
+                  </div>
+                  <div class="obra-actions">
+                    <span id="obra-count"></span>
+                    <button id="obra-hand-in" class="primary-button" type="button">Entregar para vistoria</button>
+                  </div>
                 </section>
-              </div>
-              <div class="obra-actions">
-                <span id="obra-count"></span>
-                <button id="obra-hand-in" class="primary-button" type="button">Entregar para auditoria</button>
               </div>
               <p id="obra-live" class="visually-hidden" aria-live="polite"></p>
             </div>
@@ -525,8 +580,8 @@
                 <div id="obra-score" class="obra-score"></div>
               </div>
               <div class="obra-audit-grid">
-                <figure class="obra-panel"><figcaption>Como fica na tela</figcaption><div id="obra-preview"></div></figure>
-                <figure class="obra-panel"><figcaption>Como o leitor de tela anuncia</figcaption><ol id="obra-reader" class="obra-reader"></ol></figure>
+                <figure class="obra-panel"><figcaption>Como ficou na tela<small>Os alfinetes vermelhos marcam o que precisa de reforma.</small></figcaption><div id="obra-preview"></div></figure>
+                <figure class="obra-panel is-reader"><figcaption>Como o leitor de tela lê<button id="obra-listen" class="obra-listen" type="button">▶ Ouvir como o leitor de tela</button></figcaption><ol id="obra-reader" class="obra-reader"></ol></figure>
               </div>
               <ul id="obra-checklist" class="obra-checklist"></ul>
               <button id="obra-next" class="primary-button" type="button">Próxima obra</button>
@@ -547,6 +602,112 @@
               <button id="again-obra" class="primary-button" type="button">Jogar novamente</button>
             </div>
           </section>
+
+          <section id="maze-game" class="maze-game" aria-labelledby="maze-title" hidden>
+            <div class="color-game-header">
+              <div><h2 id="maze-title" tabindex="-1">Labirinto do Tab</h2><p>Atravesse sites só com o teclado e ache a saída com o mínimo de teclas.</p></div>
+              <button id="back-from-maze" class="secondary-button" type="button">Voltar aos jogos</button>
+            </div>
+            <div class="maze-site">
+              <div class="maze-host"></div>
+              <p class="maze-bubble" aria-live="polite" hidden><strong>Pepi Bolota</strong><span class="maze-bubble-text"></span></p>
+            </div>
+
+            <div id="maze-intro" class="maze-intro">
+              <div class="maze-map" id="maze-map"></div>
+              <div class="maze-intro-lead">
+                <h3>Sem mouse, só teclado</h3>
+                <p>Muita gente navega sem mouse: por escolha, por uma lesão no braço ou porque usa leitor de tela. Para essas pessoas, todo site é um labirinto, e a ordem do foco é o mapa. Hoje você atravessa seis sites assim, do jeito delas.</p>
+              </div>
+              <div class="maze-learn">
+                <figure class="maze-lesson-card">
+                  <figcaption><span class="maze-chip">1</span>Seu chaveiro</figcaption>
+                  <ul class="maze-keys">
+                    <li><span class="maze-keycaps"><kbd class="maze-key is-wide">Tab</kbd></span><span>leva o foco para a <strong>frente</strong></span></li>
+                    <li><span class="maze-keycaps"><kbd class="maze-key">Shift</kbd><b aria-hidden="true">+</b><kbd class="maze-key is-wide">Tab</kbd></span><span>leva o foco para <strong>trás</strong></span></li>
+                    <li><span class="maze-keycaps"><kbd class="maze-key is-wide">Enter</kbd></span><span><strong>aciona</strong> o que está em foco</span></li>
+                  </ul>
+                  <p class="maze-small">Depois do último elemento, o foco passa pela barra do navegador e recomeça do topo, nos dois sentidos. Sem teclado físico? Há teclas na tela.</p>
+                </figure>
+                <figure class="maze-lesson-card">
+                  <figcaption><span class="maze-chip">2</span>Como a nota funciona</figcaption>
+                  <div class="maze-formula" aria-label="Caminho ideal dividido pelas teclas que você apertou é igual à eficiência">
+                    <span><b>caminho ideal</b><small>o menor número de teclas possível</small></span><i aria-hidden="true">÷</i>
+                    <span><b>teclas que você apertou</b><small>Tab, Shift+Tab e Enter</small></span><i aria-hidden="true">=</i>
+                    <span class="is-result"><b>eficiência</b></span>
+                  </div>
+                  <p class="maze-small">Exemplo: se o caminho ideal tem 6 teclas e você apertou 8, a eficiência é 75%. Dá para repetir cada nível, e vale a sua melhor tentativa.</p>
+                </figure>
+              </div>
+              <ol id="maze-level-list" class="maze-level-list" aria-label="As seis fases"></ol>
+              <div class="maze-start">
+                <p class="maze-goal">Cada fase só libera a próxima com pelo menos <strong>70% de eficiência</strong>.</p>
+                <button id="start-maze" class="primary-button" type="button">Entrar no labirinto</button>
+              </div>
+            </div>
+
+            <div id="maze-level" class="maze-level" hidden>
+              <ol id="maze-steps" class="maze-steps" aria-label="Níveis"></ol>
+              <div class="maze-briefing">
+                <div class="maze-briefing-main">
+                  <span id="maze-level-art" class="maze-level-badge" aria-hidden="true"></span>
+                  <div>
+                  <p class="maze-concept-line"><span id="maze-concept" class="maze-concept"></span></p>
+                  <h3 id="maze-level-title"></h3>
+                  <p id="maze-brief" class="maze-brief"></p>
+                  </div>
+                </div>
+                <div class="maze-side-tools">
+                  <div id="maze-count" class="maze-count" aria-label="Teclas apertadas"></div>
+                  <button id="maze-restart" class="maze-restart" type="button">↺ Recomeçar o nível</button>
+                </div>
+              </div>
+              <div id="maze-frame" class="maze-frame">
+                <div class="maze-browser-bar"><i></i><i></i><i></i><span id="maze-address" class="maze-address" tabindex="-1" role="textbox" aria-readonly="true" aria-label="Barra do navegador"><span id="maze-url"></span></span></div>
+                <div id="maze-page" class="maze-page"></div>
+                <svg id="maze-trail" class="maze-trail" aria-hidden="true"></svg>
+                <div id="maze-focus" class="maze-focus" aria-hidden="true" hidden><span>?</span></div>
+                <button id="maze-resume" class="maze-resume primary-button" type="button" hidden>Voltar ao labirinto</button>
+              </div>
+              <div class="maze-statusbar"><p id="maze-status" class="maze-status"></p><p id="maze-note" class="maze-note"></p></div>
+              <p id="maze-hint" class="maze-hint" hidden></p>
+              <div id="maze-keypad" class="maze-keypad" role="group" aria-label="Teclas na tela, para mouse e toque">
+                <button type="button" data-key="shift"><kbd>Shift+Tab</kbd><small>voltar</small></button>
+                <button type="button" data-key="tab"><kbd>Tab</kbd><small>avançar</small></button>
+                <button type="button" data-key="enter"><kbd>Enter</kbd><small>acionar</small></button>
+              </div>
+              <div id="maze-done" class="maze-done" hidden>
+                <div class="maze-done-head"><h3 id="maze-done-title" tabindex="-1"></h3><div id="maze-done-score" class="maze-done-score"></div></div>
+                <p id="maze-done-detail" class="maze-done-detail"></p>
+                <p id="maze-done-lesson" class="maze-done-lesson"></p>
+                <p id="maze-gate" class="maze-gate" hidden></p>
+                <button id="maze-show-ideal" class="secondary-button" type="button">Ver o caminho ideal</button>
+                <p id="maze-ideal" class="maze-ideal" tabindex="-1" hidden></p>
+                <div class="maze-done-actions"><button id="maze-retry" class="secondary-button" type="button">Tentar de novo</button><button id="maze-next" class="primary-button" type="button">Próximo nível</button></div>
+              </div>
+              <p id="maze-live" class="visually-hidden" aria-live="polite"></p>
+            </div>
+
+            <div id="maze-results" class="maze-results" hidden>
+              <h3 id="maze-result-title" tabindex="-1">Fim do labirinto!</h3>
+              <p id="maze-verdict" class="maze-verdict" role="status"></p>
+              <div class="maze-final-row"><div id="maze-final" class="maze-final"></div><div id="maze-bars" class="maze-bars"></div></div>
+              <p class="maze-lesson">Quem navega pelo teclado depende de três coisas: uma ordem de foco que siga a ordem da tela, um foco sempre visível e nenhuma armadilha sem saída. Na prática: um link para pular o menu, janelas que devolvem o foco ao fechar, nada de tabindex positivo e nada invisível no caminho do Tab.</p>
+              <p class="maze-small">Quer melhorar uma nota? Repita um nível:</p>
+              <ul id="maze-replay" class="maze-replay"></ul>
+              <details class="waiter-table">
+                <summary>Ver os níveis em tabela</summary>
+                <table>
+                  <thead><tr><th scope="col">Nível</th><th scope="col">Assunto</th><th scope="col">Caminho ideal</th><th scope="col">Sua eficiência</th></tr></thead>
+                  <tbody id="maze-summary"></tbody>
+                </table>
+              </details>
+              <button id="again-maze" class="primary-button" type="button">Jogar do começo</button>
+            </div>
+          </section>
+
+          <!-- A Casa Assombrada do Dark UX: casa.js draws everything inside this section. -->
+          <section id="house-game" class="house-game" aria-labelledby="house-title" hidden></section>
 
           <section id="certificate-view" class="certificate-view" aria-labelledby="certificate-title" hidden>
             <div class="color-game-header">

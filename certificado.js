@@ -1,5 +1,8 @@
-// Certificado do Front Arcade: unlocked when the player has completed the three
-// individual games of the workshop. It is drawn on a canvas (name, avatar, the games
+// Certificado do Front Arcade: earned when the player has completed every individual
+// game of the workshop, the last being A Casa Assombrada do Dark UX. Until then its card
+// stays hidden: no prize on display. Finishing the last game sets off a full-screen
+// party (Pepi dancing, fireworks, confetti) that ends with a sealed envelope; opening it
+// opens the certificate. It is drawn on a canvas (name, avatar, the games
 // and what each one trains, Pepi's seal, date and a verification code) and can be
 // downloaded as a PNG or as an A4 PDF. The PDF is written by hand: one page with the
 // canvas embedded as a JPEG, no library needed. ?certificado in the address unlocks it
@@ -41,6 +44,8 @@
     { name: "Garçom Relâmpago", skill: "Lei de Hick", detail: "Menos opções, mais rapidez", icon: "waiter", done: () => flag("front-arcade.garcom-relampago.completed.v1") },
     { name: "Armadilha dos Hábitos Ruins", skill: "Consistência", detail: "Hábitos e mudanças de layout", icon: "habit", done: () => flag("front-arcade.habitos.completed.v1") },
     { name: "Tela em Obras", skill: "Semântica e estados vazios", detail: "Títulos, rótulos e vazios gentis", icon: "obra", done: () => flag("front-arcade.tela-em-obras.completed.v1") },
+    { name: "Labirinto do Tab", skill: "Navegação por teclado", detail: "Ordem de foco sem armadilhas", icon: "maze", done: () => flag("front-arcade.labirinto-tab.completed.v1") },
+    { name: "A Casa Assombrada do Dark UX", skill: "Desafio final", detail: "Todos os maus padrões de uma vez", icon: "house", done: () => flag("front-arcade.casa-assombrada.completed.v1") },
   ];
   const completed = () => games.filter(game => game.done()).length;
 
@@ -53,6 +58,10 @@
     // A cursor about to step on a mousetrap's cheese.
     habit: [["n.........", "nn........", "nwn.......", "nwwn..yy..", "nwwwn.yyy.", "nwnnnyyyyy", "nn..bbbbbb", "n...bbbbbb"], { n: ink.navy, w: "#fff", y: "#f6c445", b: "#b77b52" }, 0],
     // A builder's hard hat with a red star on the front.
+    // A haunted house with two lit windows.
+    house: [["....nn....", "...nppn...", "..nppppn..", ".nnnnnnnn.", ".npyppypn.", ".nppppppn.", ".nppnnppn.", ".nnnnnnnn."], { n: ink.navy, p: "#6b4fa0", y: "#f6c445" }, 0],
+    // A little maze with the way out lit in gold.
+    maze: [["nnnnnnnnnn", "n...n....n", "n.n.n.nn.n", "n.n...n..n", "n.nnnnn.nn", "n.....n..y", "nnnn.nnn.n", "nnnnnnnnnn"], { n: ink.navy, y: "#f6c445" }, 0],
     obra: [["...nnnn...", "..nyyYyn..", ".nyyrryyn.", ".nyrrrryn.", ".nyyrryyn.", "nnnnnnnnnn", "noooooooon", ".........."], { n: ink.navy, y: "#f6c445", Y: "#ffe08a", r: "#e44d63", o: "#e0a92a" }, 0],
   };
   function emblemSvg(kind) {
@@ -83,14 +92,15 @@
     const count = completed();
     const ready = unlocked();
     card.classList.toggle("is-unlocked", ready);
+    card.hidden = !ready;
     open.disabled = !ready;
     open.textContent = ready ? "Ver certificado" : "Bloqueado";
-    get("certificate-name").textContent = ready ? "Certificado do Front Arcade" : "Prêmio surpresa";
+    get("certificate-name").textContent = ready ? "Seu certificado" : "Prêmio surpresa";
     status.textContent = ready
-      ? "Surpresa! Você concluiu todos os jogos individuais e ganhou um certificado com o seu nome."
+      ? `Você concluiu os ${games.length} jogos individuais. O certificado com o seu nome está aqui.`
       : `${count} de ${games.length} jogos individuais concluídos. Termine todos para abrir.`;
     const visible = !gamesWindow.hidden && !library.hidden && !soloList.hidden;
-    if (ready && visible && !testing && !flag(revealedKey)) {
+    if (ready && visible && !testing && !flag(revealedKey) && !partying) {
       try { localStorage.setItem(revealedKey, "true"); } catch { /* Reveals again next time. */ }
       card.classList.add("is-revealing");
       card.addEventListener("animationend", () => card.classList.remove("is-revealing"), { once: true });
@@ -316,11 +326,13 @@
     pixels(art[0], x + art[2] * s, y + s, s, art[1]);
   }
 
-  // One row of four or fewer; with more, rows of three (the last one centred).
+  // One row of four or fewer; five or six in rows of three; seven or more in rows of
+  // four. The last row is centred.
   function gamesRow() {
     const many = games.length > 4;
-    const perRow = many ? 3 : games.length;
-    const w = many ? 540 : 404;
+    const dense = games.length > 6;
+    const perRow = dense ? 4 : many ? 3 : games.length;
+    const w = dense ? 412 : many ? 540 : 404;
     const h = many ? 128 : 196;
     const gap = many ? 18 : 20;
     games.forEach((game, index) => {
@@ -332,7 +344,7 @@
       roundRect(x, y, w, h, 22, "#fff", ink.line, 3);
       if (many) {
         gameIcon(game.icon, x + 22, y + 28, 7);
-        text(game.name, x + 110, y + 46, { size: 30, weight: 750, align: "left", max: w - 170 });
+        text(game.name, x + 110, y + 46, { size: dense ? 26 : 30, weight: 750, align: "left", max: w - 170 });
         text(game.skill, x + 110, y + 82, { size: 24, weight: 650, color: ink.blue, align: "left", max: w - 130 });
         text(game.detail, x + 110, y + 112, { size: 20, weight: 500, color: ink.muted, align: "left", max: w - 130 });
       } else {
@@ -484,14 +496,215 @@
     view.hidden = true;
     library.hidden = false;
   }
-  open.addEventListener("click", async () => {
+  async function showCertificate() {
     if (!unlocked()) return;
+    // Close whichever game is open the proper way, so it reports that it closed.
+    document.querySelector("#games-window [id$='-game']:not([hidden]) [id^='back-from-']")?.click();
     library.hidden = true;
     view.hidden = false;
     get("certificate-title").focus();
     await draw();
     report("certificate-opened");
+  }
+  open.addEventListener("click", showCertificate);
+
+  /* ---------- The grand finale ---------- */
+
+  // When the last game is won: a night sky with fireworks and confetti, Pepi dancing,
+  // the title popping in letter by letter, then a sealed envelope that opens the
+  // certificate. "Pular" and Escape go straight to the envelope. Under reduced motion
+  // there are no fireworks or dancing, only fades. The fireworks are soft bursts on a
+  // dark sky, never full-screen flashes.
+  const celebratedKey = "front-arcade.certificate.celebrated.v1";
+  // Pepi's recorded line for the party, if it is in falas.json.
+  async function finaleClip() {
+    try {
+      const manifest = await fetch("./assets/pepi/falas.json", { cache: "no-cache" }).then(response => (response.ok ? response.json() : {}));
+      const file = manifest.finaleCheer;
+      if (typeof file !== "string" || !/^[\w-]+\.(mp3|ogg|wav)$/.test(file)) return null;
+      const data = await fetch(`./assets/pepi/${file}`).then(response => (response.ok ? response.arrayBuffer() : Promise.reject(new Error(file))));
+      return await window.PepiBolota?.audioContext?.()?.decodeAudioData(data) ?? null;
+    } catch {
+      return null;
+    }
+  }
+  let partying = false;
+  function finale() {
+    if (partying) return;
+    partying = true;
+    const P = window.PepiBolota;
+    const calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const profile = typeof loadProfile === "function" ? loadProfile() : null;
+    const name = profile?.name ?? "";
+    const title = "Você zerou o Front Arcade!";
+    const overlay = document.createElement("div");
+    overlay.className = `finale${calm ? " is-calm" : ""}`;
+    overlay.setAttribute("role", "dialog");
+    overlay.setAttribute("aria-modal", "true");
+    overlay.setAttribute("aria-label", "Comemoração: você concluiu todos os jogos");
+    overlay.innerHTML = `
+      <canvas class="finale-sky" aria-hidden="true"></canvas>
+      <div class="finale-stage">
+        <p class="finale-kicker">${games.length} de ${games.length} jogos concluídos</p>
+        <h2 class="finale-title" aria-label="${title}">${(() => { let index = 0; return title.split(" ").map(word => `<span class="finale-word" aria-hidden="true">${[...word].map(char => `<span style="--i:${index++}">${char}</span>`).join("")}</span>`).join(" "); })()}</h2>
+        <p class="finale-name">${name ? `Parabéns, ${name.replace(/[<>&"]/g, "")}!` : "Parabéns!"} Você passou por todos os desafios da oficina, e o <strong>Crie Meu Site</strong> foi liberado na área de trabalho.</p>
+        <div class="finale-pepi pepi" data-face="laugh">${P?.markup?.() ?? ""}</div>
+        <p class="finale-bubble" hidden><strong>Pepi Bolota</strong><span></span></p>
+        <div class="finale-envelope" hidden>
+          <button type="button" class="finale-letter" aria-describedby="finale-letter-note">
+            <span class="finale-flap" aria-hidden="true"></span>
+            <span class="finale-paper" aria-hidden="true"><b>Certificado</b><i>Front Arcade</i></span>
+            <span class="finale-seal" aria-hidden="true">★</span>
+            <span class="visually-hidden">Abrir o envelope com o seu certificado</span>
+          </button>
+          <p id="finale-letter-note" class="finale-note">Seu certificado chegou! Clique no envelope para abrir.</p>
+        </div>
+      </div>
+      <button type="button" class="finale-skip">Pular</button>
+      <p class="visually-hidden" aria-live="assertive">Você concluiu todos os jogos do Front Arcade! O seu certificado chegou num envelope.</p>`;
+    document.body.append(overlay);
+    const previous = document.activeElement;
+    const sky = overlay.querySelector(".finale-sky");
+    const pepi = overlay.querySelector(".finale-pepi");
+    const envelope = overlay.querySelector(".finale-envelope");
+    const letter = overlay.querySelector(".finale-letter");
+    const timers = [];
+    const later = (ms, run) => timers.push(setTimeout(run, calm ? Math.min(ms, 600) : ms));
+    let frame = 0;
+
+    // Fireworks and confetti on a canvas.
+    const ctx2 = sky.getContext("2d");
+    const resize = () => { sky.width = innerWidth * devicePixelRatio; sky.height = innerHeight * devicePixelRatio; ctx2.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0); };
+    resize();
+    addEventListener("resize", resize);
+    const hues = ["#ffd166", "#ff7eb6", "#7ee0c3", "#8ab8ff", "#c7a6ff", "#ffffff"];
+    const sparks = [];
+    const confetti = [];
+    function burst(x, y) {
+      const colour = hues[Math.floor(Math.random() * hues.length)];
+      for (let index = 0; index < 46; index++) {
+        const angle = Math.PI * 2 * index / 46;
+        const speed = 1.6 + Math.random() * 2.6;
+        sparks.push({ x, y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, life: 1, colour });
+      }
+      P?.sfx("sparkle");
+    }
+    for (let index = 0; index < (calm ? 0 : 140); index++) {
+      confetti.push({ x: Math.random() * innerWidth, y: -Math.random() * innerHeight, vy: 1.2 + Math.random() * 2.2, spin: Math.random() * 6, size: 5 + Math.random() * 6, colour: hues[index % hues.length] });
+    }
+    function tick() {
+      ctx2.clearRect(0, 0, innerWidth, innerHeight);
+      for (const spark of sparks) {
+        spark.x += spark.vx;
+        spark.y += spark.vy;
+        spark.vy += .035;
+        spark.vx *= .985;
+        spark.life -= .012;
+        if (spark.life <= 0) continue;
+        ctx2.globalAlpha = Math.max(0, spark.life);
+        ctx2.fillStyle = spark.colour;
+        ctx2.fillRect(spark.x, spark.y, 3, 3);
+      }
+      for (const piece of confetti) {
+        piece.y += piece.vy;
+        piece.spin += .08;
+        if (piece.y > innerHeight + 20) piece.y = -20;
+        ctx2.globalAlpha = .9;
+        ctx2.fillStyle = piece.colour;
+        ctx2.save();
+        ctx2.translate(piece.x + Math.sin(piece.spin) * 8, piece.y);
+        ctx2.rotate(piece.spin);
+        ctx2.fillRect(-piece.size / 2, -piece.size / 4, piece.size, piece.size / 2);
+        ctx2.restore();
+      }
+      ctx2.globalAlpha = 1;
+      for (let index = sparks.length - 1; index >= 0; index--) if (sparks[index].life <= 0) sparks.splice(index, 1);
+      frame = requestAnimationFrame(tick);
+    }
+    if (!calm) {
+      tick();
+      [300, 1100, 1900, 2700, 3500, 4300].forEach((ms, index) => later(ms, () => burst(innerWidth * (.2 + (index % 3) * .3 + Math.random() * .1), innerHeight * (.18 + Math.random() * .2))));
+    }
+    P?.sfx("reveal");
+    later(700, () => { pepi.dataset.face = "star"; P?.sfx("giggle"); });
+    // Pepi's line, recorded or as a caption, with lip sync when there is a clip.
+    const talk = new AbortController();
+    later(2200, async () => {
+      const bubble = overlay.querySelector(".finale-bubble");
+      const text = "Você zerou o Front Arcade! Eu sabia que você conseguia! Abre o envelope: o seu certificado chegou. E tem mais: o Crie Meu Site foi liberado na área de trabalho!";
+      bubble.hidden = false;
+      try {
+        const clip = P?.soundOn ? await finaleClip() : null;
+        if (talk.signal.aborted) return;
+        const typing = P?.typewrite ? P.typewrite(text, talk.signal, bubble.querySelector("span")) : Promise.resolve(bubble.querySelector("span").textContent = text);
+        await Promise.all([typing, clip ? P.playClip(clip, talk.signal, pepi) : null]);
+      } catch {
+        // Cut short by opening the envelope.
+      }
+      pepi.dataset.face = "laugh";
+    });
+
+    // Act two: the envelope.
+    function showEnvelope() {
+      if (!envelope.hidden) return;
+      overlay.classList.add("is-mail");
+      envelope.hidden = false;
+      pepi.dataset.face = "love";
+      P?.sfx("pop");
+      letter.focus();
+    }
+    later(5200, showEnvelope);
+    overlay.querySelector(".finale-skip").addEventListener("click", showEnvelope);
+
+    function finish(openIt) {
+      talk.abort();
+      timers.forEach(clearTimeout);
+      cancelAnimationFrame(frame);
+      removeEventListener("resize", resize);
+      overlay.removeEventListener("keydown", keys);
+      overlay.classList.add("is-leaving");
+      setTimeout(() => overlay.remove(), calm ? 0 : 450);
+      partying = false;
+      try {
+        localStorage.setItem(celebratedKey, "true");
+        localStorage.setItem(revealedKey, "true");
+      } catch { /* It may celebrate again next time. */ }
+      if (openIt) {
+        if (gamesWindow.hidden) document.querySelector(".desktop-shortcut[data-games]")?.click();
+        showCertificate();
+      } else previous?.focus?.();
+      renderCard();
+    }
+    letter.addEventListener("click", () => {
+      overlay.classList.add("is-opening");
+      P?.sfx("reveal");
+      setTimeout(() => finish(true), calm ? 0 : 900);
+    });
+    // The dialog keeps the focus: Tab cycles between the skip button and the envelope.
+    function keys(event) {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        if (envelope.hidden) showEnvelope();
+        else finish(false);
+      } else if (event.key === "Tab") {
+        const stops = [...overlay.querySelectorAll("button")].filter(button => !button.closest("[hidden]"));
+        const index = stops.indexOf(document.activeElement);
+        event.preventDefault();
+        stops[(index + (event.shiftKey ? -1 : 1) + stops.length) % stops.length]?.focus();
+      }
+    }
+    overlay.addEventListener("keydown", keys);
+    overlay.querySelector(".finale-skip").focus();
+    report("certificate-unlocked");
+  }
+
+  // The party starts when the last game is won (a moment later, so its own victory
+  // screen shows first). ?festa plays it on demand.
+  document.addEventListener("frontarcade:event", ({ detail }) => {
+    if (!/-finished$/.test(detail?.type ?? "") && detail?.type !== "frontarcade:popups-completed") return;
+    if (completed() === games.length && !flag(celebratedKey)) setTimeout(finale, 2400);
   });
+  if (new URLSearchParams(location.search).has("festa")) setTimeout(finale, 1500);
   get("back-from-certificate").addEventListener("click", () => {
     close();
     open.focus();
