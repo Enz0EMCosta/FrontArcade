@@ -60,7 +60,7 @@
     habitChaos: { text: "Eita, agora virou bagunça! Respira e lê antes de clicar!", face: "wide", act: "hop", end: "happy", priority: 2 },
     habitDone: { text: "Viu só? O hábito deixa a gente rápido, mas qualquer mudança vira armadilha. Por isso, consistência é tudo!", face: "wink", act: "party", end: "happy", priority: 3 },
     certificateReady: { text: "Você concluiu todos os jogos individuais! O seu prêmio surpresa chegou: um certificado com o seu nome!", face: "star", act: "party", end: "love", priority: 3 },
-    builderOpen: { text: "Crie Meu Site! Seu portfólio já vem montado: é só clicar e trocar pelo que é seu. Solta essa criatividade!", face: "star", act: "cheer", end: "happy", priority: 2 },
+    builderOpen: { text: "Você conquistou o Crie Meu Site! Seu portfólio já vem montado: é só clicar e trocar pelo que é seu. Solta essa criatividade!", face: "star", act: "cheer", end: "happy", priority: 2 },
     builderExport: { text: "Seu site está prontinho! Agora é só mostrar para todo mundo!", face: "love", act: "party", end: "happy", priority: 3 },
     aboutUs: { text: "Esses são os meus papais! Eles são engraçados, né?", face: "love", act: "heart", end: "happy", priority: 2 },
     idle: { text: "Ei! Os jogos estão te esperando. Vamos jogar?", face: "wink", act: "wave", end: "happy", priority: 1 },
@@ -2065,6 +2065,10 @@
     "waiter-opened": () => goIntoGame(),
     "obra-opened": () => goIntoGame(),
     "obra-closed": () => backFromGame(),
+    "maze-opened": () => goIntoGame(),
+    "maze-closed": () => backFromGame(),
+    "house-opened": () => goIntoGame(),
+    "house-closed": () => backFromGame(),
     "habit-opened"() {
       score.played = true;
       if (canSay("habitOpen", Infinity)) say("habitOpen");

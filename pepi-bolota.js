@@ -59,7 +59,7 @@
       text: "Já nos Pop-ups Infinitos, enfrentam um formulário cheio de interrupções. E no Lag Lab, sentem como um atraso muda tudo.",
       speech: "Já nos Pópaps Infinitos, enfrentam um formulário cheio de interrupções. E no Lég Léb, sentem como um atraso muda tudo.",
     },
-    builder: { text: "Enquanto no Crie Meu Site, vocês montam o próprio portfólio, do jeitinho de vocês, e ainda podem baixar o resultado. Isso não é animal?" },
+    builder: { text: "E, no fim da trilha, vocês ganham o Crie Meu Site: montam o próprio portfólio, do jeitinho de vocês, e ainda podem baixar o resultado. Isso não é animal?" },
     everyone: { text: "Ah, e não precisa saber programar, viu? Dá para aprender tudo isso brincando." },
     call: { text: "Mas antes de começar, deixa eu chamar os meus papais, que prepararam tudo isso!" },
     papais: { text: "Papaaais!", speech: "Papais!" },
@@ -1591,7 +1591,7 @@
     setFace("happy");
     gesture(cheer());
     await say(lines.builder, signal, [
-      { at: 6.94, phrase: "Isso não é animal", run: () => { setFace("star"); sfx("sparkle"); particles("stars", 5); } },
+      { at: 8.54, phrase: "Isso não é animal", run: () => { setFace("star"); sfx("sparkle"); particles("stars", 5); } },
     ]);
     setFace("love");
     particles("hearts", 3);
