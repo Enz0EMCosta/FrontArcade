@@ -24,6 +24,7 @@
   const os = dialog.querySelector(".intro-os");
   const power = dialog.querySelector(".os-power");
   const build = dialog.querySelector(".intro-build");
+  const lab = dialog.querySelector(".intro-lab");
   const buildLog = dialog.querySelector(".build-log");
   const buildProgress = dialog.querySelector(".build-progress > span");
   const buildPercent = dialog.querySelector(".build-percent");
@@ -58,7 +59,7 @@
       text: "Já nos Pop-ups Infinitos, enfrentam um formulário cheio de interrupções. E no Lag Lab, sentem como um atraso muda tudo.",
       speech: "Já nos Pópaps Infinitos, enfrentam um formulário cheio de interrupções. E no Lég Léb, sentem como um atraso muda tudo.",
     },
-    builder: { text: "Enquanto no Construa Meu Site, vocês montam a própria página, do jeitinho de vocês, e ainda podem baixar o resultado. Isso não é animal?" },
+    builder: { text: "Enquanto no Crie Meu Site, vocês montam o próprio portfólio, do jeitinho de vocês, e ainda podem baixar o resultado. Isso não é animal?" },
     everyone: { text: "Ah, e não precisa saber programar, viu? Dá para aprender tudo isso brincando." },
     call: { text: "Mas antes de começar, deixa eu chamar os meus papais, que prepararam tudo isso!" },
     papais: { text: "Papaaais!", speech: "Papais!" },
@@ -231,6 +232,99 @@
   // It sits behind the real art, so printed rows cover it as the scan goes down.
   function blueprintMarkup() {
     return `<svg class="pepi-blueprint" viewBox="0 -1 48 51" aria-hidden="true" focusable="false">${robotMarkup()}</svg>`;
+  }
+
+  // Brem Daya 2.0, the robot Pepi has a crush on: his chubby build, a newer model in
+  // periwinkle and mint, with a heart antenna, a pink bow, eyelashes, lipstick and
+  // "2.0" glowing on her chest. Her face groups reuse Pepi's class names, so `data-face`,
+  // blinking and the lip sync work on her as well.
+  const bremColor = {
+    head: "#a9b6f2", headShade: "#8493da", headLight: "#dbe2fd",
+    mint: "#86e3c9", mintDark: "#4fb898", mintLight: "#d8fff3",
+    skirt: "#d3daf9", skirtShade: "#aab5ec",
+    bow: "#ff7eb6", bowDark: "#d64f8d", bowLight: "#ffc2dc", lips: "#ff8fc0",
+  };
+  const digits = { 2: ["111", "001", "111", "100", "111"], 0: ["111", "101", "101", "101", "111"] };
+  const digit = (value, x, y, fill) => digits[value]
+    .map((row, line) => [...row].map((bit, column) => (bit === "1" ? rect(x + column, y + line, 1, 1, fill) : "")).join("")).join("");
+
+  function bremArm(side) {
+    const b = bremColor;
+    const shoulder = side === "left" ? 3 : 41;
+    const hand = side === "left" ? 2 : 40;
+    return `<g class="pepi-arm pepi-arm-${side}">
+      ${blob(shoulder, 27, 4, 4, color.ink, 1)}${rect(shoulder + 1, 28, 2, 2, b.head)}
+      ${rect(shoulder + 1, 31, 2, 4, color.ink)}${rect(shoulder + 1, 32, 2, 1, b.headShade)}
+      ${blob(hand, 35, 6, 4, color.ink, 1)}<rect class="pepi-hand" x="${hand + 1}" y="36" width="4" height="2" fill="${b.mint}"/>${rect(hand + 1, 36, 1, 1, b.mintLight)}
+    </g>`;
+  }
+
+  function bremMarkup() {
+    const c = color;
+    const b = bremColor;
+    // Eyelashes on the outer corner of each eye, one pixel above the eye's top row.
+    const lashes = top => dots([[17, top], [16, top - 1], [30, top], [31, top - 1]], c.face);
+    return `<svg class="pepi-art brem-art" viewBox="0 -1 48 51" shape-rendering="crispEdges" aria-hidden="true" focusable="false"><g class="brem-robot">
+      <g class="pepi-feet">${blob(14, 45, 7, 4, c.ink, 1)}${rect(15, 46, 5, 2, b.mint)}${rect(15, 46, 2, 1, b.mintLight)}${blob(27, 45, 7, 4, c.ink, 1)}${rect(28, 46, 5, 2, b.mint)}${rect(28, 46, 2, 1, b.mintLight)}</g>
+      <g class="pepi-ear-left">${blob(3, 16, 5, 8, c.ink, 1)}${rect(4, 17, 3, 6, b.mint)}${rect(5, 19, 1, 2, b.mintDark)}</g>
+      <g class="pepi-ear-right">${blob(40, 16, 5, 8, c.ink, 1)}${rect(41, 17, 3, 6, b.mint)}${rect(42, 19, 1, 2, b.mintDark)}</g>
+      <g class="pepi-antenna">${rect(23, 5, 2, 2, c.ink)}${heart(21, 1, b.bow)}${rect(21, 1, 1, 1, b.bowLight)}</g>
+      <g class="pepi-core">
+        ${blob(19, 6, 10, 4, c.ink, 1)}${rect(20, 7, 8, 2, b.mint)}
+        ${blob(9, 37, 30, 10, c.ink, 4)}${blob(10, 38, 28, 8, b.skirt, 3)}${rect(11, 43, 26, 1, b.bow)}
+        ${[16, 21, 26, 31].map(px => rect(px, 41, 1, 2, b.skirtShade)).join("")}
+        ${blob(7, 9, 34, 32, c.ink, 4)}${blob(8, 10, 32, 30, b.head, 3)}
+        ${rect(37, 13, 2, 24, b.headShade)}${rect(10, 37, 28, 2, b.headShade)}${rect(11, 11, 6, 1, b.headLight)}${rect(9, 13, 1, 6, b.headLight)}
+        ${blob(11, 10, 26, 14, c.ink)}${blob(12, 11, 24, 12, c.screen)}${rect(14, 12, 3, 1, c.glare)}${rect(13, 13, 1, 2, c.glare)}
+        ${blob(13, 25, 22, 11, c.ink, 1)}${rect(14, 26, 20, 9, c.screen)}
+        ${digit(2, 16, 28, c.gold)}${rect(20, 32, 1, 1, c.gold)}${digit(0, 22, 28, c.gold)}
+        <g class="pepi-heart">${heart(27, 29, b.bow)}</g>
+      </g>
+      <g class="brem-bow">${blob(29, 4, 6, 6, c.ink, 1)}${rect(30, 5, 4, 4, b.bow)}${rect(30, 5, 2, 1, b.bowLight)}${blob(37, 4, 6, 6, c.ink, 1)}${rect(38, 5, 4, 4, b.bow)}${rect(38, 5, 2, 1, b.bowLight)}${blob(34, 5, 4, 4, c.ink, 1)}${rect(35, 6, 2, 2, b.bowDark)}</g>
+      <g class="pepi-face">
+        ${rect(14, 18, 3, 2, c.blush)}${rect(31, 18, 3, 2, c.blush)}
+        <g class="pepi-blush-strong">${rect(13, 18, 5, 2, c.blush)}${rect(30, 18, 5, 2, c.blush)}${dots([[14, 18], [16, 18], [31, 18], [33, 18]], b.bowLight)}</g>
+        <g class="pepi-look">
+          <g class="pepi-eyes pepi-eyes-normal">${rect(18, 15, 2, 2, c.face)}${rect(28, 15, 2, 2, c.face)}${lashes(14)}</g>
+          <g class="pepi-eyes pepi-eyes-happy">${dots([[18, 16], [19, 15], [20, 16], [28, 16], [29, 15], [30, 16]], c.face)}${dots([[17, 15], [31, 15]], c.face)}</g>
+          <g class="pepi-eyes pepi-eyes-wide">${rect(18, 14, 2, 3, c.face)}${rect(28, 14, 2, 3, c.face)}${lashes(13)}</g>
+          <g class="pepi-eyes pepi-eyes-love">${dots([[18, 15], [20, 15], [28, 15], [30, 15], [19, 17], [29, 17]], b.bow)}${rect(18, 16, 3, 1, b.bow)}${rect(28, 16, 3, 1, b.bow)}</g>
+          <g class="pepi-eyes pepi-eyes-wink">${rect(18, 15, 2, 2, c.face)}${dots([[17, 14], [16, 13]], c.face)}${dots([[28, 16], [29, 15], [30, 16], [31, 15]], c.face)}</g>
+          <g class="pepi-eyes pepi-eyes-shy">${rect(18, 17, 2, 1, c.face)}${rect(28, 17, 2, 1, c.face)}${dots([[17, 16], [30, 16]], c.face)}</g>
+        </g>
+        <g class="pepi-look pepi-look-mouth">
+          <g class="pepi-mouth-closed">
+            <g class="mouth-smile">${rect(23, 19, 2, 1, b.lips)}${rect(22, 18, 1, 1, b.lips)}${rect(25, 18, 1, 1, b.lips)}</g>
+            <g class="mouth-shy">${dots([[22, 19], [23, 18], [24, 19], [25, 18]], b.lips)}</g>
+          </g>
+          <g class="pepi-mouth-open">${rect(22, 18, 4, 3, b.lips)}${rect(23, 19, 2, 1, c.screen)}</g>
+        </g>
+      </g>
+      ${bremArm("left")}${bremArm("right")}
+    </g></svg>`;
+  }
+
+  // Little props for Pepi on the desktop: his phone (Brem Daya's photo is a heart on
+  // the screen) and the flower he gives her.
+  function propMarkup(kind) {
+    const c = color;
+    const b = bremColor;
+    if (kind === "phone") {
+      return `<svg viewBox="0 0 9 13" shape-rendering="crispEdges" aria-hidden="true" focusable="false">
+        ${blob(0, 0, 9, 13, c.ink, 1)}${rect(1, 1, 7, 10, "#ffe3f1")}${rect(3, 1, 3, 1, c.ink)}
+        <g class="phone-heart">${heart(2, 3, b.bow)}${rect(2, 3, 1, 1, b.bowLight)}</g>
+        ${rect(2, 8, 3, 1, b.head)}${rect(4, 9, 3, 1, b.bowLight)}${rect(4, 11, 1, 1, c.lilacDark)}
+      </svg>`;
+    }
+    if (kind === "heart") {
+      return `<svg viewBox="0 0 5 4" shape-rendering="crispEdges" aria-hidden="true" focusable="false">${heart(0, 0, b.bow)}${rect(0, 0, 1, 1, b.bowLight)}</svg>`;
+    }
+    return `<svg viewBox="0 0 9 15" shape-rendering="crispEdges" aria-hidden="true" focusable="false">
+      ${rect(3, 0, 3, 1, b.bowDark)}${rect(1, 1, 7, 1, b.bowDark)}${rect(0, 2, 9, 3, b.bowDark)}${rect(1, 5, 7, 1, b.bowDark)}${rect(3, 6, 3, 1, b.bowDark)}
+      ${rect(3, 1, 3, 1, b.bow)}${rect(1, 2, 7, 3, b.bow)}${rect(2, 5, 5, 1, b.bow)}${rect(2, 2, 2, 1, b.bowLight)}
+      ${rect(3, 3, 3, 2, c.gold)}${rect(3, 3, 1, 1, c.goldLight)}
+      ${rect(4, 7, 1, 8, "#3f9a4f")}${rect(5, 10, 2, 1, "#5fbf5f")}${rect(6, 9, 1, 1, "#5fbf5f")}${rect(2, 12, 2, 1, "#5fbf5f")}${rect(2, 11, 1, 1, "#5fbf5f")}
+    </svg>`;
   }
 
   // Two small cards about Pepi over the scenery: his status (mood and where he is,
@@ -446,7 +540,21 @@
       tone(context, { from: 170, to: 55, start: now, length: .14, volume: .5 });
       hiss(context, { filter: "bandpass", frequency: 1900, start: now, length: .05, volume: .3 });
     }
-    if (kind === "crack") hiss(context, { filter: "highpass", frequency: 2400, start: now + .02, length: .4, volume: .35 });
+    if (kind === "crack") {
+      // A heavier thud, the long crunch of the glass and a few tinkling chips.
+      tone(context, { from: 90, to: 38, start: now, length: .3, volume: .35 });
+      hiss(context, { filter: "highpass", frequency: 2400, start: now + .02, length: .5, volume: .4 });
+      hiss(context, { filter: "bandpass", frequency: 900, start: now + .03, length: .7, volume: .22 });
+      for (let chip = 0; chip < 5; chip++) {
+        const note = 3200 + Math.random() * 2600;
+        tone(context, { type: "triangle", from: note, to: note * .97, start: now + .15 + Math.random() * .6, length: .06, volume: .03 });
+      }
+    }
+    // The cracks creeping on: a short, dry tick of glass.
+    if (kind === "creak") {
+      hiss(context, { filter: "highpass", frequency: 3200, start: now, length: .22, volume: .18 });
+      tone(context, { type: "square", from: 2300, to: 1700, start: now, length: .04, volume: .015 });
+    }
     if (kind === "blip") tone(context, { type: "square", from: 660, to: 990, start: now, length: .07, volume: .04 });
     if (kind === "pop") tone(context, { from: 380, to: 920, start: now, length: .13, volume: .18 });
     if (kind === "reveal") {
@@ -459,6 +567,13 @@
     // A soft three-note chime, like an operating system waking up.
     if (kind === "boot") {
       [392, 523, 784].forEach((note, index) => tone(context, { type: "triangle", from: note, to: note * 1.005, start: now + index * .12, length: .9, volume: .07 }));
+    }
+    // Something falling from the sky: a long, descending whistle.
+    if (kind === "fall") tone(context, { type: "triangle", from: 1900, to: 420, start: now, length: .78, volume: .05 });
+    // A beam of light switching on: a rising sweep with a shimmer on top.
+    if (kind === "beam") {
+      tone(context, { from: 260, to: 1300, start: now, length: .7, volume: .07 });
+      [1568, 2093, 2637, 3136].forEach((note, index) => tone(context, { type: "triangle", from: note, to: note * 1.01, start: now + .2 + index * .08, length: .22, volume: .03 }));
     }
     if (kind === "tick") tone(context, { type: "square", from: 1400, to: 1300, start: now, length: .03, volume: .025 });
     if (kind === "sparkle") {
@@ -915,32 +1030,137 @@
     ], { duration: 650, easing: "ease-out" }).finished.then(() => ring.remove(), () => ring.remove());
   }
 
+  // A realistic impact: a crushed, frosted point; long jagged radial cracks that taper
+  // and branch, racing outwards; rings of the spider web between them; facets that
+  // catch the light; chips of glass falling off. A moment later a few cracks creep on.
   function crack(x, y) {
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     svg.classList.add("glass-crack");
-    let paths = "";
-    for (let ray = 0; ray < 9; ray++) {
-      const angle = ray / 9 * Math.PI * 2 + Math.random() * .5;
-      let px = x;
-      let py = y;
-      let d = `M${x} ${y}`;
-      const length = 70 + Math.random() * 150;
-      for (let step = 1; step <= 3; step++) {
-        const bend = angle + (Math.random() - .5) * .5;
-        px += Math.cos(bend) * length / 3;
-        py += Math.sin(bend) * length / 3;
-        d += `L${px.toFixed(1)} ${py.toFixed(1)}`;
+    const reach = Math.hypot(innerWidth, innerHeight) * .42;
+    const speed = 2.6; // px per ms: how fast the cracks run
+    const parts = [];
+    const segment = (points, width, delay) => {
+      const d = points.map((point, index) => `${index ? "L" : "M"}${point[0].toFixed(1)} ${point[1].toFixed(1)}`).join("");
+      const length = points.slice(1).reduce((sum, point, index) => sum + Math.hypot(point[0] - points[index][0], point[1] - points[index][1]), 0);
+      parts.push(`<path d="${d}" pathLength="1" stroke-width="${width.toFixed(2)}" style="animation-delay:${Math.round(delay)}ms;animation-duration:${Math.max(30, Math.round(length / speed))}ms"/>`);
+    };
+    // Main rays: a random walk outwards, drawn as short pieces that get thinner.
+    const count = 13;
+    const rays = [];
+    for (let ray = 0; ray < count; ray++) {
+      let angle = (ray + Math.random() * .7) / count * Math.PI * 2;
+      const length = reach * (.35 + Math.random() * .65);
+      const points = [[x, y]];
+      const distances = [0];
+      let travelled = 0;
+      while (travelled < length) {
+        const step = 14 + Math.random() * 26;
+        angle += (Math.random() - .5) * .38;
+        const [px, py] = points.at(-1);
+        points.push([px + Math.cos(angle) * step, py + Math.sin(angle) * step]);
+        travelled += step;
+        distances.push(travelled);
       }
-      paths += `<path d="${d}" pathLength="1"/>`;
+      rays.push({ points, distances, length });
+      for (let index = 1; index < points.length; index++) {
+        const share = distances[index] / length;
+        segment([points[index - 1], points[index]], 2.8 - share * 2.1, distances[index - 1] / speed);
+        // Branches split off now and then, thinner and shorter.
+        if (distances[index] > 40 && index < points.length - 2 && Math.random() < .16) {
+          let turn = angle + (Math.random() < .5 ? -1 : 1) * (.35 + Math.random() * .5);
+          const branch = [points[index]];
+          const size = 30 + Math.random() * 120 * (1 - share * .5);
+          for (let gone = 0; gone < size;) {
+            const step = 10 + Math.random() * 18;
+            turn += (Math.random() - .5) * .4;
+            const [bx, by] = branch.at(-1);
+            branch.push([bx + Math.cos(turn) * step, by + Math.sin(turn) * step]);
+            gone += step;
+          }
+          segment(branch, Math.max(.6, 1.6 - share * 1.2), distances[index] / speed);
+        }
+      }
     }
-    const ring = Array.from({ length: 8 }, (_, index) => {
-      const angle = index / 8 * Math.PI * 2;
-      const radius = 18 + Math.random() * 10;
-      return `${(x + Math.cos(angle) * radius).toFixed(1)},${(y + Math.sin(angle) * radius).toFixed(1)}`;
-    }).join(" ");
-    svg.innerHTML = `${paths}<polygon points="${ring}" pathLength="1"/>`;
+    const along = (ray, distance) => {
+      const index = ray.distances.findIndex(value => value >= distance);
+      if (index <= 0) return null;
+      const [a, b] = [ray.points[index - 1], ray.points[index]];
+      const t = (distance - ray.distances[index - 1]) / (ray.distances[index] - ray.distances[index - 1]);
+      return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
+    };
+    // Facets between the first rays catch the light, each a little differently.
+    const facets = [];
+    const firstRing = 30 + Math.random() * 14;
+    rays.forEach((ray, index) => {
+      const [a, b] = [along(ray, firstRing * 2.2), along(rays[(index + 1) % count], firstRing * 2.2)];
+      if (!a || !b || Math.random() < .35) return;
+      facets.push(`<polygon class="glass-facet" points="${x},${y} ${a.join(",")} ${b.join(",")}" style="--o:${(.04 + Math.random() * .12).toFixed(2)};animation-delay:${Math.round(firstRing / speed)}ms"/>`);
+    });
+    // The spider web: rings that join neighbouring rays, kinked towards the centre.
+    [firstRing, 70, 118, 180, 255].forEach((radius, ring) => {
+      rays.forEach((ray, index) => {
+        if (Math.random() > [1, .9, .7, .45, .28][ring]) return;
+        const size = radius * (.85 + Math.random() * .3);
+        const [a, b] = [along(ray, size), along(rays[(index + 1) % count], size * (.85 + Math.random() * .3))];
+        if (!a || !b) return;
+        const middle = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+        const pull = .82 + Math.random() * .12;
+        const kink = [x + (middle[0] - x) * pull, y + (middle[1] - y) * pull];
+        segment([a, kink, b], Math.max(.6, 1.5 - ring * .22), size / speed + 30);
+      });
+    });
+    // The crushed point: tiny cracks all around it.
+    for (let crumb = 0; crumb < 14; crumb++) {
+      const angle = Math.random() * Math.PI * 2;
+      const from = Math.random() * 8;
+      const to = from + 5 + Math.random() * 12;
+      segment([[x + Math.cos(angle) * from, y + Math.sin(angle) * from], [x + Math.cos(angle + .4) * to, y + Math.sin(angle + .4) * to]], 1, 0);
+    }
+    // A moment later the longest cracks creep a little further.
+    const creep = 950;
+    for (const ray of [...rays].sort((a, b) => b.length - a.length).slice(0, 3)) {
+      let [px, py] = ray.points.at(-1);
+      const [qx, qy] = ray.points.at(-2);
+      let angle = Math.atan2(py - qy, px - qx);
+      const points = [[px, py]];
+      for (let gone = 0, size = 60 + Math.random() * 110; gone < size;) {
+        const step = 12 + Math.random() * 20;
+        angle += (Math.random() - .5) * .35;
+        px += Math.cos(angle) * step;
+        py += Math.sin(angle) * step;
+        points.push([px, py]);
+        gone += step;
+      }
+      segment(points, .8, creep + Math.random() * 250);
+    }
+    svg.innerHTML = '<defs><radialGradient id="glass-frost"><stop offset="0" stop-color="#fff" stop-opacity=".85"/>'
+      + '<stop offset=".45" stop-color="#eef9ff" stop-opacity=".45"/><stop offset="1" stop-color="#eef9ff" stop-opacity="0"/></radialGradient></defs>'
+      + `<circle class="glass-frost" cx="${x}" cy="${y}" r="${(firstRing * .9).toFixed(1)}" fill="url(#glass-frost)"/>${facets.join("")}${parts.join("")}`;
     glass.append(svg);
+    chips(x, y);
+    setTimeout(() => { if (svg.isConnected) sfx("creak"); }, creep);
     return x;
+  }
+
+  // Little chips of glass fall from the impact.
+  function chips(x, y) {
+    if (reduceMotion.matches) return;
+    for (let index = 0; index < 9; index++) {
+      const chip = document.createElement("span");
+      chip.className = "glass-chip";
+      const size = 4 + Math.random() * 8;
+      chip.style.cssText = `left:${x}px;top:${y}px;width:${size.toFixed(1)}px;height:${(size * (.6 + Math.random() * .8)).toFixed(1)}px`;
+      glass.append(chip);
+      const vx = (Math.random() - .5) * 160;
+      const up = 20 + Math.random() * 60;
+      const fall = 220 + Math.random() * 260;
+      const spin = (Math.random() - .5) * 720;
+      chip.animate([0, .25, .5, .75, 1].map(t => ({
+        transform: `translate(${(vx * t).toFixed(1)}px, ${(-up * 4 * t * (1 - t) + fall * t * t).toFixed(1)}px) rotate(${(spin * t).toFixed(0)}deg)`,
+        opacity: t < .7 ? 1 : 1 - (t - .7) / .3,
+      })), { duration: 700 + Math.random() * 500, easing: "linear", delay: Math.random() * 80, fill: "both" })
+        .finished.then(() => chip.remove(), () => chip.remove());
+    }
   }
 
   function shake(strength) {
@@ -1099,6 +1319,7 @@
     pepi.classList.add("is-building", "is-booting");
     mover.style.opacity = "";
     build.hidden = false;
+    placeLabel.textContent = "Oficina do Pepi";
     live.textContent = "O Pepi Bolota está sendo criado.";
     await animate(build, [
       { opacity: 0, transform: "translateY(16px) scale(.97)" },
@@ -1136,6 +1357,40 @@
     await wait(1400, signal);
     await animate(build, [{ opacity: 1, transform: "none" }, { opacity: 0, transform: "scale(.96)" }], { duration: 300, easing: "ease-in", fill: "none" });
     build.hidden = true;
+  }
+
+  // Ready, Pepi opens the workshop onto the world: a hole grows from him and the
+  // seafront of Aracaju appears behind it, while he looks around in wonder.
+  async function openSeafront(signal) {
+    scenery?.focus("orla");
+    if (reduceMotion.matches) {
+      lab.classList.add("is-open");
+      return;
+    }
+    const box = pepi.getBoundingClientRect();
+    const cx = box.left + box.width / 2;
+    const cy = box.top + box.height / 2;
+    const far = Math.hypot(Math.max(cx, innerWidth - cx), Math.max(cy, innerHeight - cy)) + 60;
+    lab.style.setProperty("--hole-x", `${Math.round(cx)}px`);
+    lab.style.setProperty("--hole-y", `${Math.round(cy)}px`);
+    lab.classList.add("is-opening");
+    sfx("boot");
+    setFace("star");
+    const opening = animate(lab, [
+      { "--hole": "0px", opacity: 1 },
+      { "--hole": `${Math.round(box.width * .45)}px`, opacity: 1, offset: .25 },
+      { "--hole": `${Math.round(far)}px`, opacity: 1, offset: .9 },
+      { "--hole": `${Math.round(far)}px`, opacity: 0 },
+    ], { duration: 1500, easing: "cubic-bezier(.6, 0, .3, 1)" });
+    await wait(500, signal);
+    setLook("left");
+    await wait(450, signal);
+    setLook("right");
+    await opening;
+    lab.classList.replace("is-opening", "is-open");
+    setLook(null);
+    setFace("happy");
+    await wait(250, signal);
   }
 
   // Rolled up again, he bounces out of the build window straight at the glass,
@@ -1215,6 +1470,7 @@
   async function entrance(signal) {
     await bootSystem(signal);
     await buildPepi(signal);
+    await openSeafront(signal);
     await launch();
     await wait(120, signal);
     await unfold(true);
@@ -1413,18 +1669,64 @@
   const editAvatarButton = get("edit-avatar");
   let handingOff = false;
 
-  // Rolled up, he dives into the screen; the flash turns into the arcade's boot screen.
-  async function dive() {
+  // Instead of the arcade's usual boot screen, the desktop is switched on underneath
+  // and the intro closes like an iris onto Pepi, rolled up in the middle of the screen:
+  // the scene shrinks into the ball, the ball gives a little bounce and winks out.
+  // The same circle that opened the seafront now closes the story.
+  let irisCentre = null;
+  async function irisOut() {
+    document.dispatchEvent(new CustomEvent("frontarcade:boot"));
     if (reduceMotion.matches) return;
     await curl();
-    sfx("reveal");
     const box = naturalBox();
-    const scale = Math.max(innerWidth, innerHeight) / box.width * 1.5;
+    const scale = Math.max(1.4, Math.min(2.2, innerHeight * .3 / box.height));
     await Promise.all([
-      moveTo(poseAt(innerWidth / 2, innerHeight / 2, scale, box), 700, "cubic-bezier(.5, 0, .9, .4)"),
-      animate(ball(), [{ transform: "rotate(0)" }, { transform: "rotate(540deg)" }], { duration: 700, fill: "none" }),
-      animate(power, [{ opacity: 0, transform: "none" }, { opacity: 0, transform: "none", offset: .5 }, { opacity: 1, transform: "none" }], { duration: 700 }),
+      moveTo(poseAt(innerWidth / 2, innerHeight * .48, scale, box), 750, "cubic-bezier(.45, 0, .25, 1)"),
+      animate(ball(), [{ transform: "rotate(0)" }, { transform: "rotate(360deg)" }], { duration: 750, fill: "none", easing: "cubic-bezier(.45, 0, .25, 1)" }),
+      fadeShadow(false, 400),
+      // Captions and the duo step aside, leaving Pepi alone in the scenery.
+      animate(dialogue, [{ opacity: 1 }, { opacity: 0 }], { duration: 400 }),
+      animate(duo, [{ opacity: 1 }, { opacity: 0 }], { duration: 500 }),
     ]);
+    const ballBox = pepi.querySelector(".pepi-ball").getBoundingClientRect();
+    const cx = ballBox.left + ballBox.width / 2;
+    const cy = ballBox.top + ballBox.height / 2;
+    irisCentre = { x: cx, y: cy };
+    const far = Math.hypot(Math.max(cx, innerWidth - cx), Math.max(cy, innerHeight - cy)) + 40;
+    const snug = ballBox.width * .5 + 34;
+    dialog.style.setProperty("--iris-x", `${Math.round(cx)}px`);
+    dialog.style.setProperty("--iris-y", `${Math.round(cy)}px`);
+    dialog.classList.add("is-leaving");
+    sfx("boot");
+    await animate(dialog, [{ "--iris": `${Math.round(far)}px` }, { "--iris": `${Math.round(snug)}px` }], {
+      duration: 1300, easing: "cubic-bezier(.65, 0, .35, 1)",
+    });
+    await animate(ball(), [
+      { transform: "scale(1)" }, { transform: "scale(1.18, .84)", offset: .35 }, { transform: "scale(.9, 1.1)", offset: .7 }, { transform: "scale(1)" },
+    ], { duration: 360, fill: "none" });
+    sfx("pop");
+    await Promise.all([
+      animate(dialog, [{ "--iris": `${Math.round(snug)}px` }, { "--iris": "0px" }], { duration: 420, easing: "cubic-bezier(.55, 0, .75, .2)" }),
+      animate(ball(), [{ transform: "scale(1)" }, { transform: "scale(0)" }], { duration: 420, easing: "cubic-bezier(.55, 0, .75, .2)" }),
+    ]);
+  }
+
+  // Where the iris closed, a little star twinkles over the desktop for a moment.
+  function twinkleOnDesktop() {
+    if (!irisCentre || reduceMotion.matches) return;
+    const spark = document.createElement("span");
+    spark.className = "pepi-iris-spark";
+    spark.innerHTML = starMarkup;
+    spark.style.left = `${Math.round(irisCentre.x)}px`;
+    spark.style.top = `${Math.round(irisCentre.y)}px`;
+    irisCentre = null;
+    document.body.append(spark);
+    sfx("sparkle");
+    spark.animate([
+      { transform: "translate(-50%, -50%) scale(0) rotate(0)", opacity: 1 },
+      { transform: "translate(-50%, -50%) scale(1.3) rotate(90deg)", opacity: 1, offset: .35 },
+      { transform: "translate(-50%, -50%) scale(.2) rotate(180deg)", opacity: 0 },
+    ], { duration: 900, easing: "ease-out" }).finished.then(() => spark.remove(), () => spark.remove());
   }
 
   async function handOff() {
@@ -1444,14 +1746,15 @@
         ]);
         setBrows(null);
         setFace("happy");
-        await dive();
+        await irisOut();
       }
     } catch {
       // Skipped halfway: still go on to the arcade.
     }
     handingOff = false;
     if (dialog.open) dialog.close();
-    powerButton.click();
+    powerButton.click(); // only boots if the iris did not already
+    twinkleOnDesktop();
     await openEditorForGuide();
   }
 
@@ -1716,6 +2019,9 @@
     setProgress(0);
     setChapter(0);
     scenery?.focus("orla");
+    placeLabel.textContent = "Oficina do Pepi";
+    lab.classList.remove("is-opening", "is-open");
+    dialog.classList.remove("is-leaving");
     glass.replaceChildren();
     duo.hidden = true;
     duo.querySelectorAll(".intro-person").forEach(figure => figure.classList.remove("is-walking", "has-arrived"));
@@ -1750,6 +2056,8 @@
       // Never leave the audience stuck in front of a frozen scene.
       console.error(error);
       os.classList.remove("is-off");
+      lab.classList.add("is-open");
+      scenery?.focus("orla");
       build.hidden = true;
       art().style.clipPath = "";
       mover.style.opacity = "";
@@ -1771,6 +2079,9 @@
   // After the real art, so `querySelector` keeps finding the real arms and face first.
   pepi.insertAdjacentHTML("beforeend", `${blueprintMarkup()}<span class="pepi-scan" aria-hidden="true"></span>`);
   dialog.querySelector(".os-brand-mark").innerHTML = starMarkup;
+  // Bits of data drifting up through the workshop, each at its own pace.
+  lab.querySelector(".lab-bits").innerHTML = Array.from({ length: 18 }, (_, index) =>
+    `<i style="left:${(index * 37 + 11) % 97 + 1.5}%; --t:${(5 + (index * 7 % 5) * .9).toFixed(1)}s; --d:${(-index * 1.3 % 6).toFixed(1)}s"></i>`).join("");
   scenery?.mount(dialog.querySelector(".scenery"), { onPlaceChange: label => { placeLabel.textContent = label; } });
   const icon = openButton.querySelector(".intro-button-icon");
   icon.innerHTML = pepiMarkup("1 -1 46 46");
@@ -1803,8 +2114,20 @@
   });
 
   // Pepi on the desktop (pepi-companion.js) shares his art, voice and sound effects.
+  // Pepi or Brem as a standalone SVG for an <img> or a canvas, where the page styles do
+  // not reach: the few rules that pick one face come along inside the SVG.
+  function canvasMarkup(who = "pepi", face = "happy") {
+    const art = who === "brem" ? bremMarkup() : pepiMarkup();
+    const style = `<style>.pepi-ball,.pepi-sweat,.brow-worried,.pepi-eyes,.pepi-blush-strong,.pepi-blueprint,.pepi-scan,.pepi-mouth-closed>g{display:none}`
+      + `.pepi-eyes-${face},.pepi-mouth-closed>.mouth-smile{display:inline}.pepi-mouth-open{opacity:0}</style>`;
+    return art.replace("<svg ", '<svg xmlns="http://www.w3.org/2000/svg" ').replace(/(<svg[^>]*>)/, `$1${style}`);
+  }
+
   window.PepiBolota = {
     markup: pepiMarkup,
+    canvasMarkup,
+    bremMarkup,
+    propMarkup,
     sfx,
     particles,
     typewrite,

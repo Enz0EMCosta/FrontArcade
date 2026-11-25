@@ -50,7 +50,17 @@
     lagOpen: { text: "Lag Lab! Desenhe com calma e repare: quando a tela demora para responder, tudo fica mais difícil.", face: "happy", act: "hop", end: "happy", priority: 2 },
     lagSlow: { text: "Sentiu o atraso? Não é a sua mão, é a interface! É por isso que cada milissegundo importa.", face: "wide", act: "nod", end: "happy", priority: 2 },
     lagDone: { text: "Experimento concluído! Agora você sabe por que site rápido é site gostoso de usar.", face: "star", act: "party", end: "happy", priority: 3 },
-    builderOpen: { text: "Construa Meu Site! Aqui quem manda é você! Solta essa criatividade!", face: "star", act: "cheer", end: "happy", priority: 2 },
+    // The games window: the choice of mode and the surprise prize at the end of the solo track.
+    gamesSurprise: { text: "Psiu! Conclua todos os jogos individuais pra ganhar um prêmio surpresa!", face: "wink", act: "hop", end: "happy", priority: 2 },
+    groupSoon: { text: "Os jogos em dupla e em grupo estão chegando! Chama a galera, que logo, logo tem novidade.", face: "star", act: "wave", end: "happy", priority: 2 },
+    // Armadilha dos Hábitos Ruins: he cheers from beside the window.
+    habitOpen: { text: "Armadilha dos Hábitos Ruins! Repete, repete, repete… mas fica de olho: nem tudo continua igual.", face: "squint", act: "hop", end: "happy", priority: 2 },
+    habitCaught: { text: "Pegadinha! A mão foi no automático, mas o botão tinha mudado.", face: "laugh", act: "giggle", end: "happy", priority: 2 },
+    habitDodged: { text: "Uau, você percebeu a mudança! Olho de águia!", face: "star", act: "cheer", end: "happy", priority: 2 },
+    habitChaos: { text: "Eita, agora virou bagunça! Respira e lê antes de clicar!", face: "wide", act: "hop", end: "happy", priority: 2 },
+    habitDone: { text: "Viu só? O hábito deixa a gente rápido, mas qualquer mudança vira armadilha. Por isso, consistência é tudo!", face: "wink", act: "party", end: "happy", priority: 3 },
+    certificateReady: { text: "Você concluiu todos os jogos individuais! O seu prêmio surpresa chegou: um certificado com o seu nome!", face: "star", act: "party", end: "love", priority: 3 },
+    builderOpen: { text: "Crie Meu Site! Seu portfólio já vem montado: é só clicar e trocar pelo que é seu. Solta essa criatividade!", face: "star", act: "cheer", end: "happy", priority: 2 },
     builderExport: { text: "Seu site está prontinho! Agora é só mostrar para todo mundo!", face: "love", act: "party", end: "happy", priority: 3 },
     aboutUs: { text: "Esses são os meus papais! Eles são engraçados, né?", face: "love", act: "heart", end: "happy", priority: 2 },
     idle: { text: "Ei! Os jogos estão te esperando. Vamos jogar?", face: "wink", act: "wave", end: "happy", priority: 1 },
@@ -61,6 +71,17 @@
     grabbed: { text: "Ei, ei… pra onde você tá me levando? Tô de olho em você, hein!", face: "squint", end: "squint", priority: 1 },
     upsideDown: { text: "Opa, opa! Tá tudo de cabeça pra baixo! Me desvira, por favor!", face: "oops", end: "shy", priority: 2 },
     landed: { text: "Ufa… pousei! Da próxima vez, avisa antes, tá?", face: "oops", brows: "worried", end: "shy", priority: 1 },
+    // On the phone with his crush. `speaker: "brem"` lines are said by Brem Daya 2.0.
+    crushPhone: { text: "Ai, ai… acho que eu tô apaixonado! O nome dela é Brem Daya 2.0. Olha que robozinha mais linda!", face: "love", end: "love", priority: 1 },
+    crushAsk: { text: "Será que eu chamo ela pra sair? O que você acha?", face: "shy", end: "shy", priority: 1 },
+    // He gets it all muddled up out of nerves, and ends up with his hands on his face.
+    crushYes: { text: "Sério?! Então tá, lá vai, hein… Ai, meu Deus, estou tão nervosooo! Brem Daya, quer… comigo… sair? Espera… você e eu… sair nós… juntos… talvez… dia? Ah, não, drogaaa! Estraguei tudo!", face: "wide", brows: "worried", act: "flustered", end: "oops", priority: 1 },
+    bremYes: { speaker: "brem", text: "Uma flor pra mim? Que fofo! Ai, é claro que eu aceito, Pepi!", face: "love", end: "love", priority: 1 },
+    crushHappy: { text: "Ela aceitou! Esse é o dia mais feliz da minha vida!", face: "star", act: "party", end: "love", priority: 1 },
+    crushNo: { text: "Tá bom, tá bom… vou esperar o momento certo. Ok!", face: "shy", end: "happy", priority: 1 },
+    // The flower grows while a game is open: he asks the player to help him pick it.
+    sproutHelp: { text: "Nossa, uma flor apareceu! Você pode me ajudar a colher? É só clicar nela. É muito importante pra mim!", face: "wide", act: "startle", end: "love", priority: 2 },
+    sproutThanks: { text: "Obrigado! Vou guardar ela pra um momento especial.", face: "love", end: "wink", priority: 2 },
   };
 
   /* ---------- Markup ---------- */
@@ -79,6 +100,7 @@
     <div class="pepi-pal-bubble" hidden aria-hidden="true">
       <p class="pepi-pal-name">Pepi Bolota</p>
       <p class="pepi-pal-text"></p>
+      <div class="pepi-pal-choices" hidden></div>
     </div>
     <p class="intro-sr" aria-live="polite"></p>`;
   document.body.append(root);
@@ -88,11 +110,22 @@
   const bot = root.querySelector(".pepi-pal-bot");
   const bubble = root.querySelector(".pepi-pal-bubble");
   const bubbleText = root.querySelector(".pepi-pal-text");
+  const bubbleName = root.querySelector(".pepi-pal-name");
+  const choiceBox = root.querySelector(".pepi-pal-choices");
   const live = root.querySelector("[aria-live]");
   const art = () => bot.querySelector(".pepi-art");
   const part = selector => bot.querySelector(`.pepi-robot ${selector}`);
   const arm = side => part(`.pepi-arm-${side}`);
   const ball = () => bot.querySelector(".pepi-ball-spin");
+
+  // Brem Daya 2.0, Pepi's crush: she only beams in when the player tells him to ask her out.
+  const brem = document.createElement("div");
+  brem.className = "pepi pepi-pal-brem";
+  brem.dataset.face = "happy";
+  brem.hidden = true;
+  brem.setAttribute("aria-hidden", "true");
+  brem.innerHTML = P.bremMarkup();
+  ground.append(brem);
 
   // Taskbar control: show or hide Pepi and turn his voice on or off.
   const tray = document.createElement("div");
@@ -137,9 +170,13 @@
   let lastTickle = 0;
   let pokeTurn = 0;
   let dragged = false;
+  let crush = null; // { controller } while the phone scene with Brem Daya plays
+  let soaring = null; // flying around with his thrusters on
+  let away = false; // inside the Garçom Relâmpago game, working as the waiter
+  let afterAway = null; // a line to say once he is back on the desktop
   const said = new Map(); // line id -> when it was last said
   const score = { colorMisses: 0, colorHits: 0, popupsLosses: 0, played: false, lagSlowSaid: false };
-  const busy = () => Boolean(held || flying || landing);
+  const busy = () => Boolean(held || flying || landing || soaring);
 
   function readPreference() {
     try { return localStorage.getItem(prefKey) !== "off"; } catch { return true; }
@@ -166,6 +203,14 @@
   const openWindow = () => (rebootDialog?.open ? rebootDialog : windows.find(item => !item.hidden));
   const coversScreen = () => Boolean(document.fullscreenElement) || Boolean(desktop.querySelector(".window.window-expanded:not([hidden])"));
   const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+  // Room for a whole speech bubble beside the open window, so it covers nothing in it.
+  function roomBesideWindow() {
+    if (tucked || coversScreen()) return false;
+    const open = openWindow();
+    if (!open) return true;
+    const box = open.getBoundingClientRect();
+    return Math.max(innerWidth - box.right, box.left) >= (bubble.offsetWidth || 300) + 40;
+  }
 
   // He follows the top layer: inside the virus alert or a fullscreen window, otherwise
   // the page. While the alert still shakes into place (its transform would move him
@@ -501,6 +546,11 @@
         { transform: "translateY(1px) scale(1.04, .96)", offset: .7 }, { transform: "translateY(0) scale(1)" },
       ], { duration: 460 });
     },
+    // Nervous: sweating, shaking, fidgeting with the phone.
+    flustered() {
+      bot.classList.add("is-nervous");
+      animate(art(), [0, 1, 0, 1, 0, 1, 0, 1, 0].map(step => ({ transform: `translateX(${step ? 2 : -2}px)` })), { duration: 900 });
+    },
     // Points up at the Jogos icon, which glows for a moment.
     point() {
       pointAt(gamesShortcut);
@@ -541,7 +591,11 @@
     let centre = x;
     let headTop;
     let feet;
-    if (busy()) {
+    if (talking?.line.speaker === "brem") {
+      const box = brem.getBoundingClientRect();
+      centre = box.left + box.width / 2;
+      headTop = box.top;
+    } else if (busy()) {
       const box = bot.getBoundingClientRect();
       centre = box.left + box.width / 2;
       headTop = box.top;
@@ -577,9 +631,44 @@
 
   const canSay = (id, gap = 0) => !said.has(id) || performance.now() - said.get(id) >= gap;
 
+  // Shows answer buttons under a question; resolves with the chosen value, or null when
+  // nobody answers in time or the line is cut off.
+  function choose(options, signal) {
+    return new Promise(resolve => {
+      let timer = 0;
+      const finish = value => {
+        clearTimeout(timer);
+        signal.removeEventListener("abort", stop);
+        choiceBox.hidden = true;
+        choiceBox.replaceChildren();
+        bubble.classList.remove("is-asking");
+        bubble.setAttribute("aria-hidden", "true");
+        resolve(value);
+      };
+      const stop = () => finish(null);
+      choiceBox.replaceChildren(...options.map(({ label, value }) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "pepi-pal-choice";
+        button.textContent = label;
+        button.addEventListener("click", () => finish(value));
+        return button;
+      }));
+      choiceBox.hidden = false;
+      bubble.classList.add("is-asking");
+      bubble.classList.remove("is-see-through");
+      bubble.removeAttribute("aria-hidden"); // the buttons must reach screen readers
+      placeBubble();
+      timer = setTimeout(stop, 25000);
+      signal.addEventListener("abort", stop, { once: true });
+    });
+  }
+
   // Resolves true when the whole line was said, false when it was skipped or cut off.
-  async function say(id) {
+  // With `choices`, resolves with the player's answer instead (null without one).
+  async function say(id, { choices } = {}) {
     const line = lines[id];
+    if (away) return false; // busy waiting tables inside the game
     if (!line || !enabled || !present) return false;
     if (talking && line.priority < talking.line.priority) return false;
     talking?.controller.abort();
@@ -592,28 +681,43 @@
     if (sleeping) wake();
     if (!busy()) stopTravel();
     let finished = false;
+    let answer = null;
+    const byBrem = line.speaker === "brem";
+    const speaker = byBrem ? brem : bot;
     try {
       rise(true);
-      if (!held) look(0, 0);
-      face(line.face);
-      brows(line.brows);
-      acts[line.act]?.();
-      live.textContent = line.text;
+      if (!held && !crush) look(0, 0);
+      if (byBrem) {
+        brem.dataset.face = line.face;
+      } else {
+        face(line.face);
+        brows(line.brows);
+        acts[line.act]?.();
+      }
+      bubbleName.textContent = byBrem ? "Brem Daya 2.0" : "Pepi Bolota";
+      bubble.classList.toggle("is-brem", byBrem);
+      live.textContent = byBrem ? `Brem Daya 2.0: ${line.text}` : line.text;
       bubbleText.textContent = "";
       await openBubble();
       const clip = P.soundOn ? await clipFor(id) : null;
       if (signal.aborted) throw signal.reason;
       const typing = P.typewrite(line.text, signal, bubbleText);
       if (clip) {
-        await Promise.all([typing, P.playClip(clip, signal, bot)]);
+        await Promise.all([typing, P.playClip(clip, signal, speaker)]);
       } else {
         // Captions only: enough time to read the line after it is typed.
         await typing;
-        await wait(1500 + line.text.length * 24, signal);
+        await wait((choices ? 400 : 1500) + line.text.length * (choices ? 8 : 24), signal);
       }
-      brows(null);
-      face(line.end ?? "happy");
-      await wait(clip ? 1300 : 500, signal);
+      if (choices) answer = await choose(choices, signal);
+      if (signal.aborted) throw signal.reason;
+      if (byBrem) {
+        brem.dataset.face = line.end ?? "happy";
+      } else {
+        brows(null);
+        face(line.end ?? "happy");
+      }
+      await wait(choices ? 150 : clip ? 1300 : 500, signal);
       finished = true;
     } catch {
       // Cut off by a more important line, or Pepi was hidden.
@@ -625,7 +729,7 @@
       rise(false);
       schedule();
     }
-    return finished;
+    return choices ? (finished ? answer : null) : finished;
   }
 
   function silenceLine() {
@@ -642,7 +746,7 @@
   }
 
   async function wander() {
-    if (!present || talking || travelling || busy() || alarm || document.hidden) return schedule();
+    if (!present || away || talking || travelling || busy() || alarm || crush || document.hidden) return schedule();
     const idle = performance.now() - lastInput;
     if (sleeping) return schedule(6000);
     if (idle > 80000) {
@@ -654,6 +758,21 @@
     if (x < area.from - 1 || x > area.to + 1) {
       await travel(clamp(x, area.from, area.to));
       return schedule(1200);
+    }
+    // A flower grew on the desktop: if the player doesn't pick it for him, he goes himself.
+    if (sprout && !openWindow() && !area.tuck && performance.now() - sprout.born > 25000 && Math.random() < .4) {
+      crushScene();
+      return;
+    }
+    // The flower the player helped him pick: once the desktop is free, it is Brem's turn.
+    if (pocket && !openWindow() && !area.tuck && Math.random() < .5) {
+      crushScene();
+      return;
+    }
+    // Now and then he switches on his thrusters and flies around the empty desktop.
+    if (!openWindow() && !area.tuck && !reduceMotion.matches && performance.now() - lastFlight > 45000 && Math.random() < .22) {
+      await fly();
+      return;
     }
     if (!openWindow() && idle > 40000 && canSay("idle", 240000)) {
       say("idle");
@@ -750,6 +869,8 @@
       await travel(area.tuck ? area.from : clamp(innerWidth - width() * 1.6, area.from, area.to));
       acts.wave();
       schedule();
+      lastFlight = performance.now() - 25000; // his first flight comes a little sooner
+      if (!sprout) planSprout();
       arriving = null;
       return true;
     })();
@@ -758,6 +879,9 @@
 
   async function leave() {
     if (!present) return;
+    crush?.controller.abort();
+    stopSoar();
+    clearTimeout(sproutTimer);
     silenceLine();
     clearTimeout(wanderTimer);
     wake(true);
@@ -1015,6 +1139,7 @@
 
   // Back to normal standing: no rotation, no lift, the usual faces.
   function settle() {
+    stopSoar();
     if (held) cancelAnimationFrame(held.frame);
     if (flying) cancelAnimationFrame(flying.frame);
     held = null;
@@ -1033,12 +1158,15 @@
   }
 
   bot.addEventListener("pointerdown", event => {
-    if (event.button !== 0 || !present || busy() || bot.classList.contains("is-ball")) return;
+    if (event.button !== 0 || !present || held || flying || landing || crush || bot.classList.contains("is-ball")) return;
     event.preventDefault(); // no text selection while dragging
     const start = { x: event.clientX, y: event.clientY, id: event.pointerId };
     const move = moved => {
       if (moved.pointerId !== start.id) return;
-      if (!held && !flying && !landing && Math.hypot(moved.clientX - start.x, moved.clientY - start.y) > 6) grab(start);
+      if (!held && !flying && !landing && Math.hypot(moved.clientX - start.x, moved.clientY - start.y) > 6) {
+        stopSoar(); // caught in mid-flight
+        grab(start);
+      }
       if (!held) return;
       held.px = moved.clientX;
       held.py = moved.clientY;
@@ -1117,6 +1245,766 @@
     requestAnimationFrame(relocate);
   }
 
+  /* ---------- On the phone with Brem Daya 2.0 ---------- */
+
+  // Now and then, alone on an empty desktop, Pepi takes out his phone, sighs over Brem
+  // Daya 2.0 and asks the player whether he should ask her out. "Sim": he sends the
+  // message, she beams in beside him and he gives her a flower. "Não": he puts the phone
+  // away. A game, a window or hiding Pepi interrupts the scene at once.
+  let phone = null;
+  let flower = null;
+  let beam = null;
+  let holds = []; // arms held in a pose: { element, angle, run }
+  let bremAt = 0; // her centre, in viewport pixels
+  const spring = "cubic-bezier(.3, 1.5, .5, 1)";
+
+  // Turns an arm to an angle and keeps it there until releaseHolds().
+  function hold(element, angle, duration = 320) {
+    const from = holds.find(item => item.element === element);
+    from?.run.cancel();
+    holds = holds.filter(item => item !== from);
+    const run = element.animate([{ transform: `rotate(${from?.angle ?? 0}deg)` }, { transform: `rotate(${angle}deg)` }], {
+      duration: reduceMotion.matches ? 1 : duration, easing: spring, fill: "forwards",
+    });
+    holds.push({ element, angle, run });
+    return run.finished.catch(() => {});
+  }
+
+  function releaseHolds(elements) {
+    for (const item of holds.filter(entry => !elements || elements.includes(entry.element))) {
+      item.run.cancel();
+      animate(item.element, [{ transform: `rotate(${item.angle}deg)` }, { transform: "rotate(0)" }], { duration: 260 });
+      holds = holds.filter(entry => entry !== item);
+    }
+  }
+
+  async function takePhone(signal) {
+    phone = document.createElement("span");
+    phone.className = "pepi-pal-phone";
+    phone.innerHTML = P.propMarkup("phone");
+    bot.append(phone);
+    look(0, 1);
+    hold(arm("left"), -62);
+    hold(arm("right"), 62);
+    await animate(phone, [{ transform: "translateY(40%) scale(0)", opacity: 0 }, { transform: "none", opacity: 1 }], { duration: 340, easing: spring });
+    P.sfx("blip");
+    // He scrolls through her photos with his thumb.
+    for (let tap = 0; tap < 3; tap++) {
+      await wait(420, signal);
+      P.sfx("tick");
+      animate(phone, [{ transform: "none" }, { transform: "translateY(5%) scale(.96)" }, { transform: "none" }], { duration: 170 });
+    }
+    await wait(300, signal);
+    bot.classList.add("is-loving", "is-blushing");
+    P.particles("hearts", 3, bot);
+  }
+
+  async function putPhoneAway() {
+    const item = phone;
+    phone = null;
+    if (!item) return;
+    await animate(item, [{ transform: "none", opacity: 1 }, { transform: "translateY(40%) scale(0)", opacity: 0 }], { duration: 240, easing: "ease-in" });
+    item.remove();
+    releaseHolds([arm("left"), arm("right")]);
+    bot.classList.remove("is-loving");
+  }
+
+  /* A flower grows on the desktop (three minutes after he arrives, or five seconds with
+     ?flor in the address, for testing). Clicking it sends Pepi to pick it; otherwise he
+     picks it himself a little later. He hides it behind his back and takes out his
+     phone: it is the same flower he gives Brem Daya at the end.
+     If a game is open when it grows, it comes up right beside him and he asks the player
+     for help. Picked that way, he keeps it until the desktop is free again. */
+  let sprout = null; // { element, x, born, help }
+  let sproutTimer = 0;
+  let plucked = null; // the flower on its way from the floor to his hand
+  let pocket = false; // he has a picked flower behind his back, saved for Brem
+  const sproutDelay = new URLSearchParams(location.search).has("flor") ? 5000 : 180000;
+
+  function planSprout(delay = sproutDelay) {
+    clearTimeout(sproutTimer);
+    sproutTimer = setTimeout(growSprout, delay);
+  }
+
+  async function growSprout() {
+    if (!present || sprout || pocket) return;
+    if (crush || alarm || busy() || away) return planSprout(10000);
+    if (openWindow()) return helpSprout();
+    const w = width();
+    const room = [[w * .8, x - w * 1.8], [x + w * 1.8, innerWidth - w * .8]].filter(([from, to]) => to > from);
+    if (!room.length) return planSprout(10000);
+    const [from, to] = room[Math.floor(Math.random() * room.length)];
+    await plantSprout(from + Math.random() * (to - from));
+    if (sprout && !talking && !busy() && !crush && !sleeping) {
+      face("wide", 1400);
+      lookAt(sprout.element);
+    }
+  }
+
+  // Beside him, on his side of the open window (or next to the corner he peeks from).
+  function helpSpot(base = x) {
+    const w = width();
+    const area = zone();
+    const fallback = clamp(base - w * .95, w * .5, innerWidth - w * .5);
+    if (area.tuck) return fallback;
+    return [base - w * 1.3, base + w * 1.3, base - w * .9, base + w * .9]
+      .find(at => at >= area.from - w * .2 && at <= area.to + w * .2 && at > w * .5 && at < innerWidth - w * .5) ?? fallback;
+  }
+
+  async function helpSprout() {
+    if (talking || sleeping) return planSprout(4000); // asks once the current line is over
+    await plantSprout(helpSpot(), true);
+    if (!sprout || !openWindow() || crush) return;
+    sprout.element.classList.add("is-calling");
+    sprout.element.setAttribute("aria-label", "Uma florzinha nasceu. Clique para ajudar o Pepi a colher");
+    lookAt(sprout.element);
+    say("sproutHelp");
+  }
+
+  // The player helped: he picks it, thanks them and keeps it for later.
+  async function helpPick() {
+    const controller = new AbortController();
+    crush = { controller, help: true };
+    try {
+      silenceLine();
+      rise(true);
+      await pickFlower(controller.signal);
+      pocket = true;
+      await say("sproutThanks");
+    } catch {
+      // Hidden or sent away in the middle: the flower is lost.
+    } finally {
+      clearCrush();
+      crush = null;
+      rise(false);
+      if (present && !talking) schedule();
+      if (!sprout && !pocket) planSprout();
+    }
+  }
+
+  async function plantSprout(at, help = false) {
+    const element = document.createElement("button");
+    element.type = "button";
+    element.className = "pepi-pal-sprout";
+    element.setAttribute("aria-label", "Uma florzinha nasceu. Clique para o Pepi colher");
+    element.innerHTML = P.propMarkup("flower");
+    element.style.left = `${Math.round(at)}px`;
+    ground.append(element);
+    sprout = { element, x: at, born: performance.now(), help };
+    element.addEventListener("click", () => {
+      lastInput = performance.now();
+      if (crush || busy() || alarm || !present) return;
+      if (talking && talking.line.priority < 3) silenceLine();
+      if (openWindow()) helpPick();
+      else crushScene();
+    });
+    // It pushes up out of the floor, then opens with a sparkle.
+    P.sfx("blip");
+    await animate(element.querySelector("svg"), [{ clipPath: "inset(100% 0 0 0)" }, { clipPath: "inset(0% 0 0 0)" }], { duration: 1300, easing: "steps(15, end)" });
+    animate(element, [{ transform: "translateX(-50%) scale(1)" }, { transform: "translateX(-50%) scale(1.25, .85)" }, { transform: "translateX(-50%) scale(1)" }], { duration: 320, easing: spring });
+    P.sfx("sparkle");
+    P.particles("stars", 4, element);
+  }
+
+  // He rolls up next to the flower, bends down, picks it and hides it behind his back.
+  async function pickFlower(signal) {
+    const { element, x: at } = sprout;
+    sprout = null;
+    element.disabled = true;
+    element.classList.remove("is-calling");
+    plucked = element;
+    const side = at > x ? 1 : -1;
+    const stand = clamp(at - side * width() * .62, width() * .6, innerWidth - width() * .6);
+    if (Math.abs(stand - x) > 4) await travel(stand);
+    if (signal.aborted) throw new Error("interrupted");
+    const facing = at > x ? 1 : -1;
+    look(facing * 2, 1);
+    face("love");
+    const reaching = arm(facing === 1 ? "right" : "left");
+    animate(art(), [{ transform: "none" }, { transform: "translateY(5%) scale(1.05, .92)", offset: .5 }, { transform: "none" }], { duration: 700 });
+    await hold(reaching, facing === 1 ? -30 : 30, 320);
+    // Pluck: the flower jumps up into his hand.
+    const flowerBox = element.getBoundingClientRect();
+    const hand = reaching.querySelector(".pepi-hand").getBoundingClientRect();
+    const dx = hand.left + hand.width / 2 - (flowerBox.left + flowerBox.width / 2);
+    const dy = hand.top - (flowerBox.top + flowerBox.height * .6);
+    P.sfx("pop");
+    await animate(element, [
+      { transform: "translateX(-50%)" },
+      { transform: `translate(calc(-50% + ${dx / 2}px), ${dy / 2 - 18}px) rotate(${facing * -12}deg)`, offset: .5 },
+      { transform: `translate(calc(-50% + ${dx}px), ${dy}px) rotate(${facing * -6}deg)` },
+    ], { duration: 460, easing: "ease-out", fill: "forwards" });
+    bot.classList.add("is-blushing");
+    P.particles("hearts", 2, bot);
+    await wait(900, signal);
+    // He looks left and right... and hides it behind his back.
+    look(-2, 0);
+    await wait(380, signal);
+    look(2, 0);
+    await wait(380, signal);
+    look(0, 0);
+    face("wink");
+    const own = bot.getBoundingClientRect();
+    const back = { x: own.left + own.width / 2 - (flowerBox.left + flowerBox.width / 2), y: own.top + own.height * .45 - (flowerBox.top + flowerBox.height * .6) };
+    await animate(element, [
+      { transform: `translate(calc(-50% + ${dx}px), ${dy}px) rotate(${facing * -6}deg)`, opacity: 1 },
+      { transform: `translate(calc(-50% + ${back.x}px), ${back.y}px) scale(.3)`, opacity: 0 },
+    ], { duration: 300, easing: "ease-in", fill: "forwards" });
+    element.remove();
+    plucked = null;
+    releaseHolds([reaching]);
+    bot.classList.remove("is-blushing");
+    await wait(400, signal);
+  }
+
+  function placeBrem(at) {
+    bremAt = at;
+    brem.style.transform = `translate(${Math.round(at - width() / 2)}px, 0)`;
+  }
+
+  // A spark of light left behind by something moving (the falling heart).
+  function trailBit(source) {
+    const box = source.getBoundingClientRect();
+    const origin = ground.getBoundingClientRect();
+    const bit = document.createElement("span");
+    bit.className = "pepi-pal-trail";
+    bit.style.left = `${Math.round(box.left + box.width / 2 - origin.left)}px`;
+    bit.style.top = `${Math.round(box.top + box.height * .3 - origin.top)}px`;
+    bit.style.background = ["#fff", "#ffd1e8", "#ff8ccf"][Math.floor(Math.random() * 3)];
+    ground.append(bit);
+    animate(bit, [
+      { transform: "translate(-50%, -50%) scale(1)", opacity: 1 },
+      { transform: `translate(calc(-50% + ${Math.round((Math.random() - .5) * 18)}px), calc(-50% - ${Math.round(4 + Math.random() * 12)}px)) scale(.2)`, opacity: 0 },
+    ], { duration: 560 }).then(() => bit.remove());
+  }
+
+  // She arrives like a shooting star: a pink heart streaks down to the spot beside him
+  // and lands with a ring of light. A beam opens over it, a hologram of her flickers in
+  // and the scanner prints her for real from the top down while she floats. Then she
+  // drops to the floor, twirls and strikes a pose as the beam goes back up.
+  async function beamIn(at, signal) {
+    placeBrem(at);
+    brem.dataset.face = "happy";
+    const art = brem.querySelector(".pepi-art");
+    if (reduceMotion.matches) {
+      brem.hidden = false;
+      return;
+    }
+    const tall = ground.clientHeight;
+    const comet = document.createElement("span");
+    comet.className = "pepi-pal-comet";
+    comet.innerHTML = P.propMarkup("heart");
+    comet.style.left = `${Math.round(at)}px`;
+    ground.append(comet);
+    P.sfx("fall");
+    const drift = (at > x ? 1 : -1) * Math.min(220, innerWidth * .12);
+    const fall = comet.animate([
+      { transform: `translate(calc(-50% + ${drift}px), ${-tall}px) rotate(${drift > 0 ? 25 : -25}deg) scale(1.2)` },
+      { transform: "translate(-50%, 0) rotate(0) scale(1)" },
+    ], { duration: 780, easing: "cubic-bezier(.55, 0, .85, .55)", fill: "forwards" });
+    const trail = setInterval(() => trailBit(comet), 40);
+    await fall.finished.catch(() => {});
+    clearInterval(trail);
+    comet.remove();
+    // It lands: a ring of light runs over the floor and a glowing pad stays.
+    const pad = document.createElement("span");
+    pad.className = "pepi-pal-pad";
+    pad.style.left = `${Math.round(at)}px`;
+    pad.style.width = `${Math.round(width() * 1.5)}px`;
+    const shock = pad.cloneNode();
+    shock.className = "pepi-pal-shock";
+    ground.prepend(pad, shock); // behind the robots
+    P.sfx("pop");
+    P.particles("stars", 5, pad);
+    animate(shock, [{ transform: "translateX(-50%) scale(.2)", opacity: 1 }, { transform: "translateX(-50%) scale(2.4)", opacity: 0 }], { duration: 620, easing: "ease-out" }).then(() => shock.remove());
+    await animate(pad, [{ transform: "translateX(-50%) scale(0)", opacity: 0 }, { transform: "translateX(-50%) scale(1)", opacity: 1 }], { duration: 380, easing: spring, fill: "forwards" });
+    // The beam comes down over the pad.
+    beam = document.createElement("span");
+    beam.className = "pepi-pal-beam";
+    beam.style.left = `${Math.round(at)}px`;
+    beam.style.width = `${Math.round(width() * 1.1)}px`;
+    ground.prepend(beam);
+    P.sfx("beam");
+    await animate(beam, [{ transform: "translateX(-50%) scaleY(0)", opacity: 0 }, { transform: "translateX(-50%) scaleY(1)", opacity: 1 }], { duration: 420, easing: "ease-out", fill: "forwards" });
+    // A flickering hologram first; the scanner then prints the real her, top to bottom.
+    const holo = document.createElement("span");
+    holo.className = "pepi-pal-holo";
+    holo.append(art.cloneNode(true));
+    const scan = document.createElement("span");
+    scan.className = "pepi-pal-scan";
+    brem.append(holo, scan);
+    brem.hidden = false;
+    const flicker = 520;
+    const printing = 1000;
+    const float = brem.animate([{ translate: "0 -18px" }, { translate: "0 -26px", offset: .5 }, { translate: "0 -18px" }], { duration: flicker + printing, easing: "ease-in-out", fill: "forwards" });
+    animate(holo, [{ opacity: 0 }, { opacity: 1, offset: .2 }, { opacity: .3, offset: .35 }, { opacity: 1, offset: .55 }, { opacity: .5, offset: .7 }, { opacity: 1 }], { duration: flicker, easing: "steps(6, end)" });
+    const print = art.animate([{ clipPath: "inset(0 0 100% 0)" }, { clipPath: "inset(0 0 0% 0)" }], { duration: printing, delay: flicker, easing: "steps(17, end)", fill: "backwards" });
+    scan.animate([{ top: "0%", opacity: 1 }, { top: "100%", opacity: 1 }], { duration: printing, delay: flicker, easing: "steps(17, end)", fill: "both" });
+    holo.animate([{ opacity: 1 }, { opacity: 0 }], { duration: printing, delay: flicker, fill: "forwards" });
+    await wait(flicker, signal);
+    for (let tick = 0; tick < 4; tick++) setTimeout(() => P.sfx("tick"), tick * printing / 4);
+    await print.finished.catch(() => {});
+    holo.remove();
+    scan.remove();
+    // She drops onto the pad, twirls and strikes a pose; the beam goes back up.
+    float.cancel();
+    await animate(brem, [{ translate: "0 -18px" }, { translate: "0 0" }], { duration: 240, easing: "ease-in" });
+    P.sfx("knock");
+    await animate(art, [
+      { transform: "scale(1)" }, { transform: "scale(1.12, .86)", offset: .3 }, { transform: "scale(.96, 1.05)", offset: .65 }, { transform: "scale(1)" },
+    ], { duration: 320 });
+    const light = beam;
+    beam = null;
+    animate(light, [{ transform: "translateX(-50%) scaleY(1)", opacity: 1 }, { transform: "translateX(-50%) scaleY(0)", opacity: .4 }], { duration: 460, easing: "ease-in", fill: "forwards" }).then(() => light.remove());
+    P.sfx("sparkle");
+    await animate(art, [{ transform: "scaleX(1)" }, { transform: "scaleX(-1)", offset: .5 }, { transform: "scaleX(1)" }], { duration: 460, easing: "ease-in-out" });
+    const arms = [brem.querySelector(".pepi-arm-left"), brem.querySelector(".pepi-arm-right")];
+    hold(arms[0], 140, 300);
+    hold(arms[1], -140, 300);
+    brem.dataset.face = "wink";
+    P.particles("hearts", 4, brem);
+    animate(art, [{ transform: "translateY(0)" }, { transform: "translateY(-10px)", offset: .4 }, { transform: "translateY(0)" }], { duration: 380 });
+    animate(pad, [{ transform: "translateX(-50%) scale(1)", opacity: 1 }, { transform: "translateX(-50%) scale(1.6)", opacity: 0 }], { duration: 900, delay: 300, fill: "forwards" }).then(() => pad.remove());
+    await wait(900, signal);
+    releaseHolds(arms);
+    brem.dataset.face = "happy";
+    await wait(260, signal);
+  }
+
+  // She waves, blows a kiss and is beamed back up, the flower with her.
+  async function beamOut(side, signal) {
+    const waving = brem.querySelector(`.pepi-arm-${side === 1 ? "right" : "left"}`);
+    const up = side === 1 ? -150 : 150;
+    animate(waving, [0, up, up * .75, up, up * .75, 0].map(angle => ({ transform: `rotate(${angle}deg)` })), { duration: 1500, easing: "ease-in-out" });
+    brem.dataset.face = "wink";
+    P.particles("hearts", 2, brem);
+    await wait(1600, signal);
+    const at = bremAt;
+    beam = document.createElement("span");
+    beam.className = "pepi-pal-beam";
+    beam.style.left = `${Math.round(at)}px`;
+    beam.style.width = `${Math.round(width() * 1.1)}px`;
+    ground.append(beam);
+    P.sfx("reveal");
+    await animate(beam, [{ transform: "translateX(-50%) scaleY(0)", opacity: 0 }, { transform: "translateX(-50%) scaleY(1)", opacity: 1 }], { duration: 320, easing: "ease-out", fill: "forwards" });
+    const leaving = [brem.querySelector(".pepi-art"), ...(flower ? [flower] : [])].map(item =>
+      animate(item, [{ clipPath: "inset(0 0 0% 0)" }, { clipPath: "inset(0 0 100% 0)" }], { duration: 700, easing: "steps(13, end)", fill: "forwards" }));
+    await Promise.all(leaving);
+    brem.hidden = true;
+    flower?.remove();
+    flower = null;
+    const light = beam;
+    beam = null;
+    await animate(light, [{ transform: "translateX(-50%)", opacity: 1 }, { transform: "translateX(-50%) scaleX(.2)", opacity: 0 }], { duration: 380, fill: "forwards" });
+    light.remove();
+  }
+
+  // He reaches out to her, a flower pops into his hand and floats over to hers; she
+  // holds it in front of her heart with both hands.
+  async function giveFlower(side, signal) {
+    const reaching = arm(side === 1 ? "right" : "left");
+    await hold(reaching, side === 1 ? -80 : 80, 380);
+    flower = document.createElement("span");
+    flower.className = "pepi-pal-flower";
+    flower.innerHTML = P.propMarkup("flower");
+    ground.append(flower);
+    const origin = ground.getBoundingClientRect();
+    const hand = reaching.querySelector(".pepi-hand").getBoundingClientRect();
+    const start = { x: hand.left + hand.width / 2 - origin.left, y: hand.top - origin.top };
+    flower.style.left = `${Math.round(start.x - flower.offsetWidth / 2)}px`;
+    flower.style.top = `${Math.round(start.y - flower.offsetHeight * .75)}px`;
+    P.sfx("sparkle");
+    await animate(flower, [{ transform: "scale(0) rotate(-40deg)" }, { transform: "scale(1)" }], { duration: 340, easing: spring, fill: "forwards" });
+    await wait(600, signal);
+    // She reaches for it...
+    const herArm = brem.querySelector(`.pepi-arm-${side === 1 ? "left" : "right"}`);
+    brem.dataset.face = "wide";
+    await hold(herArm, side === 1 ? 70 : -70, 340);
+    const herHand = herArm.querySelector(".pepi-hand").getBoundingClientRect();
+    const reach = { x: herHand.left + herHand.width / 2 - origin.left - start.x, y: herHand.top - origin.top - start.y };
+    await animate(flower, [
+      { transform: "none" },
+      { transform: `translate(${reach.x / 2}px, ${reach.y / 2 - 26}px) rotate(${side * 14}deg)`, offset: .5 },
+      { transform: `translate(${reach.x}px, ${reach.y}px) rotate(${side * 6}deg)` },
+    ], { duration: 720, easing: "ease-in-out", fill: "forwards" });
+    releaseHolds([reaching]);
+    // ...and hugs it to her chest.
+    const bremBox = brem.getBoundingClientRect();
+    // The flower's top goes to the middle of her body, so it sits over her chest.
+    const flowerTop = start.y - flower.offsetHeight * .75;
+    const chest = { x: bremBox.left + bremBox.width / 2 - origin.left - start.x, y: bremBox.top + bremBox.height * .52 - origin.top - flowerTop };
+    hold(brem.querySelector(".pepi-arm-left"), -58, 380);
+    hold(brem.querySelector(".pepi-arm-right"), 58, 380);
+    brem.dataset.face = "love";
+    brem.classList.add("is-blushing", "is-loving");
+    P.sfx("love");
+    await animate(flower, [
+      { transform: `translate(${reach.x}px, ${reach.y}px) rotate(${side * 6}deg)` },
+      { transform: `translate(${chest.x}px, ${chest.y}px) rotate(0)` },
+    ], { duration: 380, easing: "ease-out", fill: "forwards" });
+    P.particles("hearts", 3, brem);
+  }
+
+  function clearCrush() {
+    phone?.remove();
+    flower?.remove();
+    beam?.remove();
+    phone = flower = beam = null;
+    for (const item of holds) item.run.cancel();
+    holds = [];
+    for (const item of ground.querySelectorAll(".pepi-pal-comet, .pepi-pal-pad, .pepi-pal-shock, .pepi-pal-trail")) item.remove();
+    for (const item of brem.querySelectorAll(".pepi-pal-holo, .pepi-pal-scan")) item.remove();
+    brem.hidden = true;
+    brem.classList.remove("is-blushing", "is-loving");
+    for (const run of brem.getAnimations({ subtree: true })) if (run.constructor === Animation) run.cancel();
+    bot.classList.remove("is-loving", "is-blushing", "is-nervous");
+    look(0, 0);
+    plucked?.remove();
+    plucked = null;
+  }
+
+  async function crushScene() {
+    const controller = new AbortController();
+    const { signal } = controller;
+    crush = { controller };
+    // Another line (the desktop tour, say) finishes first instead of cutting the scene.
+    const quiet = async () => {
+      while (talking) await wait(250, signal);
+    };
+    const line = async id => {
+      await quiet();
+      if (!await say(id) || signal.aborted) throw new Error("interrupted");
+    };
+    try {
+      if (sprout) await pickFlower(signal);
+      pocket = false;
+      // He moves where there is room for her beside him.
+      const margin = width() * 2.4;
+      if (innerWidth > margin * 2) {
+        const spot = clamp(x, margin, innerWidth - margin);
+        if (Math.abs(spot - x) > 4) await travel(spot);
+      }
+      if (signal.aborted) throw new Error("interrupted");
+      await quiet();
+      await takePhone(signal);
+      await line("crushPhone");
+      await quiet();
+      const answer = await say("crushAsk", { choices: [{ label: "Sim, chama ela!", value: "yes" }, { label: "Agora não", value: "no" }] });
+      if (signal.aborted) throw new Error("interrupted");
+      if (answer === "yes") {
+        phone?.classList.add("is-typing");
+        await line("crushYes");
+        // The muddled message is sent anyway, and he hides his face in his hands.
+        phone?.classList.replace("is-typing", "is-sent");
+        P.sfx("blip");
+        await wait(700, signal);
+        await putPhoneAway();
+        face("oops");
+        brows("worried");
+        acts.oops();
+        await wait(1500, signal);
+        // She beams in on the side with more room, and they look at each other.
+        bot.classList.remove("is-nervous");
+        const side = innerWidth - x > x ? 1 : -1;
+        look(side * 2, -2); // something is falling from the sky...
+        face("wide");
+        await beamIn(x + side * width() * 1.25, signal);
+        brem.style.setProperty("--look-x", `${-side * 2}px`);
+        look(side * 2, 0);
+        face("wide");
+        brows("up");
+        acts.startle();
+        await wait(700, signal);
+        brows(null);
+        face("love");
+        bot.classList.add("is-blushing");
+        await giveFlower(side, signal);
+        await line("bremYes");
+        await line("crushHappy");
+        look(side * 2, 0);
+        await beamOut(side, signal);
+        face("love", 3500);
+      } else {
+        await putPhoneAway();
+        if (answer === "no") await line("crushNo");
+        else face("shy", 1800); // nobody answered: he just puts it away, a bit shy
+      }
+    } catch {
+      // A game, a window or the player interrupted the scene.
+    } finally {
+      clearCrush();
+      crush = null;
+      if (present && !talking) schedule();
+      if (!sprout) planSprout(); // another flower grows a while later
+    }
+  }
+
+  /* ---------- Waiting tables in Garçom Relâmpago ---------- */
+
+  // In that game Pepi is the waiter: he hops into the window (a quick shrink and a
+  // flash) and comes back to the same spot on the desktop when the game is closed.
+  async function goIntoGame() {
+    if (!present || away) return;
+    crush?.controller.abort();
+    stopSoar();
+    if (held || flying) settle();
+    silenceLine();
+    stopTravel();
+    clearTimeout(wanderTimer);
+    if (sleeping) wake(true);
+    away = true;
+    if (sprout) sprout.element.hidden = true;
+    flash();
+    P.sfx("pop");
+    await animate(bot, [
+      { transform: "none", opacity: 1 },
+      { transform: "translateY(-18%) scale(1.1, .9)", opacity: 1, offset: .3 },
+      { transform: "translateY(-60%) scale(.15)", opacity: 0 },
+    ], { duration: 420, easing: "ease-in" });
+    if (away) root.hidden = true;
+  }
+
+  async function backFromGame() {
+    if (!away) return;
+    away = false;
+    if (!present) return;
+    root.hidden = false;
+    relocate();
+    flash();
+    P.sfx("pop");
+    await animate(bot, [{ transform: "translateY(-40%) scale(.2)", opacity: 0 }, { transform: "none", opacity: 1 }], { duration: 460, easing: spring });
+    acts.hop?.();
+    const line = afterAway;
+    afterAway = null;
+    if (line) {
+      await wait(500);
+      say(line);
+    } else {
+      schedule(1500);
+    }
+  }
+
+  /* ---------- Flying with his thrusters ---------- */
+
+  // Thrusters light up under his feet; he takes off, flies a free curvy route over the
+  // desktop (tilting into the turns, sometimes with a somersault), leaves little puffs of
+  // smoke and lands softly back on the taskbar. Catch him in mid-air to stop the flight.
+  let lastFlight = performance.now();
+  const jets = document.createElement("span");
+  jets.className = "pepi-pal-jets";
+  jets.setAttribute("aria-hidden", "true");
+  jets.innerHTML = "<i></i><i></i>";
+  bot.append(jets);
+
+  // A soft rocket rumble: looping noise through a low-pass filter, louder with more thrust.
+  function rumble() {
+    const context = P.soundOn ? P.audioContext() : null;
+    if (!context) return { set() {}, stop() {} };
+    const now = context.currentTime;
+    const buffer = context.createBuffer(1, context.sampleRate, context.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let index = 0; index < data.length; index++) data[index] = Math.random() * 2 - 1;
+    const source = context.createBufferSource();
+    source.buffer = buffer;
+    source.loop = true;
+    const filter = context.createBiquadFilter();
+    filter.type = "lowpass";
+    filter.frequency.value = 420;
+    const gain = context.createGain();
+    gain.gain.setValueAtTime(.0001, now);
+    gain.gain.exponentialRampToValueAtTime(.05, now + .25);
+    source.connect(filter).connect(gain).connect(context.destination);
+    source.start(now);
+    return {
+      set(level) {
+        gain.gain.setTargetAtTime(.015 + level * .04, context.currentTime, .12);
+        filter.frequency.setTargetAtTime(300 + level * 500, context.currentTime, .12);
+      },
+      stop() {
+        const end = context.currentTime;
+        gain.gain.cancelScheduledValues(end);
+        gain.gain.setValueAtTime(gain.gain.value, end);
+        gain.gain.exponentialRampToValueAtTime(.0001, end + .3);
+        source.stop(end + .32);
+      },
+    };
+  }
+
+  // A smooth route through the points (Catmull-Rom), sampled into a polyline so he can
+  // move along it at an even speed.
+  function route(points) {
+    const samples = [];
+    const at = index => points[clamp(index, 0, points.length - 1)];
+    for (let index = 0; index < points.length - 1; index++) {
+      const [p0, p1, p2, p3] = [at(index - 1), at(index), at(index + 1), at(index + 2)];
+      for (let step = 0; step < 24; step++) {
+        const t = step / 24;
+        const spline = key => .5 * (2 * p1[key] + (p2[key] - p0[key]) * t + (2 * p0[key] - 5 * p1[key] + 4 * p2[key] - p3[key]) * t * t + (3 * p1[key] - p0[key] - 3 * p2[key] + p3[key]) * t * t * t);
+        samples.push({ x: spline("x"), up: Math.max(0, spline("up")) });
+      }
+    }
+    samples.push({ ...points.at(-1) });
+    let total = 0;
+    samples.forEach((point, index) => {
+      if (index) total += Math.hypot(point.x - samples[index - 1].x, point.up - samples[index - 1].up);
+      point.distance = total;
+    });
+    return { samples, total };
+  }
+
+  function pointAlong({ samples, total }, share) {
+    const distance = share * total;
+    let low = 0;
+    let high = samples.length - 1;
+    while (high - low > 1) {
+      const middle = (low + high) >> 1;
+      if (samples[middle].distance < distance) low = middle;
+      else high = middle;
+    }
+    const a = samples[low];
+    const b = samples[high];
+    const t = b.distance > a.distance ? (distance - a.distance) / (b.distance - a.distance) : 0;
+    return { x: a.x + (b.x - a.x) * t, up: a.up + (b.up - a.up) * t };
+  }
+
+  function puff() {
+    if (document.hidden) return;
+    const smoke = document.createElement("span");
+    smoke.className = "pepi-pal-dust";
+    smoke.style.left = `${Math.round(x + (Math.random() - .5) * width() * .3)}px`;
+    smoke.style.bottom = `${Math.round(lift - 6)}px`;
+    ground.append(smoke);
+    smoke.animate([
+      { transform: "translate(-50%, 0) scale(.5)", opacity: .8 },
+      { transform: `translate(calc(-50% + ${(Math.random() - .5) * 20}px), 22px) scale(1.2)`, opacity: 0 },
+    ], { duration: 700, easing: "ease-out" }).finished.then(() => smoke.remove(), () => smoke.remove());
+  }
+
+  function setThrust(level) {
+    bot.style.setProperty("--thrust", level.toFixed(2));
+    soaring?.sound.set(level);
+  }
+
+  // Plans the trip: take-off, three or four free waypoints over the desktop, and a soft
+  // approach to a spot on the taskbar.
+  function flightPlan() {
+    const w = width();
+    const top = groundY() - height() - 40;
+    const random = (from, to) => from + Math.random() * (to - from);
+    const points = [{ x, up: 0 }, { x: x + random(-30, 30), up: Math.min(top, 150) }];
+    const stops = 3 + Math.floor(Math.random() * 2);
+    for (let stop = 0; stop < stops; stop++) points.push({ x: random(w * .8, innerWidth - w * .8), up: random(top * .35, top) });
+    const area = zone();
+    const end = random(area.from, area.to);
+    points.push({ x: end, up: Math.min(top, 130) }, { x: end, up: 0 });
+    return points;
+  }
+
+  async function fly() {
+    const top = groundY() - height() - 40;
+    if (soaring || top < 220 || reduceMotion.matches) return;
+    lastFlight = performance.now();
+    stopTravel();
+    look(0, -1);
+    face("wide");
+    // Crouch, the thrusters cough into life, and off he goes.
+    bot.classList.add("is-jetting");
+    setThrust(.4);
+    P.sfx("pop");
+    await animate(art(), [{ transform: "none" }, { transform: "translateY(4%) scale(1.08, .9)" }], { duration: 380, fill: "forwards" });
+    if (!present || busy() || talking || crush || openWindow()) {
+      bot.classList.remove("is-jetting");
+      art().getAnimations().forEach(run => run.cancel());
+      return schedule();
+    }
+    art().getAnimations().forEach(run => run.cancel());
+    const plan = route(flightPlan());
+    soaring = {
+      plan, start: performance.now(), duration: clamp(plan.total / 380 * 1000, 4200, 9000),
+      tilt: 0, lastX: x, lastUp: 0, frame: 0, nextPuff: 0, sound: rumble(),
+      flip: Math.random() < .5 ? .35 + Math.random() * .3 : null,
+    };
+    body.style.transformOrigin = "50% 55%";
+    face("star");
+    dust();
+    arm("left").style.transform = "rotate(70deg)";
+    arm("right").style.transform = "rotate(-70deg)";
+    soaring.frame = requestAnimationFrame(stepSoar);
+  }
+
+  function stepSoar(now) {
+    const flight = soaring;
+    if (!flight) return;
+    const share = clamp((now - flight.start) / flight.duration, 0, 1);
+    // Gentle on take-off and landing, quick in between.
+    const eased = share < .5 ? 2 * share * share : 1 - (-2 * share + 2) ** 2 / 2;
+    const point = pointAlong(flight.plan, eased);
+    const dt = Math.max(1, now - (flight.time ?? now - 16)) / 1000;
+    flight.time = now;
+    const vx = (point.x - flight.lastX) / dt;
+    const vy = (point.up - flight.lastUp) / dt;
+    flight.lastX = point.x;
+    flight.lastUp = point.up;
+    x = point.x;
+    lift = point.up;
+    walker.style.transform = place(x, lift);
+    // He leans into the direction he flies, and somersaults once on some trips.
+    flight.tilt += (clamp(vx / 22, -28, 28) - flight.tilt) * .12;
+    let spin = 0;
+    if (flight.flip !== null) {
+      const flipShare = clamp((eased - flight.flip) / .12, 0, 1);
+      spin = (flipShare < .5 ? 2 * flipShare * flipShare : 1 - (-2 * flipShare + 2) ** 2 / 2) * 360 * Math.sign(vx || 1);
+    }
+    body.style.rotate = `${(flight.tilt + spin).toFixed(1)}deg`;
+    setThrust(clamp(.7 + vy / 400, .35, 1.4));
+    if (now > flight.nextPuff) {
+      puff();
+      flight.nextPuff = now + 110;
+    }
+    placeBubble();
+    if (share >= 1) {
+      touchDown();
+      return;
+    }
+    flight.frame = requestAnimationFrame(stepSoar);
+  }
+
+  // Lands softly: the thrusters fade, a squash, some dust, a wink.
+  function touchDown() {
+    stopSoar();
+    P.sfx("knock");
+    dust();
+    animate(art(), [
+      { transform: "translateY(0) scale(1)" }, { transform: "translateY(4%) scale(1.1, .88)", offset: .35 }, { transform: "translateY(0) scale(1)" },
+    ], { duration: 360 });
+    face("wink", 1400);
+    lastFlight = performance.now();
+    schedule(2600);
+  }
+
+  // Something needs him (a game, a window): he heads straight down and lands.
+  function landSoon() {
+    if (!soaring || soaring.landing) return;
+    const end = clamp(x, zone().from, zone().to);
+    const plan = route([{ x, up: lift }, { x: (x + end) / 2, up: lift * .4 }, { x: end, up: 0 }]);
+    Object.assign(soaring, { plan, start: performance.now(), duration: clamp(plan.total / 600 * 1000, 350, 1200), flip: null, landing: true });
+  }
+
+  function stopSoar() {
+    const flight = soaring;
+    if (!flight) return;
+    soaring = null;
+    cancelAnimationFrame(flight.frame);
+    flight.sound.stop();
+    bot.classList.remove("is-jetting");
+    bot.style.removeProperty("--thrust");
+    lift = 0;
+    walker.style.transform = place(x);
+    body.style.rotate = "";
+    body.style.transformOrigin = "";
+    for (const side of ["left", "right"]) arm(side).style.transform = "";
+  }
+
   /* ---------- Reactions to the games ---------- */
 
   let saving = false; // the avatar-saved reaction says the welcome itself
@@ -1166,10 +2054,58 @@
         saving = false;
       }
     },
-    "games-opened": () => { if (canSay("gamesOpen", Infinity)) say("gamesOpen"); },
+    // The window opens on the choice of mode: he hints at the prize until it is won.
+    "games-opened": () => {
+      if (!window.FrontArcadeTrail?.complete() && canSay("gamesSurprise", 300000)) say("gamesSurprise");
+    },
+    "games-mode"({ mode }) {
+      if (mode === "solo" && canSay("gamesOpen", Infinity)) say("gamesOpen");
+      if (mode === "group" && canSay("groupSoon", 300000)) say("groupSoon");
+    },
+    "waiter-opened": () => goIntoGame(),
+    "obra-opened": () => goIntoGame(),
+    "obra-closed": () => backFromGame(),
+    "habit-opened"() {
+      score.played = true;
+      if (canSay("habitOpen", Infinity)) say("habitOpen");
+    },
+    // Short lines between rounds, not on every trap, so they don't get in the way.
+    // His bubble must not cover the game's buttons: he talks only when it fits beside
+    // the window, otherwise he just reacts with his face.
+    "habit-trap"({ caught }) {
+      const room = roomBesideWindow();
+      if (room && caught && canSay("habitCaught", 45000)) say("habitCaught");
+      else if (room && !caught && canSay("habitDodged", 90000)) say("habitDodged");
+      else if (caught) {
+        face("laugh", 1200);
+        acts.giggle();
+      } else {
+        face("star", 1200);
+        acts.cheer();
+      }
+    },
+    // The last stretch of the session, where every change comes at once.
+    "habit-chaos"() {
+      if (roomBesideWindow() && canSay("habitChaos", 300000)) say("habitChaos");
+      else {
+        face("wide", 1400);
+        acts.hop();
+      }
+    },
+    "habit-finished": () => say("habitDone"),
+    "habit-failed"() {
+      face("oops", 1600);
+      acts.giggle();
+    },
+    "waiter-closed": () => backFromGame(),
+    "certificate-unlocked"() {
+      if (away) afterAway = "certificateReady";
+      else say("certificateReady");
+    },
     "games-closed": () => { if (score.played && canSay("goodbye", 180000)) say("goodbye"); },
-    "builder-opened": () => { if (canSay("builderOpen", Infinity)) say("builderOpen"); },
-    "builder-exported": () => say("builderExport"),
+    // Crie Meu Site covers the desktop: he moves into the app (see site-builder.js).
+    "builder-opened": () => goIntoGame(),
+    "builder-closed": () => backFromGame(),
     "about-opened": () => { if (canSay("aboutUs", Infinity)) say("aboutUs"); },
     "color-opened"() {
       score.played = true;
@@ -1228,6 +2164,8 @@
 
   document.addEventListener("frontarcade:event", ({ detail }) => {
     lastInput = performance.now();
+    if (!crush?.help) crush?.controller.abort(); // the games come first (picking the flower can go on)
+    if (soaring) landSoon();
     reactions[detail?.type]?.(detail);
   });
 
@@ -1237,7 +2175,7 @@
   let lookFrame = 0;
   function followPointer() {
     lookFrame = 0;
-    if (!present || !pointer || sleeping || travelling || talking || busy() || alarm) return;
+    if (!present || !pointer || sleeping || travelling || talking || busy() || alarm || crush) return;
     const box = bot.getBoundingClientRect();
     const dx = (pointer.x - (box.left + box.width / 2)) / 220;
     const dy = (pointer.y - (box.top + box.height / 2)) / 220;
@@ -1255,7 +2193,7 @@
   document.addEventListener("pointermove", event => {
     lastInput = performance.now();
     pointer = { x: event.clientX, y: event.clientY };
-    if (!bubble.hidden && !held) {
+    if (!bubble.hidden && !held && !bubble.classList.contains("is-asking")) {
       const box = bubble.getBoundingClientRect();
       const near = pointer.x > box.left - 24 && pointer.x < box.right + 24 && pointer.y > box.top - 24 && pointer.y < box.bottom + 24;
       bubble.classList.toggle("is-see-through", near);
@@ -1271,7 +2209,7 @@
 
   // Tickles: hovering makes him giggle, a click gets a line (or wakes him up).
   bot.addEventListener("pointerenter", () => {
-    if (sleeping || talking || travelling || busy() || alarm || performance.now() - lastTickle < 1500) return;
+    if (sleeping || talking || travelling || busy() || alarm || crush || performance.now() - lastTickle < 1500) return;
     lastTickle = performance.now();
     face("laugh", 1300);
     bot.classList.add("is-blushing");
@@ -1280,7 +2218,7 @@
   });
   bot.addEventListener("pointerleave", () => bot.classList.remove("is-blushing"));
   bot.addEventListener("click", () => {
-    if (dragged || busy()) return;
+    if (dragged || busy() || crush) return;
     if (sleeping) {
       say("wakeUp");
       return;
@@ -1348,10 +2286,21 @@
   /* ---------- Keeping up with the screen ---------- */
 
   function relocate() {
-    if (!present || alarm === "pending") return;
+    if (!present || away || alarm === "pending") return;
+    if (crush && !crush.help && openWindow()) crush.controller.abort(); // a window needs the room
+    if (soaring && openWindow()) landSoon();
+    if (sprout) sprout.element.hidden = !sprout.help && (Boolean(openWindow()) || coversScreen());
     rehost();
     if (busy()) return;
     const area = zone();
+    // The flower he asked for help with stays beside him when the window moves him.
+    if (sprout?.help && !crush && openWindow()) {
+      const spot = helpSpot(area.tuck ? area.from : clamp(x, area.from, area.to));
+      if (Math.abs(spot - sprout.x) > width() * 2) {
+        sprout.x = spot;
+        sprout.element.style.left = `${Math.round(spot)}px`;
+      }
+    }
     if (area.tuck !== tucked) setTuck(area.tuck);
     if (x < area.from - 1 || x > area.to + 1) {
       if (talking) {

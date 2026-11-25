@@ -97,6 +97,184 @@
 }
 .pepi-pal-bot.is-alarm.is-ball::after { top: 6%; }
 
+/* On the phone with Brem Daya 2.0: the phone glows in his hands, a beam of pink light
+   brings her in, and the flower floats from his hand to hers. */
+.pepi-pal-phone {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: calc(9px * var(--pepi-px));
+  translate: -50% 0;
+  rotate: -6deg;
+  filter: drop-shadow(0 0 calc(3px * var(--pepi-px)) #ffd1e8) drop-shadow(0 0 2px #fff);
+  pointer-events: none;
+}
+.pepi-pal-phone svg, .pepi-pal-flower svg { display: block; width: 100%; height: auto; }
+.pepi-pal-phone .phone-heart { transform-box: fill-box; transform-origin: center; animation: pepi-beat .9s steps(1) infinite; }
+.pepi-pal-phone.is-typing { animation: pal-typing .26s steps(2, jump-none) infinite; }
+.pepi-pal-phone.is-sent .phone-heart { animation: pal-sent .7s ease-in forwards; }
+.pepi-pal-flower {
+  position: absolute;
+  width: calc(8px * var(--pepi-px));
+  filter: drop-shadow(2px 0 0 #fff) drop-shadow(-2px 0 0 #fff) drop-shadow(0 2px 0 #fff) drop-shadow(0 -2px 0 #fff);
+  pointer-events: none;
+}
+.pepi-pal-brem {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  animation: pal-breathe 2.4s ease-in-out infinite;
+  transform-origin: 50% 100%;
+  pointer-events: none;
+}
+.pepi-pal-brem .pepi-art { transform-origin: 50% 100%; }
+.pepi-pal-brem .pepi-look { transform: translate(var(--look-x, 0px), 0px); }
+.pepi-pal-brem .pepi-look-mouth { transform: translate(calc(var(--look-x, 0px) / 2), 0px); }
+.pepi-pal-beam {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background:
+    linear-gradient(90deg, #ffd1e800, #ffd1e8b3 22%, #fff7fbe6 50%, #ffd1e8b3 78%, #ffd1e800),
+    repeating-linear-gradient(#ffffff40 0 4px, #ffffff00 4px 12px);
+  transform-origin: 50% 0;
+  pointer-events: none;
+}
+/* Bright edges and sparkles rising inside the beam. */
+.pepi-pal-beam::before {
+  content: "";
+  position: absolute;
+  inset: 0 16%;
+  border-inline: 2px solid #ffffff8c;
+}
+.pepi-pal-beam::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, #fff 0 1.5px, #fff0 2px), radial-gradient(circle, #ffd1e8 0 1px, #ffd1e800 1.5px);
+  background-size: 22px 40px, 14px 26px;
+  background-position: 0 0, 7px 13px;
+  mask: linear-gradient(90deg, transparent, #000 30% 70%, transparent);
+  animation: pal-beam-rise .9s linear infinite;
+}
+/* Brem's arrival: the falling heart and its trail, the landing pad, her hologram and
+   the scan line that prints her. */
+.pepi-pal-comet {
+  position: absolute;
+  bottom: 0;
+  width: calc(10px * var(--pepi-px));
+  filter: drop-shadow(0 0 3px #fff) drop-shadow(0 0 14px #ff5fb0);
+  pointer-events: none;
+}
+.pepi-pal-comet svg { display: block; width: 100%; height: auto; }
+.pepi-pal-trail {
+  position: absolute;
+  width: calc(3px * var(--pepi-px));
+  height: calc(3px * var(--pepi-px));
+  box-shadow: 0 0 8px #ff8ccf;
+  pointer-events: none;
+}
+.pepi-pal-pad, .pepi-pal-shock {
+  position: absolute;
+  bottom: 0;
+  height: calc(5px * var(--pepi-px));
+  border-radius: 50%;
+  pointer-events: none;
+}
+.pepi-pal-pad { background: radial-gradient(closest-side, #fff7fb, #ff8ccfcc 50%, #ff8ccf00); }
+.pepi-pal-shock { border: 2px solid #ffb3da; box-shadow: 0 0 10px #ff8ccf; }
+.pepi-pal-holo {
+  position: absolute;
+  inset: 0;
+  /* A pink-tinted, see-through copy of her with scanlines and a glow. */
+  filter: grayscale(1) brightness(1.25) sepia(1) hue-rotate(275deg) saturate(3.2) drop-shadow(0 0 6px #ff5fb0);
+  mask: repeating-linear-gradient(#000 0 3px, #0005 3px 5px);
+  animation: pal-holo .12s steps(2, jump-none) infinite;
+  pointer-events: none;
+}
+.pepi-pal-scan {
+  position: absolute;
+  left: -14%;
+  right: -14%;
+  height: calc(1.5px * var(--pepi-px));
+  border-radius: 2px;
+  background: #fff;
+  box-shadow: 0 0 8px 2px #ff8ccf, 0 0 18px 4px #ffd1e8;
+  pointer-events: none;
+}
+
+/* Thrusters under his feet: pixel flames that flicker and grow with the thrust. */
+.pepi-pal-jets { display: none; }
+.pepi-pal-bot.is-jetting .pepi-pal-jets { display: block; }
+.pepi-pal-jets i {
+  position: absolute;
+  top: 93%;
+  width: calc(5px * var(--pepi-px));
+  height: calc(9px * var(--pepi-px));
+  translate: -50% 0;
+  transform-origin: 50% 0;
+  scale: 1 var(--thrust, 1);
+  background: linear-gradient(#fffbe6 0 22%, #ffd36b 22% 48%, #ff8a3d 48% 74%, #e4405f 74%);
+  clip-path: polygon(0 0, 100% 0, 100% 40%, 80% 40%, 80% 70%, 60% 70%, 60% 100%, 40% 100%, 40% 70%, 20% 70%, 20% 40%, 0 40%);
+  filter: drop-shadow(0 0 6px #ffb347);
+  animation: pal-flame .12s steps(2, jump-none) infinite;
+  pointer-events: none;
+}
+.pepi-pal-jets i:first-child { left: 36.5%; }
+.pepi-pal-jets i:last-child { left: 63.5%; animation-delay: -.06s; }
+
+/* The little flower that grows on the desktop: a button, so it can be clicked. */
+.pepi-pal-sprout {
+  position: absolute;
+  bottom: 0;
+  width: calc(11px * var(--pepi-px));
+  padding: 0;
+  border: 0;
+  background: none;
+  transform: translateX(-50%);
+  transform-origin: 50% 100%;
+  cursor: pointer;
+  pointer-events: auto;
+  filter: drop-shadow(2px 0 0 #fff) drop-shadow(-2px 0 0 #fff) drop-shadow(0 -2px 0 #fff);
+}
+.pepi-pal-sprout svg { display: block; width: 100%; height: auto; transform-origin: 50% 100%; animation: pal-sway 2.6s ease-in-out infinite; }
+.pepi-pal-sprout:hover svg { animation-duration: .9s; }
+.pepi-pal-sprout:focus-visible { outline: 3px solid #f0a8cc; outline-offset: 4px; border-radius: 6px; }
+.pepi-pal-sprout:disabled { cursor: default; }
+/* While he asks for help, a soft pink glow pulses behind it. */
+.pepi-pal-sprout.is-calling::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  z-index: -1;
+  width: 190%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  translate: -50% 25%;
+  background: radial-gradient(closest-side, #ffd1e8e6, #ff8ccf66 55%, #ff8ccf00);
+  animation: pal-call 1.1s ease-in-out infinite;
+}
+
+/* Questions get answer buttons: then the bubble takes clicks and stays opaque. */
+.pepi-pal-bubble.is-asking { pointer-events: auto; }
+.pepi-pal-bubble.is-brem .pepi-pal-name { color: #5b5fc7; }
+.pepi-pal-choices { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.pepi-pal-choice {
+  min-height: 36px;
+  padding: 6px 14px;
+  border: 2px solid #3b2838;
+  border-radius: 10px;
+  color: #3b2838;
+  background: #fff;
+  box-shadow: 0 3px 0 #3b2838;
+  font: 700 .85rem/1 var(--mono);
+}
+.pepi-pal-choice:first-child { color: #fff; background: #d6407e; }
+.pepi-pal-choice:hover { translate: 0 -1px; box-shadow: 0 4px 0 #3b2838; }
+.pepi-pal-choice:active { translate: 0 2px; box-shadow: 0 1px 0 #3b2838; }
+.pepi-pal-choice:focus-visible { outline: 3px solid #5d84b4; outline-offset: 2px; }
+
 /* Napping: slow, deep breaths and a drooping antenna. */
 .pepi-pal-bot.is-sleeping { animation: pal-snooze 3.4s ease-in-out infinite; }
 .pepi-pal-bot.is-sleeping .pepi-antenna { animation: none; transform: rotate(-18deg); }
@@ -233,6 +411,13 @@
 @keyframes pal-siren { 0% { fill: #ff4d6a; } 50% { fill: #fff1f4; } }
 @keyframes pal-siren-glow { 0% { opacity: 1; scale: 1; } 50% { opacity: .35; scale: .8; } }
 @keyframes pal-alert-sign { from { translate: 0 0; rotate: -8deg; } to { translate: 0 -4px; rotate: 8deg; } }
+@keyframes pal-flame { 0% { scale: 1 calc(var(--thrust, 1) * .82); } 100% { scale: 1.08 var(--thrust, 1); } }
+@keyframes pal-beam-rise { to { background-position: 0 -40px, 7px -13px; } }
+@keyframes pal-holo { 0% { opacity: .8; } 100% { opacity: .45; } }
+@keyframes pal-call { 50% { scale: 1.3; opacity: .5; } }
+@keyframes pal-sway { 0%, 100% { rotate: -5deg; } 50% { rotate: 5deg; } }
+@keyframes pal-typing { 0% { translate: -50% 0; } 100% { translate: -50% 4%; } }
+@keyframes pal-sent { 0% { transform: none; opacity: 1; } 100% { transform: translateY(-140%) scale(1.4); opacity: 0; } }
 @keyframes pal-cta { 50% { box-shadow: 0 0 0 5px #f0a8cc88, 0 0 24px #f0a8cc; scale: 1.04; } }
 @keyframes pal-hint {
   50% { border-color: #f0a8cc; background: #d6407e40; box-shadow: 0 0 0 6px #f0a8cc55, 0 0 26px #f0a8cc; }
@@ -249,7 +434,9 @@
 @media (prefers-reduced-motion: reduce) {
   .pepi-pal-bot, .pepi-pal-bot.is-sleeping, .pepi-pal-bot.is-alarm, .pepi-pal-bot.is-alarm::before,
   .pepi-pal-bot.is-alarm::after, .pepi-pal.is-held .pepi-pal-bot .pepi-feet, .pepi-pal-bot.is-kicking .pepi-feet,
-  .desktop-shortcut.pepi-hint, .primary-button.pepi-hint { animation: none; }
+  .desktop-shortcut.pepi-hint, .primary-button.pepi-hint, .pepi-pal-brem, .pepi-pal-phone .phone-heart,
+  .pepi-pal-phone.is-typing, .pepi-pal-jets i, .pepi-pal-sprout svg, .pepi-pal-beam::after, .pepi-pal-holo,
+  .pepi-pal-sprout.is-calling::before { animation: none; }
   .desktop-shortcut.pepi-hint, .primary-button.pepi-hint { box-shadow: 0 0 0 3px #f0a8cc; }
   .pepi-pal-body, .pepi-switch input, .pepi-switch input::before { transition: none; }
 }

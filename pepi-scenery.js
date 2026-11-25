@@ -1,5 +1,5 @@
 // Pixel-art scenery behind Pepi Bolota, in daylight: Aracaju's seafront (Orla de
-// Atalaia, with the arches and the giant crab statue) and the UFS campus. Three
+// Atalaia, with the four blue arches and the giant crab statue) and the UFS campus. Three
 // canvases scroll at different speeds (parallax) when the camera travels between them.
 (() => {
   const HEIGHT = 270; // art pixels; the layers are scaled to the full viewport height
@@ -189,26 +189,46 @@
     box(top.x - 2, top.y + 1, 4, 3, "#7a5a2e");
   }
 
-  // Three white arches over the promenade, left of the camera's centre so they frame
-  // the scene instead of growing out of Pepi.
-  const arches = [{ x: 96, width: 40, height: 60 }, { x: 148, width: 56, height: 80 }, { x: 200, width: 40, height: 60 }];
+  // The four arches of the Orla de Atalaia: side by side, sharing their pillars, covered
+  // in small blue tiles, the two in the middle taller than the ones at the ends. They
+  // stand left of the camera's centre, so they frame the scene instead of growing out
+  // of Pepi.
+  const arches = { left: 88, pillar: 9, opening: 16, heights: [78, 96, 96, 74] };
+  const tiles = ["#5b66b4", "#5560ad", "#6170bc", "#4f5aa5", "#5864b2"];
 
   function paintArches(box) {
-    const lights = ["#ff8fbf", "#ffc94d", "#58c7f0", "#a78bfa"];
-    arches.forEach((arch, archIndex) => {
-      const radius = arch.width / 2;
-      const top = WALK - arch.height;
-      for (const side of [arch.x - radius, arch.x + radius - 4]) {
-        box(side, top + radius, 4, WALK - top - radius, "#ffffff");
-        box(side + (side < arch.x ? 3 : 0), top + radius, 1, WALK - top - radius, "#c9d3e0");
-      }
-      for (let x = -radius; x <= radius; x++) {
-        const y = top + radius - Math.round(Math.sqrt(Math.max(0, radius * radius - x * x)));
-        box(arch.x + x, y, 1, 4, "#ffffff");
-        box(arch.x + x, y + 3, 1, 1, "#c9d3e0");
-        if ((x + radius) % 5 === 0) box(arch.x + x, y + 1, 1, 2, lights[(x + radius + archIndex) % lights.length]);
-      }
+    const { left, pillar, opening, heights } = arches;
+    const span = opening + pillar; // from one pillar to the next
+    const outer = (opening + pillar * 2) / 2;
+    const right = left + span * heights.length + pillar;
+    const top = WALK - Math.max(...heights);
+    const solid = (x, y) => heights.some((height, index) => {
+      const from = left + index * span;
+      if (x < from || x >= from + outer * 2 || y < WALK - height || y >= WALK) return false;
+      const spring = WALK - height + outer; // where the curve begins
+      if (y >= spring) return x - from < pillar || x - from >= pillar + opening;
+      const distance = Math.hypot(x + .5 - (from + outer), y + .5 - spring);
+      return distance <= outer && distance >= outer - pillar;
     });
+    box(left - 3, WALK, right - left + 8, 2, "#c7af8e"); // their shadow on the paving
+    for (let y = top; y < WALK; y++) {
+      for (let x = left; x < right; x++) {
+        if (!solid(x, y)) continue;
+        // Tiles of three pixels in slightly different blues, like the real mosaic;
+        // light on the left edges and the top of the curve, shade on the right.
+        const tile = Math.floor(x / 3) * 7 + Math.floor(y / 3) * 13;
+        let fill = tiles[tile % tiles.length];
+        if (!solid(x + 1, y)) fill = "#3a4386";
+        else if (!solid(x - 1, y) || !solid(x, y - 1)) fill = "#8c98d8";
+        box(x, y, 1, 1, fill);
+      }
+    }
+    // The plaques on the pillar between the two tall arches.
+    const plaque = left + 2 * span + 2;
+    box(plaque, WALK - 26, pillar - 4, 8, "#2b2d3b");
+    box(plaque, WALK - 15, pillar - 4, 7, "#2b2d3b");
+    box(plaque + 1, WALK - 24, pillar - 6, 1, "#6d7184");
+    box(plaque + 1, WALK - 13, pillar - 6, 1, "#6d7184");
   }
 
   // The giant crab statue of the Orla de Atalaia: claws up, eyes on stalks, on a plinth.

@@ -73,6 +73,21 @@ dialog.intro-dialog {
 }
 dialog.intro-dialog[open] { display: block; }
 .intro-dialog::backdrop { background: var(--os-bg); }
+/* Leaving for the arcade: the whole intro closes like an iris onto Pepi (--iris is
+   animated from pepi-bolota.js) and the desktop, already on, shows around it. */
+dialog.intro-dialog.is-leaving {
+  -webkit-mask: radial-gradient(circle at var(--iris-x, 50%) var(--iris-y, 50%), #000 calc(var(--iris) - 28px), #0000 var(--iris));
+  mask: radial-gradient(circle at var(--iris-x, 50%) var(--iris-y, 50%), #000 calc(var(--iris) - 28px), #0000 var(--iris));
+}
+.intro-dialog.is-leaving::backdrop { background: transparent; backdrop-filter: none; }
+.pepi-iris-spark {
+  position: fixed;
+  z-index: 60;
+  width: 42px;
+  pointer-events: none;
+  filter: drop-shadow(0 0 10px #ffc96b);
+}
+.pepi-iris-spark svg { display: block; width: 100%; }
 
 .intro-stage {
   position: relative;
@@ -497,6 +512,57 @@ dialog.intro-dialog[open] { display: block; }
   background: radial-gradient(130% 100% at 50% 45%, transparent 58%, #0b1d3a4d 100%);
 }
 
+/* The workshop where Pepi is built: a blueprint room in Pepi OS colours, a glowing grid
+   floor that scrolls towards the audience and bits of data drifting up. When he is
+   ready a hole opens from him (--hole) and the seafront appears behind it. */
+@property --hole { syntax: "<length>"; inherits: false; initial-value: 0px; }
+@property --iris { syntax: "<length>"; inherits: false; initial-value: 0px; }
+.intro-lab {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(55% 50% at 50% 40%, #5a2a6e8c, transparent 72%),
+    linear-gradient(#f0a8cc17 1px, transparent 1px) 50% 0 / 48px 48px,
+    linear-gradient(90deg, #f0a8cc17 1px, transparent 1px) 50% 0 / 48px 48px,
+    linear-gradient(#86e6ff0b 1px, transparent 1px) 50% 0 / 12px 12px,
+    linear-gradient(90deg, #86e6ff0b 1px, transparent 1px) 50% 0 / 12px 12px,
+    var(--os-bg);
+}
+.intro-lab.is-opening {
+  -webkit-mask: radial-gradient(circle at var(--hole-x, 50%) var(--hole-y, 45%), #0000 var(--hole), #000 calc(var(--hole) + 40px));
+  mask: radial-gradient(circle at var(--hole-x, 50%) var(--hole-y, 45%), #0000 var(--hole), #000 calc(var(--hole) + 40px));
+}
+.intro-lab.is-open { display: none; }
+.lab-floor {
+  position: absolute;
+  right: -60%;
+  bottom: 0;
+  left: -60%;
+  height: 42%;
+  background:
+    linear-gradient(#86e6ff4d 2px, transparent 2px) 0 0 / 100% 56px,
+    linear-gradient(90deg, #f0a8cc4d 2px, transparent 2px) 50% 0 / 72px 100%;
+  transform: perspective(300px) rotateX(60deg);
+  transform-origin: 50% 100%;
+  -webkit-mask-image: linear-gradient(transparent, #000 65%);
+  mask-image: linear-gradient(transparent, #000 65%);
+  animation: lab-floor 2.8s linear infinite;
+}
+.lab-bits i {
+  position: absolute;
+  bottom: -12px;
+  width: 6px;
+  height: 6px;
+  background: var(--os-cyan);
+  box-shadow: 0 0 10px currentColor;
+  opacity: 0;
+  animation: lab-bit var(--t, 6s) linear var(--d, 0s) infinite;
+}
+.lab-bits i:nth-child(3n) { background: var(--os-pink); color: var(--os-pink); }
+.lab-bits i:nth-child(3n + 1) { color: var(--os-cyan); }
+.lab-bits i:nth-child(4n) { width: 4px; height: 4px; background: var(--os-gold); color: var(--os-gold); }
+
 /* Two small cards about Pepi, over the sky. */
 .os-window {
   position: absolute;
@@ -664,16 +730,24 @@ dialog.intro-dialog[open] { display: block; }
   height: 100%;
   overflow: visible;
   fill: none;
-  stroke: #f2fbffe6;
-  stroke-width: 1.6;
+  stroke: #f2fbffeb;
   stroke-linecap: round;
   stroke-linejoin: round;
-  filter: drop-shadow(0 0 2px #fff) drop-shadow(1px 1px 0 #00000080);
+  /* A bright edge on one side, a dark one on the other: light refracting in the crack. */
+  filter: drop-shadow(0 0 1.5px #ffffffd9) drop-shadow(1px 1px 0 #00000085) drop-shadow(-1px -1px 0 #bfeaff4d);
 }
-.glass-crack path, .glass-crack polygon {
+.glass-crack path {
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
-  animation: crack-draw .22s ease-out forwards;
+  animation: crack-draw .22s linear forwards;
+}
+.glass-frost { animation: glass-frost .5s ease-out both; transform-box: fill-box; transform-origin: center; }
+.glass-facet { fill: #fff; stroke: none; opacity: 0; animation: glass-facet .6s ease-out forwards; }
+.glass-chip {
+  position: absolute;
+  background: linear-gradient(135deg, #ffffffe6, #cfefff99 55%, #ffffff40);
+  clip-path: polygon(0 20%, 70% 0, 100% 65%, 30% 100%);
+  filter: drop-shadow(0 0 2px #fff);
 }
 
 @keyframes pepi-float { 50% { translate: 0 -6px; } }
@@ -688,6 +762,8 @@ dialog.intro-dialog[open] { display: block; }
 @keyframes intro-caret { 50% { opacity: 0; } }
 @keyframes intro-dialogue-in { from { opacity: 0; transform: translateY(16px); } }
 @keyframes crack-draw { to { stroke-dashoffset: 0; } }
+@keyframes glass-frost { from { opacity: 0; transform: scale(.3); } }
+@keyframes glass-facet { to { opacity: var(--o, .08); } }
 @keyframes blueprint-in { 0% { opacity: 0; } 25% { opacity: .8; } 50% { opacity: .2; } 100% { opacity: 1; } }
 @keyframes log-in { from { opacity: 0; transform: translateY(6px); } }
 /* ---------- Pepi inside the avatar editor ---------- */
@@ -779,6 +855,13 @@ dialog.intro-dialog[open] { display: block; }
 @keyframes os-meter { from { transform: scaleY(.12); } to { transform: scaleY(calc(.3 + var(--f) * .6)); } }
 @keyframes os-beat { 0%, 60%, 100% { transform: scale(1); } 70% { transform: scale(1.4); } }
 @keyframes pepi-glow { 50% { opacity: .75; scale: 1.06; } }
+@keyframes lab-floor { to { background-position: 0 56px, 50% 0; } }
+@keyframes lab-bit {
+  0% { opacity: 0; transform: translateY(0); }
+  15% { opacity: .9; }
+  80% { opacity: .5; }
+  100% { opacity: 0; transform: translateY(calc(-100vh - 24px)); }
+}
 
 /* Big screens and projectors: more room, so everyone grows (the duo stays taller). */
 @media (min-width: 1100px) and (min-height: 860px) {
@@ -805,8 +888,11 @@ dialog.intro-dialog[open] { display: block; }
   .pepi, .pepi-shadow, .pepi-star, .pepi-antenna, .pepi-heart, .pepi-eyes-normal, .pepi-eyes-love, .pepi-eyes-star,
   .intro-person.is-walking canvas, .intro-caret, .intro-dialogue,
   .os-beat, .pepi-move::before, .pepi-guide-bot, .pepi-guide-peek,
-  .intro-os.is-voicing .os-meter i, .build-log li, .pepi.is-building .pepi-blueprint { animation: none; }
+  .intro-os.is-voicing .os-meter i, .build-log li, .pepi.is-building .pepi-blueprint, .lab-floor { animation: none; }
+  .lab-bits { display: none; }
   .pepi, .pepi-look { transition: none; }
   .pepi.is-confused .pepi-thinking i { animation: none; opacity: 1; transform: none; }
-  .glass-crack path, .glass-crack polygon { animation: none; stroke-dashoffset: 0; }
+  .glass-crack path { animation: none; stroke-dashoffset: 0; }
+  .glass-frost { animation: none; }
+  .glass-facet { animation: none; opacity: var(--o, .08); }
 }
