@@ -54,8 +54,24 @@
     undo: line("M9 14L4 9l5-5M4 9h10a6 6 0 0 1 0 12h-3"),
     redo: line("M15 14l5-5-5-5M20 9H10a6 6 0 0 0 0 12h3"),
     eye: line("M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12ZM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"),
+    level: line("M3 12h18M7 8v8M17 8v8"),
+    move: line("M12 3v18M3 12h18M9 6l3-3 3 3M9 18l3 3 3-3M6 9l-3 3 3 3M18 9l3 3-3 3"),
+    lines: line("M4 6h16M4 12h16M4 18h16M2 3v18"),
     eyeOff: line("M3 3l18 18M10.6 5.1A10 10 0 0 1 12 5c6 0 10 7 10 7a17 17 0 0 1-3.2 4M6.6 6.6C3.8 8.4 2 12 2 12s4 7 10 7a9.6 9.6 0 0 0 5.4-1.6M9.9 9.9a3 3 0 0 0 4.2 4.2"),
   };
+
+  // A text's own size, spacing, line height, rotation and nudge, as inline style.
+  function fmtStyle(format, tag) {
+    if (!format) return "";
+    const parts = [];
+    if (format.z && format.z !== 1) parts.push(`zoom:${format.z}`);
+    if (format.ls) parts.push(`letter-spacing:${format.ls}em`);
+    if (format.lh) parts.push(`line-height:${format.lh}`);
+    if (format.r) parts.push(`rotate:${format.r}deg`);
+    if (format.tx || format.ty) parts.push(`translate:${format.tx}cqi ${format.ty}cqi`);
+    if ((format.r || format.tx || format.ty) && tag === "span") parts.push("display:inline-block");
+    return parts.join(";");
+  }
 
   /* ---------- Collage pieces ---------- */
 
@@ -125,7 +141,13 @@
     piece.wide = /^(word|pill|tape)/.test(key) || ["loop", "underline"].includes(key);
   }
   Object.assign(doodles, scrap);
-  const cute = { berry: "Moranguinho", cat: "Gatinho", flower: "Flor", star: "Estrelinha", bow: "Laço", heart: "Coração", mushroom: "Cogumelo", letter: "Cartinha" };
+  // The themed sticker collections (site-stickers.js) keep their own colours.
+  const packs = window.CMS_PACKS ?? {};
+  for (const [key, pack] of Object.entries(packs)) {
+    for (const [art, piece] of Object.entries(pack.pieces)) doodles[art] = { ...piece, group: `pack:${key}` };
+  }
+  let pack = Object.keys(packs)[0];
+  const cute ={ berry: "Moranguinho", cat: "Gatinho", flower: "Flor", star: "Estrelinha", bow: "Laço", heart: "Coração", mushroom: "Cogumelo", letter: "Cartinha" };
   const cuteImages = new Map();
   function cutePicture(art) {
     if (cuteImages.has(art)) return cuteImages.get(art);
@@ -253,7 +275,7 @@
   let serial = 1;
   const sticker = (art, x, y, s, r = 0) => ({ id: serial++, art, x, y, s: s ?? doodles[art]?.size ?? 12, r });
   function section(layout, tone = 0, stickers = []) {
-    return { id: serial++, layout, tone, off: false, hide: {}, texts: {}, photos: {}, icons: {}, stickers };
+    return { id: serial++, layout, tone, off: false, hide: {}, texts: {}, photos: {}, icons: {}, fmt: {}, stickers };
   }
   function sampleProject() {
     return {
@@ -271,6 +293,54 @@
     };
   }
 
+  // Ready-made portfolios: a style, a palette, the blocks with their texts and a few
+  // stickers. Picking one replaces the page; Desfazer brings the old one back.
+  const filled = (item, texts, fmt = {}) => Object.assign(item, { texts, fmt });
+  const templates = {
+    designer: { name: "Design gráfico", hint: "Pôster azul, letras de adesivo e colagem.", swatches: ["#2f6fe4", "#e9e9e6", "#121212"], build: sampleProject },
+    foto: {
+      name: "Fotografia", hint: "Minimal e frio, para as fotos falarem alto.", swatches: ["#38506a", "#e6ecf2", "#071018"],
+      build: () => ({ theme: "minimal", palette: "polar", exported: false, sections: [
+        filled(section("cover", 1, [sticker("vCamera", 80, 20, 12, 10), sticker("cFilm", 22, 88, 16, -4)]), { kicker: "Fotografia", year: "2025", title: "Luz & Sombra", name: "por Seu Nome" }),
+        filled(section("feature", 0), { kicker: "Ensaio 01", title: "Orla ao entardecer", body: "Uma série sobre a luz dourada da Atalaia: pescadores, crianças e o vento no fim da tarde. Fotografei com uma lente fixa, só com luz natural.", caption: "Aracaju · 2025" }),
+        filled(section("grid", 0, [sticker("tapeGrid", 18, 12, 13, -6)]), { kicker: "Portfólio", title: "Séries", cap1: "Retratos", cap2: "Paisagens", cap3: "Rua" }),
+        filled(section("about", 2), { hello: "Oi!", intro: "Eu sou", name: "Seu Nome.", role: "fotógrafa em formação", bio: "Ando sempre com uma câmera e gosto de gente, de cidade e de luz baixa. Faço retratos, eventos pequenos e ensaios de rua." }),
+        filled(section("quote", 1), { quote: "“Fotografar é colocar na mesma linha a cabeça, o olho e o coração.”", author: "Henri Cartier-Bresson" }),
+        filled(section("contact", 0), { kicker: "Contato", title: "Vamos fotografar?", body: "Retratos, ensaios e cobertura de eventos.", email: "seunome@email.com", social: "@seunome.foto", cta: "Marcar um ensaio" }),
+      ] }),
+    },
+    ilustra: {
+      name: "Ilustração", hint: "Caderno de desenhos lilás, cheio de adesivos.", swatches: ["#7b5cc4", "#f6f2fd", "#2c1d52"],
+      build: () => ({ theme: "caderno", palette: "violeta", exported: false, sections: [
+        filled(section("cover", 1, [sticker("lFlower", 82, 18, 10, 8), sticker("lButterfly", 16, 84, 9, -12), sticker("lStar", 90, 80, 7, 10)]), { kicker: "Ilustração", year: "2025", title: "Caderno", name: "de Seu Nome" }),
+        filled(section("about", 0, [sticker("lLavender", 92, 70, 6, 8)]), { hello: "Olá!", intro: "Me chamo", name: "Seu Nome.", role: "ilustradora e sonhadora", bio: "Desenho bichos, plantas e pessoas com aquarela e no digital. Adoro capas de livro, estampas e personagens fofos." }),
+        filled(section("grid", 0, [sticker("lMoon", 90, 14, 8, 0)]), { kicker: "Galeria", title: "Desenhos favoritos", cap1: "Capa de livro", cap2: "Personagem", cap3: "Estampa" }),
+        filled(section("skills", 2), { kicker: "Técnicas", title: "Como eu desenho", t1: "Aquarela", d1: "Cores leves e manchas no papel.", t2: "Digital", d2: "Pincéis no tablet e muita camada.", t3: "Personagens", d3: "Do rascunho ao bichinho pronto." }),
+        filled(section("contact", 1, [sticker("lHearts", 86, 26, 8, 8)]), { kicker: "Contato", title: "Bora desenhar junto?", body: "Encomendas, capas e parcerias.", email: "seunome@email.com", social: "@seunome.desenha", cta: "Mandar uma ideia" }),
+      ] }),
+    },
+    ux: {
+      name: "UX/UI", hint: "Revista colorida com estudo de caso.", swatches: ["#ef0c1a", "#ffbbbc", "#99c13f"],
+      build: () => ({ theme: "revista", palette: "guacamole", exported: false, sections: [
+        filled(section("cover", 1, [sticker("cursor", 70, 64, 5, -8), sticker("box", 14, 16), sticker("box", 17.5, 16)]), { kicker: "UX/UI Design", year: "2025", title: "Design que acolhe", name: "por Seu Nome" }, { title: { z: .72, ls: 0, lh: 0, r: 0, tx: 0, ty: 0 } }),
+        filled(section("feature", 0, [sticker("badge", 88, 16, 8, 12)]), { kicker: "Estudo de caso", title: "App do ônibus", body: "Conversei com 12 pessoas no ponto, desenhei três fluxos e testei protótipos no papel. O tempo para achar a linha certa caiu de 40 para 12 segundos.", caption: "Pesquisa · Protótipo · Teste" }),
+        filled(section("skills", 2), { kicker: "Processo", title: "Como eu trabalho", t1: "Pesquisa", d1: "Entrevistas e observação de verdade.", t2: "Protótipos", d2: "Do papel ao Figma, sem pressa.", t3: "Testes", d3: "Ver a pessoa usar e ajustar." }),
+        filled(section("grid", 0), { kicker: "Mais projetos", title: "Outros trabalhos", cap1: "Site de ONG", cap2: "Painel de dados", cap3: "App de receitas" }),
+        filled(section("contact", 1), { kicker: "Contato", title: "Vamos resolver juntos?", body: "Aberta a estágios e projetos de produto.", email: "seunome@email.com", social: "linkedin.com/in/seunome", cta: "Mandar mensagem" }),
+      ] }),
+    },
+    escrita: {
+      name: "Escrita", hint: "Noite estrelada para textos e poesia.", swatches: ["#1d3266", "#eef1f7", "#b8902a"],
+      build: () => ({ theme: "minimal", palette: "estrelada", exported: false, sections: [
+        filled(section("cover", 2, [sticker("eMoon", 84, 20, 9, 0), sticker("eStar", 18, 84, 11, -10)]), { kicker: "Escrita", year: "2025", title: "Palavras ao luar", name: "por Seu Nome" }, { title: { z: .8, ls: 0, lh: 0, r: -3, tx: 0, ty: 0 } }),
+        filled(section("text", 0, [sticker("aQuill", 92, 22, 6, 12)]), { kicker: "Quem escreve", title: "Escrevo para lembrar", body: "Contos curtos, crônicas da cidade e poemas que nascem no ônibus. Aqui estão alguns textos que já saíram da gaveta." }),
+        filled(section("quote", 1), { quote: "“Escrever é procurar entender, é procurar reproduzir o irreproduzível.”", author: "Clarice Lispector" }),
+        filled(section("grid", 0, [sticker("eCloud", 84, 12, 13, 0)]), { kicker: "Textos", title: "Publicados", cap1: "Conto: A maré", cap2: "Crônica: Calçadão", cap3: "Poema: Farol" }),
+        filled(section("contact", 0), { kicker: "Contato", title: "Quer ler mais?", body: "Revisões, oficinas e parcerias.", email: "seunome@email.com", social: "@seunome.escreve", cta: "Escrever para mim" }),
+      ] }),
+    },
+  };
+
   /* ---------- Styles and colour palettes ---------- */
 
   const themes = {
@@ -280,7 +350,10 @@
     caderno: { name: "Caderno", hint: "Papel texturizado, letras desenhadas à mão e fotos de polaroide.", swatches: ["#e3a21a", "#f5f2ea", "#2b2a28"] },
   };
   // A palette recolours any style: paper, ink and accent; the rest is derived in CSS.
+  // Each sticker collection brings a palette of its own, listed first.
   const palettes = {
+    ...Object.fromEntries(Object.entries(packs).map(([key, collection]) => [key, collection.palette])),
+    ...(window.CMS_PALETTES ?? {}),
     mostarda: { name: "Papel e mostarda", paper: "#f6f3ec", ink: "#2a2420", accent: "#e4a11b" },
     cobalto: { name: "Cobalto", paper: "#eef1f6", ink: "#111a2e", accent: "#2f5bea" },
     coral: { name: "Menta e coral", paper: "#f0f8f4", ink: "#1f2b27", accent: "#ff6b57" },
@@ -299,8 +372,15 @@
   }
   const paletteStyle = key => {
     const palette = palettes[key];
-    return palette ? `--paper:${palette.paper};--ink:${palette.ink};--accent:${palette.accent};--accent-ink:${inkOn(palette.accent)}` : "";
+    if (!palette) return "";
+    let css = `--paper:${palette.paper};--ink:${palette.ink};--accent:${palette.accent};--accent-ink:${inkOn(palette.accent)}`;
+    // Five-colour palettes also name the section tone, the highlight and the dark block.
+    if (palette.tone) css += `;--tone1:${palette.tone};--tone1-ink:${inkOn(palette.tone)};--tone1-label:${inkOn(palette.tone)}`;
+    if (palette.hl) css += `;--hl:${palette.hl}`;
+    if (palette.dark) css += `;--dark:${palette.dark};--dark-ink:${inkOn(palette.dark)}`;
+    return css;
   };
+  const paletteColours = palette => [palette.accent, palette.paper, palette.ink, palette.tone, palette.dark].filter(Boolean);
 
   /* ---------- State, saving and undo ---------- */
 
@@ -326,6 +406,10 @@
         texts: Object.fromEntries(Object.entries(item.texts ?? {}).filter(([slot, value]) => Object.hasOwn(layouts[item.layout].texts, slot) && typeof value === "string").map(([slot, value]) => [slot, value.slice(0, 600)])),
         photos: Object.fromEntries(Object.entries(item.photos ?? {}).filter(([, value]) => typeof value === "string")),
         icons: Object.fromEntries(Object.entries(item.icons ?? {}).filter(([, value]) => Object.hasOwn(icons, value))),
+        fmt: Object.fromEntries(Object.entries(item.fmt ?? {}).filter(([slot, format]) => Object.hasOwn(layouts[item.layout].texts, slot) && format && typeof format === "object").map(([slot, format]) => [slot, {
+          z: clamp(Number(format.z) || 1, .4, 3), ls: clamp(Number(format.ls) || 0, -.1, .5), lh: format.lh ? clamp(Number(format.lh), .7, 2.4) : 0,
+          r: clamp(Number(format.r) || 0, -180, 180), tx: clamp(Number(format.tx) || 0, -60, 60), ty: clamp(Number(format.ty) || 0, -60, 60),
+        }])),
         stickers: (Array.isArray(item.stickers) ? item.stickers : []).filter(piece => piece && (doodles[piece.art] || cute[piece.art])).slice(0, 40).map(piece => ({
           id: serial++, art: piece.art, x: clamp(Number(piece.x) || 50, 0, 100), y: clamp(Number(piece.y) || 50, 0, 100), s: clamp(Number(piece.s) || 10, 2, 60), r: clamp(Number(piece.r) || 0, -180, 180),
         })),
@@ -416,7 +500,8 @@
       const attributes = edit
         ? ` contenteditable="plaintext-only" spellcheck="true" role="textbox" aria-label="${esc(layout.name)}: ${esc(fallback)}"${multi ? ' aria-multiline="true"' : ""} data-slot="${slot}" data-hint="${esc(fallback)}"`
         : "";
-      return `<${tag} class="cms-t ${classes}"${attributes}>${esc(value)}</${tag}>`;
+      const look = fmtStyle(item.fmt?.[slot], tag);
+      return `<${tag} class="cms-t ${classes}"${attributes}${look ? ` style="${look}"` : ""}>${esc(value)}</${tag}>`;
     };
     const photo = (slot, classes = "", own = true) => {
       const source = photos[item.photos[slot]];
@@ -479,8 +564,9 @@
     const pieces = item.stickers.map(piece => {
       const style = `--x:${piece.x};--y:${piece.y};--s:${piece.s};--r:${piece.r}`;
       const chosen = edit && selected?.sticker === piece.id;
+      const handles = chosen ? `<span class="cms-handles" aria-hidden="true">${["nw", "ne", "sw", "se"].map(corner => `<i class="cms-handle is-${corner}" data-handle="scale" title="Arraste para mudar o tamanho"></i>`).join("")}<i class="cms-handle-rotate" data-handle="rotate" title="Arraste para girar">${ui.rotate}</i></span>` : "";
       return edit
-        ? `<span class="cms-sticker${chosen ? " is-selected" : ""}" style="${style}" data-sticker="${piece.id}" tabindex="0" role="button" aria-label="${esc(stickerName(piece.art))}. Arraste para mover; setas movem, + e − mudam o tamanho, R gira, Delete apaga.">${stickerArt(piece.art)}</span>`
+        ? `<span class="cms-sticker${chosen ? " is-selected" : ""}" style="${style}" data-sticker="${piece.id}" tabindex="0" role="button" aria-label="${esc(stickerName(piece.art))}. Arraste para mover. Puxe os cantos para mudar o tamanho e a bolinha de cima para girar. No teclado: setas movem, + e − mudam o tamanho, R gira, Delete apaga.">${stickerArt(piece.art)}${handles}</span>`
         : `<span class="cms-sticker" style="${style}" aria-hidden="true">${stickerArt(piece.art)}</span>`;
     }).join("");
     const bar = edit ? sectionBar(item) : "";
@@ -500,10 +586,43 @@
     </div>`;
   }
 
+  // Size runs on a logarithmic slider (2 to 60), so small stickers get fine steps too.
+  const sizeToRange = size => Math.round(Math.log(size / 2) / Math.log(30) * 100);
+  const rangeToSize = value => +(2 * 30 ** (value / 100)).toFixed(2);
+  const turnOf = degrees => ((Math.round(degrees) + 540) % 360) - 180;
   function stickerTools(piece) {
     if (!piece) return "";
     const button = (action, icon, label) => `<button type="button" data-sticker-action="${action}" title="${label}" aria-label="${label}">${ui[icon]}</button>`;
-    return `<span class="cms-sticker-bar" style="--x:${piece.x};--y:${piece.y};--s:${piece.s}" role="toolbar" aria-label="Enfeite">${button("smaller", "minus", "Diminuir")}${button("bigger", "plus", "Aumentar")}${button("turn", "rotate", "Girar")}${button("copy", "copy", "Duplicar")}${button("delete", "trash", "Apagar")}</span>`;
+    const turn = turnOf(piece.r);
+    return `<span class="cms-sticker-bar" data-for="${piece.id}" role="toolbar" aria-label="Enfeite">
+      <label class="cms-bar-range" title="Tamanho">${ui.minus}<input type="range" min="0" max="100" step="1" value="${sizeToRange(piece.s)}" data-sticker-range="s" aria-label="Tamanho do enfeite">${ui.plus}</label>
+      <label class="cms-bar-range" title="Giro">${ui.rotate}<input type="range" min="-180" max="180" step="1" value="${turn}" data-sticker-range="r" aria-label="Giro do enfeite" aria-valuetext="${turn} graus"><output>${turn}°</output></label>
+      ${button("straighten", "level", "Endireitar")}${button("copy", "copy", "Duplicar")}${button("delete", "trash", "Apagar")}</span>`;
+  }
+  // The toolbar sits under the sticker (or above it, near the bottom of the block),
+  // measured from the sticker's real box, so tall, wide and rotated pieces all fit.
+  function placeBar() {
+    const bar = page.querySelector(".cms-sticker-bar");
+    const node = bar && page.querySelector(`[data-sticker="${bar.dataset.for}"]`);
+    if (!node) return;
+    const layer = bar.parentElement.getBoundingClientRect();
+    const box = node.getBoundingClientRect();
+    let top = box.bottom - layer.top + 16;
+    if (top + bar.offsetHeight > layer.height - 4) top = Math.max(4, box.top - layer.top - bar.offsetHeight - 40);
+    bar.style.top = `${top}px`;
+    bar.style.left = `${clamp(box.left + box.width / 2 - layer.left, bar.offsetWidth / 2 + 4, Math.max(bar.offsetWidth / 2 + 4, layer.width - bar.offsetWidth / 2 - 4))}px`;
+  }
+  // Keeps the sliders in step with a sticker changed by its handles or the wheel.
+  function syncBar(piece) {
+    const bar = page.querySelector(`.cms-sticker-bar[data-for="${piece.id}"]`);
+    if (!bar) return;
+    const turn = turnOf(piece.r);
+    bar.querySelector('[data-sticker-range="s"]').value = sizeToRange(piece.s);
+    const rotation = bar.querySelector('[data-sticker-range="r"]');
+    rotation.value = turn;
+    rotation.setAttribute("aria-valuetext", `${turn} graus`);
+    bar.querySelector("output").textContent = `${turn}°`;
+    placeBar();
   }
 
   function render() {
@@ -517,6 +636,10 @@
     get("cms-undo").disabled = !past.length;
     get("cms-redo").disabled = !future.length;
     renderSteps();
+    if (!previewing) {
+      placeBar();
+      if (textSel) textTools();
+    }
   }
 
   /* ---------- The drawer: pages, collage pieces and styles ---------- */
@@ -542,7 +665,9 @@
     }
     panel.setAttribute("aria-labelledby", `cms-tab-${tab}`);
     if (tab === "pages") {
-      panel.innerHTML = `<p class="cms-drawer-hint">Clique para colocar um bloco pronto abaixo do bloco selecionado.</p><div class="cms-page-grid">${Object.entries(layouts).map(([key, layout]) => `
+      panel.innerHTML = `<h3 class="cms-drawer-title">Modelos prontos</h3><p class="cms-drawer-hint">Comece de um portfólio inteiro. Trocou e não gostou? Use Desfazer.</p>
+        <div class="cms-template-list">${Object.entries(templates).map(([key, template]) => `<button type="button" class="cms-template-tile" data-template-pick="${key}"><span class="cms-template-swatch" aria-hidden="true">${template.swatches.map(colour => `<i style="background:${colour}"></i>`).join("")}</span><strong>${template.name}</strong><small>${template.hint}</small></button>`).join("")}</div>
+        <h3 class="cms-drawer-title">Blocos</h3><p class="cms-drawer-hint">Clique para colocar um bloco pronto abaixo do bloco selecionado.</p><div class="cms-page-grid">${Object.entries(layouts).map(([key, layout]) => `
         <button type="button" class="cms-page-tile" data-add-section="${key}">
           <span class="cms-wire is-${key}" aria-hidden="true">${wire[key]}</span>
           <strong>${layout.name}</strong><small>${layout.hint}</small>
@@ -550,7 +675,17 @@
     } else if (tab === "stickers") {
       const tile = (art, picture) => `<button type="button" class="cms-sticker-tile${doodles[art]?.wide ? " is-wide" : ""}" data-add-sticker="${art}" aria-label="Adicionar ${esc(stickerName(art))}" title="${esc(stickerName(art))}"><span class="cms-site" data-theme="${project.theme}"${project.palette ? ` data-palette="${project.palette}" style="${paletteStyle(project.palette)}"` : ""}>${picture}</span></button>`;
       const group = name => Object.entries(doodles).filter(([, doodle]) => doodle.group === name).map(([art, doodle]) => tile(art, doodle.svg)).join("");
-      panel.innerHTML = `<p class="cms-drawer-hint">Arraste um enfeite até a página ou clique para colocá-lo no bloco selecionado.</p>
+      const collection = packs[pack];
+      const packTile = (art, doodle) => `<button type="button" class="cms-sticker-tile is-pack${doodle.wide ? " is-wide" : ""}" data-add-sticker="${art}" aria-label="Adicionar ${esc(doodle.name)}" title="${esc(doodle.name)}" style="background:${collection.palette.paper}"><span class="cms-site">${doodle.svg}</span></button>`;
+      const collections = collection ? `
+        <h3 class="cms-drawer-title" id="cms-packs-title">Coleções</h3>
+        <div class="cms-pack-tabs" role="group" aria-labelledby="cms-packs-title">${Object.entries(packs).map(([key, item]) => `<button type="button" class="cms-pack-chip" data-pack-pick="${key}" aria-pressed="${key === pack}"><span class="cms-pack-dots" aria-hidden="true">${item.swatches.map(color => `<i style="background:${color}"></i>`).join("")}</span>${item.name}</button>`).join("")}</div>
+        <p class="cms-drawer-hint cms-pack-hint">${collection.hint}</p>
+        <div class="cms-sticker-grid">${Object.entries(collection.pieces).map(([art]) => packTile(art, doodles[art])).join("")}</div>
+        ${project.palette === pack
+          ? `<p class="cms-pack-match is-on"><span aria-hidden="true">✓</span> Paleta ${collection.name} aplicada ao site.</p>`
+          : `<button type="button" class="cms-pack-match" data-pack-palette="${pack}"><span class="cms-palette-swatch" aria-hidden="true">${[collection.palette.accent, collection.palette.paper, collection.palette.ink].map(color => `<i style="background:${color}"></i>`).join("")}</span>Combinar o site: usar a paleta ${collection.name}</button>`}` : "";
+      panel.innerHTML = `<p class="cms-drawer-hint">Arraste um enfeite até a página ou clique para colocá-lo no bloco selecionado.</p>${collections}
         <h3 class="cms-drawer-title">Scrapbook</h3><div class="cms-sticker-grid">${group("scrap")}</div>
         <h3 class="cms-drawer-title">Elementos de interface</h3><div class="cms-sticker-grid">${group("ui")}</div>
         <h3 class="cms-drawer-title">Adesivos</h3><div class="cms-sticker-grid">${Object.keys(cute).map(art => tile(art, `<img src="${cutePicture(art)}" alt="">`)).join("")}</div>`;
@@ -564,7 +699,7 @@
         <p class="cms-drawer-hint">Troque as cores do site inteiro de uma vez. Funciona com qualquer estilo.</p>
         <div class="cms-palette-list">
           <button type="button" class="cms-palette-tile" data-palette-pick="" aria-pressed="${!project.palette}"><span class="cms-palette-swatch" aria-hidden="true">${themes[project.theme].swatches.map(color => `<i style="background:${color}"></i>`).join("")}</span><strong>Cores do estilo</strong></button>
-          ${Object.entries(palettes).map(([key, palette]) => `<button type="button" class="cms-palette-tile" data-palette-pick="${key}" aria-pressed="${project.palette === key}"><span class="cms-palette-swatch" aria-hidden="true"><i style="background:${palette.accent}"></i><i style="background:${palette.paper}"></i><i style="background:${palette.ink}"></i></span><strong>${palette.name}</strong></button>`).join("")}
+          ${Object.entries(palettes).map(([key, palette]) => `<button type="button" class="cms-palette-tile" data-palette-pick="${key}" aria-pressed="${project.palette === key}"><span class="cms-palette-swatch" aria-hidden="true">${paletteColours(palette).map(colour => `<i style="background:${colour}"></i>`).join("")}</span><strong>${palette.name}</strong></button>`).join("")}
         </div>`;
     }
   }
@@ -607,12 +742,31 @@
   }
 
   panel.addEventListener("click", event => {
+    const model = event.target.closest("[data-template-pick]");
+    if (model) {
+      const fresh = templates[model.dataset.templatePick].build();
+      textSel = null;
+      change(() => { project.theme = fresh.theme; project.palette = fresh.palette; project.sections = fresh.sections; }, { keepSelection: false });
+      canvas.scrollTo({ top: 0, behavior: "smooth" });
+      say(`Modelo “${templates[model.dataset.templatePick].name}” aplicado. Mudou de ideia? Use Desfazer.`);
+      pepiTip(`Modelo ${templates[model.dataset.templatePick].name}! Agora é só trocar pelos seus textos e fotos.`);
+      return;
+    }
     const add = event.target.closest("[data-add-section]");
     const stick = event.target.closest("[data-add-sticker]");
     const pick = event.target.closest("[data-theme-pick]");
-    const paint = event.target.closest("[data-palette-pick]");
+    const paint = event.target.closest("[data-palette-pick], [data-pack-palette]");
+    const shelf = event.target.closest("[data-pack-pick]");
+    if (shelf) {
+      if (shelf.dataset.packPick === pack) return;
+      pack = shelf.dataset.packPick;
+      renderDrawer();
+      panel.querySelector(`[data-pack-pick="${pack}"]`)?.focus();
+      say(`Coleção ${packs[pack].name}: ${Object.keys(packs[pack].pieces).length} enfeites.`);
+      return;
+    }
     if (paint) {
-      const key = paint.dataset.palettePick || null;
+      const key = (paint.dataset.palettePick ?? paint.dataset.packPalette) || null;
       if (key === project.palette) return;
       change(() => { project.palette = key; });
       renderDrawer();
@@ -682,7 +836,13 @@
     const node = event.target.closest(".cms-section");
     if (!node) return;
     const item = sectionById(Number(node.dataset.section));
-    if (slot && item) typing = { before: snapshot(), item, slot: slot.dataset.slot };
+    if (slot && item) {
+      typing = { before: snapshot(), item, slot: slot.dataset.slot };
+      if (textSel?.section !== item.id || textSel?.slot !== slot.dataset.slot) {
+        textSel = { section: item.id, slot: slot.dataset.slot };
+        textTools();
+      }
+    }
     if (item && selected?.section !== item.id && !event.target.closest("[data-sticker], .cms-sticker-bar")) {
       selected = { section: item.id };
       for (const other of page.querySelectorAll(".cms-section.is-selected")) other.classList.remove("is-selected");
@@ -702,6 +862,7 @@
     }
     typing.item.texts[typing.slot] = value;
     save();
+    placeTextTools();
   });
   page.addEventListener("focusout", event => {
     const slot = event.target.closest("[data-slot]");
@@ -769,7 +930,7 @@
       change(() => { item.icons[slot] = iconOrder[(iconOrder.indexOf(current) + 1) % iconOrder.length]; });
       page.querySelector(`[data-section="${item.id}"] [data-icon="${slot}"]`)?.focus();
     } else if (tool) stickerAction(item, tool.dataset.stickerAction);
-    else if (!event.target.closest("[data-slot], [data-sticker]") && (selected?.section !== item.id || selected.sticker)) {
+    else if (!event.target.closest("[data-slot], [data-sticker], .cms-sticker-bar") && (selected?.section !== item.id || selected.sticker)) {
       selected = { section: item.id };
       render();
     }
@@ -857,6 +1018,7 @@
       if (action === "smaller") piece.s = clamp(+(piece.s / 1.2).toFixed(2), 2, 60);
       if (action === "bigger") piece.s = clamp(+(piece.s * 1.2).toFixed(2), 2, 60);
       if (action === "turn") piece.r = ((piece.r + 15 + 180) % 360) - 180;
+      if (action === "straighten") piece.r = 0;
       if (action === "copy") {
         const copy = { ...piece, id: serial++, x: clamp(piece.x + 4, 2, 98), y: clamp(piece.y + 4, 2, 98) };
         item.stickers.push(copy);
@@ -893,7 +1055,9 @@
     }
   }
 
-  // Moving a sticker with the pointer: it follows in percent of its block.
+  // Moving a sticker with the pointer: it follows in percent of its block. Its corner
+  // handles resize it and the knob above rotates it, both around its centre; rotation
+  // clicks into place near every 45°.
   let moving = null;
   page.addEventListener("pointerdown", event => {
     const node = event.target.closest("[data-sticker]");
@@ -903,7 +1067,16 @@
     const piece = item.stickers.find(other => other.id === Number(node.dataset.sticker));
     event.preventDefault();
     node.setPointerCapture(event.pointerId);
-    moving = { node, block, item, piece, before: snapshot(), startX: event.clientX, startY: event.clientY, x: piece.x, y: piece.y, moved: false };
+    const handle = event.target.closest("[data-handle]");
+    const box = node.getBoundingClientRect();
+    const [cx, cy] = [box.left + box.width / 2, box.top + box.height / 2];
+    moving = {
+      node, block, item, piece, before: snapshot(), startX: event.clientX, startY: event.clientY, x: piece.x, y: piece.y, moved: false,
+      mode: handle?.dataset.handle ?? "move", cx, cy, s: piece.s, r: piece.r,
+      distance: Math.max(8, Math.hypot(event.clientX - cx, event.clientY - cy)),
+      angle: Math.atan2(event.clientY - cy, event.clientX - cx),
+    };
+    if (handle) node.classList.add(`is-${moving.mode === "scale" ? "scaling" : "turning"}`);
     if (selected?.sticker !== piece.id) {
       selected = { section: item.id, sticker: piece.id };
       for (const other of page.querySelectorAll(".cms-sticker.is-selected, .cms-section.is-selected")) other.classList.remove("is-selected");
@@ -914,6 +1087,22 @@
   });
   page.addEventListener("pointermove", event => {
     if (!moving) return;
+    if (moving.mode !== "move") {
+      moving.moved = true;
+      if (moving.mode === "scale") {
+        moving.piece.s = +clamp(moving.s * Math.hypot(event.clientX - moving.cx, event.clientY - moving.cy) / moving.distance, 2, 60).toFixed(2);
+        moving.node.style.setProperty("--s", moving.piece.s);
+      } else {
+        let turn = moving.r + (Math.atan2(event.clientY - moving.cy, event.clientX - moving.cx) - moving.angle) * 180 / Math.PI;
+        turn = turnOf(turn);
+        const snap = Math.round(turn / 45) * 45;
+        if (Math.abs(turn - snap) < 5 && !event.altKey) turn = turnOf(snap);
+        moving.piece.r = turn;
+        moving.node.style.setProperty("--r", turn);
+      }
+      syncBar(moving.piece);
+      return;
+    }
     const box = moving.block.getBoundingClientRect();
     const dx = (event.clientX - moving.startX) / box.width * 100;
     const dy = (event.clientY - moving.startY) / box.height * 100;
@@ -923,6 +1112,7 @@
     moving.piece.y = +clamp(moving.y + dy, 0, 100).toFixed(1);
     moving.node.style.setProperty("--x", moving.piece.x);
     moving.node.style.setProperty("--y", moving.piece.y);
+    placeBar();
   });
   const stopMoving = () => {
     if (!moving) return;
@@ -939,6 +1129,179 @@
   };
   page.addEventListener("pointerup", stopMoving);
   page.addEventListener("pointercancel", stopMoving);
+
+  /* ---------- Texts: size, spacing, rotation and position ---------- */
+
+  // Any text can be resized, spaced, turned and nudged, like a sticker. The settings
+  // live in item.fmt[slot] and become inline styles, so the downloaded site keeps them.
+  // Position is in cqi, a share of the site's width, so it holds on a phone too.
+  const fmtDefault = { z: 1, ls: 0, lh: 0, r: 0, tx: 0, ty: 0 };
+  const zoomToRange = zoom => Math.round(Math.log(zoom / .4) / Math.log(7.5) * 100);
+  const rangeToZoom = value => +(.4 * 7.5 ** (value / 100)).toFixed(3);
+  let textSel = null; // { section, slot }
+  const textNode = () => textSel && page.querySelector(`[data-section="${textSel.section}"] [data-slot="${textSel.slot}"]`);
+  const textFormat = () => ({ ...fmtDefault, ...(sectionById(textSel?.section)?.fmt?.[textSel?.slot] ?? {}) });
+  function hideTextTools() {
+    textSel = null;
+    page.querySelector(".cms-text-tools")?.remove();
+    page.querySelector(".cms-text-frame")?.remove();
+  }
+  function textTools() {
+    page.querySelector(".cms-text-tools")?.remove();
+    page.querySelector(".cms-text-frame")?.remove();
+    const node = textNode();
+    if (!node || previewing) return;
+    const layer = node.closest(".cms-section").querySelector(".cms-layer");
+    const format = textFormat();
+    const style = getComputedStyle(node);
+    const size = parseFloat(style.fontSize) || 16;
+    const spacing = format.ls || (parseFloat(style.letterSpacing) || 0) / size;
+    const leading = format.lh || (parseFloat(style.lineHeight) || size * 1.2) / size;
+    const turn = turnOf(format.r);
+    layer.insertAdjacentHTML("beforeend", `<div class="cms-text-frame" aria-hidden="true"><i class="cms-text-grip" data-text-handle="move" title="Arraste para mover o texto">${ui.move}</i><i class="cms-handle is-se" data-text-handle="scale" title="Arraste para mudar o tamanho"></i><i class="cms-handle-rotate" data-text-handle="rotate" title="Arraste para girar">${ui.rotate}</i></div>
+      <div class="cms-text-tools" role="toolbar" aria-label="Ajustes do texto">
+        <label class="cms-bar-range" title="Tamanho"><b class="cms-bar-glyph">A</b><input type="range" min="0" max="100" step="1" value="${zoomToRange(format.z)}" data-text-range="z" aria-label="Tamanho do texto"><b class="cms-bar-glyph is-big">A</b></label>
+        <label class="cms-bar-range" title="Espaço entre letras"><b class="cms-bar-glyph">A↔A</b><input type="range" min="-10" max="50" step="1" value="${Math.round(spacing * 100)}" data-text-range="ls" aria-label="Espaço entre letras"></label>
+        <label class="cms-bar-range" title="Espaço entre linhas">${ui.lines}<input type="range" min="70" max="240" step="5" value="${Math.round(leading * 100)}" data-text-range="lh" aria-label="Espaço entre linhas"></label>
+        <label class="cms-bar-range" title="Giro">${ui.rotate}<input type="range" min="-180" max="180" step="1" value="${turn}" data-text-range="r" aria-label="Giro do texto" aria-valuetext="${turn} graus"><output>${turn}°</output></label>
+        <button type="button" data-text-action="reset" title="Voltar ao jeito do estilo">${ui.level}<span>Padrão</span></button>
+      </div>`);
+    placeTextTools();
+  }
+  function placeTextTools() {
+    const node = textNode();
+    const frame = page.querySelector(".cms-text-frame");
+    const bar = page.querySelector(".cms-text-tools");
+    if (!node || !frame || !bar) return;
+    const layer = frame.parentElement.getBoundingClientRect();
+    const box = node.getBoundingClientRect();
+    Object.assign(frame.style, { left: `${box.left - layer.left - 6}px`, top: `${box.top - layer.top - 6}px`, width: `${box.width + 12}px`, height: `${box.height + 12}px` });
+    let top = box.bottom - layer.top + 14;
+    if (top + bar.offsetHeight > layer.height - 4) top = Math.max(4, box.top - layer.top - bar.offsetHeight - 46);
+    bar.style.top = `${top}px`;
+    bar.style.left = `${clamp(box.left + box.width / 2 - layer.left, bar.offsetWidth / 2 + 4, Math.max(bar.offsetWidth / 2 + 4, layer.width - bar.offsetWidth / 2 - 4))}px`;
+  }
+  function setFormat(patch) {
+    const item = sectionById(textSel?.section);
+    const node = textNode();
+    if (!item || !node) return;
+    tuning ??= snapshot();
+    item.fmt ??= {};
+    const format = { ...textFormat(), ...patch };
+    item.fmt[textSel.slot] = format;
+    node.style.cssText = fmtStyle(format, node.tagName.toLowerCase());
+    const turn = turnOf(format.r);
+    const rotation = page.querySelector('[data-text-range="r"]');
+    if (rotation && document.activeElement !== rotation) rotation.value = turn;
+    if (rotation) rotation.setAttribute("aria-valuetext", `${turn} graus`);
+    const output = page.querySelector(".cms-text-tools output");
+    if (output) output.textContent = `${turn}°`;
+    const zoom = page.querySelector('[data-text-range="z"]');
+    if (zoom && document.activeElement !== zoom) zoom.value = zoomToRange(format.z);
+    placeTextTools();
+  }
+  page.addEventListener("click", event => {
+    if (!event.target.closest('[data-text-action="reset"]') || !textSel) return;
+    const item = sectionById(textSel.section);
+    if (!item?.fmt?.[textSel.slot]) return;
+    change(() => { delete item.fmt[textSel.slot]; });
+  });
+  // Clicking anywhere else on the page puts the text tools away.
+  page.addEventListener("pointerdown", event => {
+    if (textSel && !event.target.closest("[data-slot], .cms-text-tools, .cms-text-frame")) hideTextTools();
+  }, true);
+  let textMoving = null;
+  page.addEventListener("pointerdown", event => {
+    const handle = event.target.closest("[data-text-handle]");
+    const node = handle && textNode();
+    if (!node || event.button !== 0) return;
+    event.preventDefault();
+    event.stopPropagation();
+    handle.setPointerCapture(event.pointerId);
+    const box = node.getBoundingClientRect();
+    const [cx, cy] = [box.left + box.width / 2, box.top + box.height / 2];
+    textMoving = {
+      mode: handle.dataset.textHandle, before: snapshot(), format: textFormat(), startX: event.clientX, startY: event.clientY, cx, cy, moved: false,
+      width: page.getBoundingClientRect().width || 1,
+      distance: Math.max(8, Math.hypot(event.clientX - cx, event.clientY - cy)),
+      angle: Math.atan2(event.clientY - cy, event.clientX - cx),
+    };
+    page.querySelector(".cms-text-frame")?.classList.add(`is-${textMoving.mode}`);
+  });
+  page.addEventListener("pointermove", event => {
+    if (!textMoving) return;
+    const start = textMoving;
+    start.moved = true;
+    if (start.mode === "move") {
+      setFormat({ tx: +clamp(start.format.tx + (event.clientX - start.startX) / start.width * 100, -60, 60).toFixed(2), ty: +clamp(start.format.ty + (event.clientY - start.startY) / start.width * 100, -60, 60).toFixed(2) });
+    } else if (start.mode === "scale") {
+      setFormat({ z: +clamp(start.format.z * Math.hypot(event.clientX - start.cx, event.clientY - start.cy) / start.distance, .4, 3).toFixed(3) });
+    } else {
+      let turn = turnOf(start.format.r + (Math.atan2(event.clientY - start.cy, event.clientX - start.cx) - start.angle) * 180 / Math.PI);
+      const snap = Math.round(turn / 45) * 45;
+      if (Math.abs(turn - snap) < 5 && !event.altKey) turn = turnOf(snap);
+      setFormat({ r: turn });
+    }
+  });
+  const stopText = () => {
+    if (!textMoving) return;
+    page.querySelector(".cms-text-frame")?.classList.remove("is-move", "is-scale", "is-rotate");
+    textMoving = null;
+    quietUntil = performance.now() + 250;
+    commitTuning();
+  };
+  page.addEventListener("pointerup", stopText);
+  page.addEventListener("pointercancel", stopText);
+
+  let tuning = null; // the snapshot before a slider or wheel gesture
+  let tuneTimer = 0;
+  function commitTuning() {
+    if (!tuning) return;
+    past.push(tuning);
+    future.length = 0;
+    tuning = null;
+    save();
+    get("cms-undo").disabled = false;
+    get("cms-redo").disabled = true;
+  }
+  function tune(piece, size, turn) {
+    tuning ??= snapshot();
+    if (size !== null) piece.s = +clamp(size, 2, 60).toFixed(2);
+    if (turn !== null) piece.r = turnOf(turn);
+    const node = page.querySelector(`[data-sticker="${piece.id}"]`);
+    node?.style.setProperty("--s", piece.s);
+    node?.style.setProperty("--r", piece.r);
+    syncBar(piece);
+  }
+  const chosenSticker = () => sectionById(selected?.section)?.stickers.find(piece => piece.id === selected?.sticker);
+  page.addEventListener("input", event => {
+    const textRange = event.target.closest("[data-text-range]");
+    if (textRange && textSel) {
+      const value = Number(textRange.value);
+      const key = textRange.dataset.textRange;
+      setFormat({ [key]: key === "z" ? rangeToZoom(value) : key === "ls" ? value / 100 : key === "lh" ? value / 100 : value });
+      return;
+    }
+    const range = event.target.closest("[data-sticker-range]");
+    const piece = range && chosenSticker();
+    if (!piece) return;
+    if (range.dataset.stickerRange === "s") tune(piece, rangeToSize(Number(range.value)), null);
+    else tune(piece, null, Number(range.value));
+  });
+  page.addEventListener("change", event => {
+    if (event.target.closest("[data-sticker-range], [data-text-range]")) commitTuning();
+  });
+  page.addEventListener("wheel", event => {
+    const node = event.target.closest(".cms-sticker.is-selected");
+    const piece = node && chosenSticker();
+    if (!piece || previewing || moving) return;
+    event.preventDefault();
+    const delta = event.deltaY || event.deltaX;
+    if (event.shiftKey) tune(piece, null, piece.r + Math.sign(delta) * 5);
+    else tune(piece, piece.s * Math.exp(-delta * .0015), null);
+    clearTimeout(tuneTimer);
+    tuneTimer = setTimeout(commitTuning, 400);
+  }, { passive: false });
 
   // Dragging a new piece from the drawer onto the page.
   let draggingFromDrawer = null;
@@ -989,7 +1352,7 @@
   const helperText = helper.querySelector(".cms-helper-text");
   const P = () => window.PepiBolota;
   const voice = {
-    builderOpen: { text: "Crie Meu Site! Seu portfólio já vem montado: é só clicar e trocar pelo que é seu. Solta essa criatividade!", face: "star" },
+    builderOpen: { text: "Você conquistou o Crie Meu Site! Seu portfólio já vem montado: é só clicar e trocar pelo que é seu. Solta essa criatividade!", face: "star" },
     builderExport: { text: "Seu site está prontinho! Agora é só mostrar para todo mundo!", face: "love" },
   };
   let helperPepi = null;

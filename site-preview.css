@@ -299,5 +299,7 @@
 }
 .cms-sticker svg, .cms-sticker img { display: block; width: 100%; height: auto; }
 .cms-sticker img { filter: drop-shadow(0 3px 2px #0003); }
+/* Collection stickers are die-cut: a white edge all around and a soft shadow. */
+.cms-site svg.is-cut { filter: drop-shadow(1.5px 0 0 #fff) drop-shadow(-1.5px 0 0 #fff) drop-shadow(0 1.5px 0 #fff) drop-shadow(0 -1.5px 0 #fff) drop-shadow(0 2px 2px rgb(0 0 0 / .26)); }
 
 .cms-footer { padding: 18px; color: var(--muted); background: var(--paper); font: .75rem var(--mono); text-align: center; }
